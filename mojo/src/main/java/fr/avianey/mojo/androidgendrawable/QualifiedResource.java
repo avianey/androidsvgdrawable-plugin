@@ -116,4 +116,8 @@ public class QualifiedResource extends File {
         return density;
     }
     
+    public String toString() {
+    	return FilenameUtils.getName(getAbsolutePath());
+    }
+    
 }

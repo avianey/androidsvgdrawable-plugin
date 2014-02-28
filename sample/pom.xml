@@ -8,7 +8,7 @@
 	<groupId>fr.avianey.mojo</groupId>
 	<artifactId>androidgendrawable-sample</artifactId>
 	<packaging>apk</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>AndroidGenDrawable Maven Plugin Sample Project</name>
 	<url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
 
@@ -32,6 +32,7 @@
             <plugin>
                 <groupId>fr.avianey.mojo</groupId>
                 <artifactId>androidgendrawable-maven-plugin</artifactId>
+				<version>1.0.1-SNAPSHOT</version>
                 <configuration>
                     <!-- where to pick the svg -->
                     <from>${project.basedir}/svg</from>
@@ -42,7 +43,7 @@
                         <phone_to_rename>phone</phone_to_rename>
                     </rename>
                     <!-- skip already generated resources (always|never|ifModified) -->
-                    <override>ifModified</override>
+                    <override>always</override>
                     <!-- create or skip missing directories -->
                     <createMissingDirectories>true</createMissingDirectories>
                     <targetedDensities>
@@ -53,7 +54,6 @@
                         <densitys>xxxhdpi</densitys>
                     </targetedDensities>
                     <!-- use no qualifier for mdpi drawables -->
-                    <!-- TODO : bug if no existing folder with no density qualifier -->
                     <fallbackDensity>mdpi</fallbackDensity>
                     <!-- use the app icon to generate the High Res Icon for Google Play -->
                     <highResIcon>icon</highResIcon>
@@ -73,7 +73,7 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.8.2</version>
                 <configuration>
                     <sign>
                         <debug>true</debug>

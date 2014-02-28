@@ -2,7 +2,7 @@ package fr.avianey.mojo.androidgendrawable;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.geom.Rectangle2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,9 +28,9 @@ import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
-import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
+import org.apache.batik.parser.UnitProcessor;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -40,22 +40,23 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGLength;
+import org.w3c.dom.svg.SVGSVGElement;
 
+import com.google.common.base.Joiner;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import fr.avianey.mojo.androidgendrawable.NinePatch.Zone;
+import fr.avianey.mojo.androidgendrawable.batik.DensityAwareUserAgent;
+import fr.avianey.mojo.androidgendrawable.util.Constants;
 
 /**
  * Goal which generates drawable from Scalable Vector Graphics (SVG) files.
  * 
  * @goal gen
  */
-// TODO : delete PNG with the same name as target PNG
 // TODO : JPEG or PNG
-// TODO : 9-Patch config doit tenir compte des classifiers
-// TODO : handle multiple output directories with no density qualifier
-// TODO : ordered qualifiers (http://developer.android.com/guide/topics/resources/providing-resources.html#QualifierRules)
 public class Gen extends AbstractMojo {
     
     /**
@@ -136,6 +137,30 @@ public class Gen extends AbstractMojo {
      * @parameter default-value="always"
      */
     private OverrideMode override;
+
+    /**
+     * <p>
+     * <strong>USE WITH CAUTION</strong><br/>
+     * You'll more likely take time to set desired width and height properly
+     * </p>
+     * 
+     * When &lt;SVG&gt; attributes "x", "y", "width" and "height" are not present defines which
+     * element are taken in account to compute the Area Of Interest of the image. The plugin will
+     * output a WARNING log if no width or height are specified within the &lt;svg&gt; element.
+     * <dl>
+     * <dt>all</dt>
+     * <dd>This includes primitive paint, filtering, clipping and masking.</dd>
+     * <dt>sensitive</dt>
+     * <dd>This includes the stroked area but does not include the effects of clipping, masking or filtering.</dd>
+     * <dt>geometry</dt>
+     * <dd>This excludes any clipping, masking, filtering or stroking.</dd>
+     * <dt>primitive</dt>
+     * <dd>This is the painted region of fill <u>and</u> stroke but does not account for clipping, masking or filtering.</dd>
+     * </dl>
+     * 
+     * @parameter default-value="sensitive"
+     */
+    private BoundsType svgBoundsType;
     
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException {
@@ -148,6 +173,7 @@ public class Gen extends AbstractMojo {
         }
         final Density _fallbackDensity = fallbackDensity;
         _targetDensities.add(_fallbackDensity);
+        getLog().info("Targeted densities : " + Joiner.on(", ").join(_targetDensities));
         getLog().debug("Fallback density set to : " + fallbackDensity.toString());
         
         /********************************
@@ -155,7 +181,7 @@ public class Gen extends AbstractMojo {
          ********************************/
         
         NinePatchMap ninePatchMap = new NinePatchMap();
-        if (ninePatchConfig != null) {
+        if (ninePatchConfig != null && ninePatchConfig.isFile()) {
             try (final Reader reader = new FileReader(ninePatchConfig)) {
                 Type t = new TypeToken<Set<NinePatch>>(){}.getType();
                 Set<NinePatch> _ninePatchMap = (Set<NinePatch>) (new GsonBuilder().create().fromJson(reader, t));
@@ -181,7 +207,9 @@ public class Gen extends AbstractMojo {
                             getLog().error(e);
                         }
                     }
-                    getLog().warn("Invalid svg input : " + file.getAbsolutePath());
+                    if (ninePatchConfig != null && !ninePatchConfig.getAbsolutePath().equals(file.getAbsolutePath())) {
+                    	getLog().warn("Invalid input file : " + file.getAbsolutePath());
+                    }
                     return false;
                 }
             })) {
@@ -189,11 +217,12 @@ public class Gen extends AbstractMojo {
                 getLog().debug("Found svg file to convert : " + f.getAbsolutePath());
             }
         } else {
-            throw new MojoExecutionException(from.getAbsolutePath() + " is not a valid input directory");
+            throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
         }
+        getLog().info("SVG files found : " + Joiner.on(", ").join(svgToConvert));
 
         QualifiedResource _highResIcon = null;
-        Rectangle2D _highResIconBounds = null;
+        Rectangle _highResIconBounds = null;
         
         /*********************************
          * Create svg in res/* folder(s) *
@@ -201,10 +230,10 @@ public class Gen extends AbstractMojo {
         
         for (QualifiedResource svg : svgToConvert) {
             try {
-                getLog().info("Handling " + FilenameUtils.getName(svg.getAbsolutePath()));
-                Rectangle2D bounds = extractSVGBounds(svg);
+                getLog().info("Transcoding " + FilenameUtils.getName(svg.getAbsolutePath()) + " to targeted densities");
+                Rectangle bounds = extractSVGBounds(svg);
                 if (getLog().isDebugEnabled()) {
-                    getLog().debug(">> Parsing : bounds [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
+                    getLog().debug(">> Parsing : dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
                 }
                 if (highResIcon != null && highResIcon.equals(svg.getName())) {
                     _highResIcon = svg;
@@ -221,7 +250,7 @@ public class Gen extends AbstractMojo {
                         destination.mkdir();
                     }
                     if (destination.exists()) {
-                        getLog().info("Transcoding " + svg.getName() + " to " + destination.getName());
+                        getLog().debug("Transcoding " + svg.getName() + " to " + destination.getName());
                         transcode(svg, d, bounds, destination, ninePatchMap.get(svg));
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
@@ -244,7 +273,7 @@ public class Gen extends AbstractMojo {
         if (_highResIcon != null) {
             try {
                 // TODO : add a garbage density (NO_DENSITY) for the highResIcon
-                getLog().info("Handling high resolution icon");
+                getLog().info("Generating high resolution icon");
                 transcode(_highResIcon, Density.mdpi, _highResIconBounds, new File("."), 512, 512, null);
             } catch (IOException e) {
                 getLog().error(e);
@@ -261,17 +290,75 @@ public class Gen extends AbstractMojo {
      * @throws MalformedURLException
      * @throws IOException
      */
-    private Rectangle2D extractSVGBounds(QualifiedResource svg) throws MalformedURLException, IOException {
-        String parser = XMLResourceDescriptor.getXMLParserClassName();
-        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-        SVGDocument doc = (SVGDocument) f.createDocument(svg.toURI().toURL().toString());
-        UserAgent userAgent = new UserAgentAdapter();
+    Rectangle extractSVGBounds(QualifiedResource svg) throws MalformedURLException, IOException {
+    	// check <svg> attributes first : x, y, width, height
+    	SVGDocument svgDocument = getSVGDocument(svg);
+    	SVGSVGElement svgElement = svgDocument.getRootElement();
+    	if (svgElement.getAttributeNode("width") != null && svgElement.getAttribute("height") != null) {
+
+            UserAgent userAgent = new DensityAwareUserAgent(svg.getDensity().getDpi());
+            UnitProcessor.Context context = org.apache.batik.bridge.UnitProcessor.createContext(
+            		new BridgeContext(userAgent), svgElement);
+            
+    		float width = svgLengthInPixels(svgElement.getWidth().getBaseVal(), context);
+    		float height = svgLengthInPixels(svgElement.getHeight().getBaseVal(), context);
+    		float x = 0;
+    		float y = 0;
+    		// check x and y attributes
+    		if (svgElement.getX() != null && svgElement.getX().getBaseVal() != null) {
+    			x = svgLengthInPixels(svgElement.getX().getBaseVal(), context);
+    		}
+    		if (svgElement.getY() != null && svgElement.getY().getBaseVal() != null) {
+    			y = svgLengthInPixels(svgElement.getY().getBaseVal(), context);
+    		}
+    		
+    		return new Rectangle((int) Math.floor(x), (int) Math.floor(y), (int) Math.ceil(width), (int) Math.ceil(height));
+    	}
+    	
+    	// use computed bounds
+    	getLog().warn("Take time to fix desired width and height attributes of the root <svg> node for this file... " +
+    			"ROI will be computed by magic using Batik " + svgBoundsType.name() + " bounds");
+    	return svgBoundsType.getBounds(getGraphicsNode(svgDocument, svg.getDensity().getDpi()));
+    }
+    
+    /**
+     * Convert an {@link SVGLength} to a value in {@link SVGLength#SVG_LENGTHTYPE_PX}
+     * @param length
+     * @param context
+     * @return
+     */
+    private float svgLengthInPixels(SVGLength length, UnitProcessor.Context context) {
+    	return UnitProcessor.svgToUserSpace(length.getValueAsString(), "px", UnitProcessor.OTHER_LENGTH, context);
+    }
+    
+    /**
+     * Return the {@link GraphicsNode} of the {@link SVGDocument}
+     * @param svgDocument
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    private GraphicsNode getGraphicsNode(SVGDocument svgDocument, int dpi) throws MalformedURLException, IOException {
+        UserAgent userAgent = new DensityAwareUserAgent(dpi);
         DocumentLoader loader = new DocumentLoader(userAgent);
         BridgeContext ctx = new BridgeContext(userAgent, loader);
         ctx.setDynamicState(BridgeContext.DYNAMIC);
         GVTBuilder builder = new GVTBuilder();
-        GraphicsNode rootGN = builder.build(ctx, doc);
-        return rootGN.getGeometryBounds();
+        GraphicsNode rootGN = builder.build(ctx, svgDocument);
+        return rootGN;
+    }
+    
+    /**
+     * Return the {@link SVGDocument} of the SVG {@link QualifiedResource}
+     * @param svg
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    SVGDocument getSVGDocument(QualifiedResource svg) throws MalformedURLException, IOException {
+    	String parser = XMLResourceDescriptor.getXMLParserClassName();
+        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+        return (SVGDocument) f.createDocument(svg.toURI().toURL().toString());
     }
     
     /**
@@ -283,7 +370,7 @@ public class Gen extends AbstractMojo {
      * @throws IOException
      * @throws TranscoderException
      */
-    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle2D bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException {
+    public void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException {
         transcode(svg, targetDensity, bounds, destination, 
                 new Float(bounds.getWidth() * svg.getDensity().ratio(targetDensity)), 
                 new Float(bounds.getHeight() * svg.getDensity().ratio(targetDensity)),
@@ -303,7 +390,7 @@ public class Gen extends AbstractMojo {
      */
     // TODO : center inside option
     // TODO : preserve aspect ratio
-    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle2D bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException {
+    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException {
         Float width = new Float(Math.floor(targetWidth));
         Float height = new Float(Math.floor(targetHeight));
         if (getLog().isDebugEnabled()) {
@@ -328,6 +415,12 @@ public class Gen extends AbstractMojo {
             .append(".png")
             .toString();
         if (override.override(svg, new File(finalName), ninePatchConfig, ninePatch != null)) {
+        	
+        	// unit conversion for size not in pixel
+        	t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
+        	// set the ROI
+        	t.addTranscodingHint(PNGTranscoder.KEY_AOI, bounds);
+        	
             if (ninePatch == null) {
                 // write file directly
                 OutputStream ostream = new FileOutputStream(finalName);

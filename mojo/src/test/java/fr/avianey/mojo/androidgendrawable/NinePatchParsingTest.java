@@ -50,7 +50,8 @@ public class NinePatchParsingTest {
          this.resultExpected = resultExpected;
     }
     
-    @Parameters
+	@Parameters
+    @SuppressWarnings("serial")
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
