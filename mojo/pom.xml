@@ -4,7 +4,7 @@
 	<groupId>fr.avianey.mojo</groupId>
 	<artifactId>androidgendrawable-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>AndroidGenDrawable Maven Plugin</name>
 	<url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
 	
@@ -28,7 +28,7 @@
         <url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
         <developerConnection>scm:git:git@github.com/avianey/androidgendrawable-maven-plugin.git</developerConnection>
         <connection>scm:git:git://github.com/avianey/androidgendrawable-maven-plugin.git</connection>
-        <tag>HEAD</tag>
+        <tag>androidgendrawable-maven-plugin-1.0.1</tag>
   </scm>
 
     <issueManagement>
