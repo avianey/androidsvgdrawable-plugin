@@ -1,13 +1,15 @@
 Android Gen Drawable Maven plugin
 =================================
 
+[![Build Status](https://travis-ci.org/avianey/androidgendrawable-maven-plugin.png?branch=master)](https://travis-ci.org/avianey/androidgendrawable-maven-plugin)  
+
 Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as portrait, landscape, small, large, us, fr, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color or a text value, this Maven plugin generates for you density specific drawable resources from qualified SVG files. The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time in as many PNG as needed and correctly placed into qualified drawable directories...at least one for each targeted device density !  
 
 ```xml
 <plugin>
     <groupId>fr.avianey.mojo</groupId>
     <artifactId>androidgendrawable-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </plugin>
 ```
 
