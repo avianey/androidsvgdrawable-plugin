@@ -87,14 +87,17 @@ SVG files use to generate density specific drawable must specify a width and hei
 ```
 	  
 This will define the bounding box of the drawable content. Everything that is drawn outside off this bounding box will not be rendered in the generated PNG drawable.  
-Inkscape provides a way to make the SVG bounding bow match the content edges.  
+
+Inkscape provides a way to make the SVG bounding bow match the content edges :  
 
 1. Open File > Document Properties [CTRL]+[SHIFT]+[D]
 2. In the Page tab Page Size > Custom Size > Resize page to content
 
-If you want the bounding box to be larger than the content (with extra border), you'll need to add an extra transparent shape that is larger than the content.  
+If you want the bounding box to be larger than the content (with extra border), you'll need to add an extra transparent shape that is larger than the content and that match the desired width and height before using this method.  
   
-It is preferable for your SVG file dimensions to be a multiple of **32** and adjusted to mdpi so they can be scaled to any density without rounding the bounding box.
+It is preferable for your SVG file dimensions to be a multiple of **32** and adjusted to **mdpi** so they can be scaled to any density without rounding the bounding box. The **"width"** and **"height"** attributes of the <svg> element are rouded to the smallest integer that is greater than or equal to the value of the attribute. **Use round integer value expressed in pixels ("px") or without dimension as much as possible...**   
+
+It's also possible to use valid SVG unit of length such as "cm", "pt", "in". Use it with caution :-).  
 
 #### 9-Patch configuration
 
