@@ -118,7 +118,11 @@ public class NinePatch {
      * @return
      */
     public static final int start(int start, int stop, int d, double ratio) {
-        return Math.min(d - 1, (int) Math.floor(start * ratio));
+        return Math.max(
+        		0, 
+        		Math.min(
+        				(int) Math.ceil(d * ratio) - 1, 
+        				(int) Math.floor(start * ratio)));
     }
     
     /**
@@ -131,7 +135,10 @@ public class NinePatch {
      * @return
      */
     public static final int size(int start, int stop, int d, double ratio) {
-        return Math.min(d - start(start, stop, d, ratio), Math.max(1, (int) Math.ceil((stop - start) * ratio)));
+        return Math.max(
+        		1, Math.min(
+		        		(int) Math.ceil(d * ratio) - start(start, stop, d, ratio), 
+		        		Math.max(1, (int) Math.floor((stop - start + 1) * ratio))));
     }
     
 }
