@@ -89,22 +89,38 @@ public class NinePatchGenerationTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
-                    {
-                    	"ninepatch-mdpi.svg", "9patch.json",
-                    	Density.mdpi,
-                    	new int[][] {
-                    			{2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, {9, 0}, // stretch x
-                    			{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // content y
-                    			{5, 13}, {6, 13}, // content x
-                    			{11, 5}, {11, 6}  // content y
-            			},
-                    	new int[][] {
-                    			{0, 0}, {1, 0}, {10, 0}, {11, 0}, // stretch x
-                    			{0, 0}, {0, 11}, {0, 12}, {0, 13}, // content y
-                    			{1, 13}, {2, 13}, {3, 13}, {4, 13}, {7, 13}, {8, 13}, {9, 13}, {10, 13}, // content x
-                    			{11, 1}, {11, 2}, {11, 3}, {11, 4}, {11, 7}, {11, 8}, {11, 9}, {11, 10}, {11, 11}, {11, 12} // content y
-                    	}
-                    }
+                        {
+                            "ninepatch-mdpi.svg", "9patch.json",
+                            Density.mdpi,
+                            new int[][] {
+                                    {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, // stretch x
+                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // content y
+                                    {5, 13}, {6, 13}, // content x
+                                    {11, 5}, {11, 6}  // content y
+                            },
+                            new int[][] {
+                                    {0, 0}, {1, 0}, {2, 0}, {9, 0}, {10, 0}, {11, 0}, // stretch x
+                                    {0, 0}, {0, 11}, {0, 12}, {0, 13}, // content y
+                                    {1, 13}, {2, 13}, {3, 13}, {4, 13}, {7, 13}, {8, 13}, {9, 13}, {10, 13}, // content x
+                                    {11, 1}, {11, 2}, {11, 3}, {11, 4}, {11, 7}, {11, 8}, {11, 9}, {11, 10}, {11, 11}, {11, 12} // content y
+                            }
+                        },
+                        {
+                            "ninepatch-mdpi.svg", "9patch.json",
+                            Density.hdpi,
+                            new int[][] {
+                                    {4, 0}, {12, 0}, // stretch x
+                                    {0, 1}, {0, 15}, // content y
+                                    {7, 19}, {9, 19}, // content x
+                                    {16, 7}, {16, 9}  // content y
+                            },
+                            new int[][] {
+                                    {3, 0}, {13, 0}, // stretch x
+                                    {0, 0}, {0, 16}, // content y
+                                    {6, 19}, {10, 19}, // content x
+                                    {16, 6}, {16, 10}, // content y
+                            }
+                        },
                 });
     }
     

@@ -3,7 +3,7 @@
         "name" : "ninepatch", 
         "stretch" : {
             "x" : [
-                [1, 8]
+                [2, 7]
             ],
             "y" : [
                 [0, 9]
