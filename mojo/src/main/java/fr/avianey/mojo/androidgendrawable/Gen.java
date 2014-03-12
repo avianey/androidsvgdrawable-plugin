@@ -34,11 +34,14 @@ import org.apache.batik.parser.UnitProcessor;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLength;
 import org.w3c.dom.svg.SVGSVGElement;
@@ -53,89 +56,121 @@ import fr.avianey.mojo.androidgendrawable.util.Constants;
 
 /**
  * Goal which generates drawable from Scalable Vector Graphics (SVG) files.
- * 
- * @goal gen
  */
-// TODO : JPEG or PNG
+@Mojo(name = "gen")
 public class Gen extends AbstractMojo {
     
     /**
      * Directory of the svg resources to generate drawable from.
      * 
-     * @parameter
-     * @required
+     * @since 1.0.0
      */
+	@Parameter(required = true)
     private File from;
     
     /**
      * Location of the Android "./res/drawable(...)" directories :
-     * - drawable
-     * - drawable-hdpi
-     * - drawable-ldpi
-     * - drawable-mdpi
-     * - drawable-xhdpi
-     * - drawable-xxhdpi
+     * <ul>
+     * <li>drawable</li>
+     * <li>drawable-hdpi</li>
+     * <li>drawable-ldpi</li>
+     * <li>drawable-mdpi</li>
+     * <li>drawable-xhdpi</li>
+     * <li>drawable-xxhdpi</li>
+     * </ul>
      * 
-     * @parameter default-value="${project.basedir}/res"
+     * @since 1.0.0
      */
+	@Parameter(defaultValue = "${project.basedir}/res")
     private File to;
     
     /**
-     * Create a drawable-density directory when no directory exists for the given qualifiers.
+     * Create a drawable-density directory when no directory exists for the given qualifiers.<br/>
      * If set to false, the plugin will generate the drawable in the best matching directory :
      * <ul>
      * <li>match all of the qualifiers</li>
      * <li>no other matching directory with less qualifiers</li>
      * </ul>
      * 
-     * @parameter default-value="true"
+     * @since 1.0.0
      */
+	@Parameter(defaultValue = "true")
     private boolean createMissingDirectories;
 
     /**
-     * Enumeration of desired target densities.
-     * If no density specified, PNG are only generated to existing directories.
+     * Enumeration of desired target densities.<br/>
+     * If no density specified, PNG are only generated to existing directories.<br/>
      * If at least one density is specified, PNG are only generated in matching directories.
      * 
-     * @parameter 
+     * @since 1.0.0
      */
+	@Parameter
     private Set<Density> targetedDensities;
 
     /**
-     * Use alternatives names for PNG resources
-     * Key = original svg name (without density prefix)
-     * Value = target name
+     * Use alternatives names for PNG resources<br/>
+     * <dl>
+     * <dt>Key</dt>
+     * <dd>original svg name (without density prefix)</dd>
+     * <dt>Value</dt>
+     * <dd>target name</dd>
+     * </dl>
      * 
-     * @parameter 
+     * @since 1.0.0 
      */
+	@Parameter
     private Map<String, String> rename;
 
     /**
      * Density for drawable directories without density qualifier
      * 
-     * @parameter default-value="mdpi"
+     * @since 1.0.0
+     * @see Density
      */
+	@Parameter(defaultValue = "mdpi")
     private Density fallbackDensity;
     
     /**
      * Name of the input file to use to generate a 512x512 high resolution Google Play icon
      * 
-     * @parameter default-value=""
+     * @since 1.0.0
      */
+	@Parameter
     private String highResIcon;
     
     /**
      * Path to the 9-patch drawable configuration file.
      * 
-     * @parameter default-value=null
+     * @since 1.0.0
      */
+	@Parameter
     private File ninePatchConfig;
+    
+    /**
+     * Path to the <strong>.svgmask</strong> directory.<br/>
+     * The {@link Gen#from} directory will be use if not specified.
+     * 
+     * @since 1.1.0
+     */
+	@Parameter(defaultValue = "${from}")
+    private File svgMaskDirectory;
+
+    /**
+     * Path to a directory referencing additional svg resources to be taken in account for masking.<br/>
+     * The {@link Gen#from} directory will be use if not specified.
+     * 
+     * @since 1.1.0
+     */
+	@Parameter(defaultValue = "${from}")
+    private File svgMaskResourcesDirectory;
     
     /**
      * Override existing generated resources.
      * 
-     * @parameter default-value="always"
+     * @since 1.0.0
+     * @see OverrideMode
      */
+	@Parameter(defaultValue = "always")
     private OverrideMode override;
 
     /**
@@ -158,9 +193,40 @@ public class Gen extends AbstractMojo {
      * <dd>This is the painted region of fill <u>and</u> stroke but does not account for clipping, masking or filtering.</dd>
      * </dl>
      * 
-     * @parameter default-value="sensitive"
+     * @since 1.0.1
+     * @see BoundsType
      */
+	@Parameter(defaultValue = "sensitive")
     private BoundsType svgBoundsType;
+    
+    /**
+     * The format for the generated images.
+     * <ul>
+     * <li>PNG</li>
+     * <li>JPG</li>
+     * </ul>
+     * 
+     * @since 1.1.0
+     * @see OutputFormat
+     */
+	@Parameter(defaultValue = "PNG")
+    private OutputFormat outputFormat;
+    
+    /**
+     * The quality for the JPG output format.
+     * 
+     * @since 1.1.0
+     */
+	@Parameter(defaultValue = "85")
+    private int jpgQuality;
+    
+    /**
+     * The background color to use when {@link OutputFormat#JPG} is specified.
+     * 
+     * @since 1.1.0
+     */
+	@Parameter(defaultValue = "0xFFFFFFFF")
+    private int jpgBackgroundColor;
     
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException {
@@ -263,7 +329,11 @@ public class Gen extends AbstractMojo {
                 getLog().error(e);
             } catch (TranscoderException e) {
                 getLog().error(e);
-            }
+            } catch (InstantiationException e) {
+                getLog().error(e);
+			} catch (IllegalAccessException e) {
+                getLog().error(e);
+			}
         }
         
         /******************************************
@@ -279,7 +349,11 @@ public class Gen extends AbstractMojo {
                 getLog().error(e);
             } catch (TranscoderException e) {
                 getLog().error(e);
-            }
+            } catch (InstantiationException e) {
+                getLog().error(e);
+			} catch (IllegalAccessException e) {
+                getLog().error(e);
+			}
         }
     }
 
@@ -362,15 +436,17 @@ public class Gen extends AbstractMojo {
     }
     
     /**
-     * Given it's bounds, transcodes a svg file to a PNG for the desired density
+     * Given it's bounds, transcodes a svg file to a raster image for the desired density
      * @param svg
      * @param targetDensity 
      * @param bounds
      * @param destination
      * @throws IOException
      * @throws TranscoderException
+     * @throws IllegalAccessException 
+     * @throws InstantiationException 
      */
-    public void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException {
+    public void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
         transcode(svg, targetDensity, bounds, destination, 
                 new Float(bounds.getWidth() * svg.getDensity().ratio(targetDensity)), 
                 new Float(bounds.getHeight() * svg.getDensity().ratio(targetDensity)),
@@ -378,7 +454,7 @@ public class Gen extends AbstractMojo {
     }
     
     /**
-     * Given a desired width and height, transcodes a svg file to a PNG for the desired density
+     * Given a desired width and height, transcodes a svg file to a raster image for the desired density
      * @param svg
      * @param targetDensity 
      * @param bounds
@@ -387,18 +463,23 @@ public class Gen extends AbstractMojo {
      * @param targetHeight
      * @throws IOException
      * @throws TranscoderException
+     * @throws IllegalAccessException 
+     * @throws InstantiationException 
      */
-    // TODO : center inside option
-    // TODO : preserve aspect ratio
-    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException {
+    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
         Float width = new Float(Math.floor(targetWidth));
         Float height = new Float(Math.floor(targetHeight));
         if (getLog().isDebugEnabled()) {
             getLog().debug(">> Transcoding : dimensions [width=" + width + " - length=" + height +"]");
         }
-        PNGTranscoder t = new PNGTranscoder();
-        t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, width);
-        t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, height);
+        ImageTranscoder t = outputFormat.getTranscoderClass().newInstance();
+        if (t instanceof JPEGTranscoder) {
+        	// custom jpg hints
+	        t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, Math.min(1, Math.max(0, jpgQuality / 100f)));
+	        t.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, new Color(jpgBackgroundColor));
+        }
+        t.addTranscodingHint(ImageTranscoder.KEY_WIDTH, width);
+        t.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, height);
         TranscoderInput input = new TranscoderInput(svg.toURI().toURL().toString());
         String outputName = svg.getName();
         if (rename != null && rename.containsKey(outputName)) {
@@ -408,20 +489,27 @@ public class Gen extends AbstractMojo {
                 getLog().warn(rename.get(outputName) + " is not a valid replacment name for " + outputName);
             }
         }
+        
+        // final name
         final String finalName = new StringBuilder(dest.getAbsolutePath())
             .append(System.getProperty("file.separator"))
             .append(outputName)
-            .append(ninePatch != null ? ".9" : "")
-            .append(".png")
+            .append(ninePatch != null && outputFormat.hasNinePatchSupport() ? ".9" : "")
+            .append(".")
+            .append(outputFormat.name().toLowerCase())
             .toString();
-        if (override.override(svg, new File(finalName), ninePatchConfig, ninePatch != null)) {
+        
+        if (override.override(svg, new File(finalName), outputFormat, ninePatchConfig, ninePatch != null)) {
         	
         	// unit conversion for size not in pixel
-        	t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
+        	t.addTranscodingHint(ImageTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
         	// set the ROI
-        	t.addTranscodingHint(PNGTranscoder.KEY_AOI, bounds);
+        	t.addTranscodingHint(ImageTranscoder.KEY_AOI, bounds);
         	
-            if (ninePatch == null) {
+            if (ninePatch == null || !outputFormat.hasNinePatchSupport()) {
+            	if (ninePatch != null) {
+            		getLog().warn("skipping the nine-patch configuration for the JPG output format !!!");
+            	}
                 // write file directly
                 OutputStream ostream = new FileOutputStream(finalName);
                 TranscoderOutput output = new TranscoderOutput(ostream);
@@ -446,7 +534,7 @@ public class Gen extends AbstractMojo {
             if (ninePatch != null) {
                 getLog().debug(ninePatchConfig.getAbsolutePath() + " last modified " + ninePatchConfig.lastModified());
             }
-            getLog().info(finalName + " already exists and is up to date... skiping generation!");
+            getLog().debug(finalName + " already exists and is up to date... skiping generation!");
         }
     }
     

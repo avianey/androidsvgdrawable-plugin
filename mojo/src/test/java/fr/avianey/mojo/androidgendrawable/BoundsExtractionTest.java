@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import fr.avianey.mojo.androidgendrawable.suite.GenDrawableTestSuite;
+
 @RunWith(Parameterized.class)
 public class BoundsExtractionTest {
 
@@ -29,7 +31,9 @@ public class BoundsExtractionTest {
 	private static final float 	DPCM	 		= DPMM * 10;
 	
     private static Gen gen;
-    
+
+	private static final String PATH_IN  = "./target/test-classes/" + BoundsExtractionTest.class.getSimpleName() + "/";
+	
     // parameters
 	private final String filename;
 	private final float expectedWidth;
@@ -45,10 +49,11 @@ public class BoundsExtractionTest {
     public static void setup() {
         gen = new Gen();
         // setup
+        Reflect.on(gen).set("outputFormat", GenDrawableTestSuite.OUTPUT_FORMAT);
+        Reflect.on(gen).set("jpgQuality", 85);
+        Reflect.on(gen).set("jpgBackgroundColor", 0xFF0000FF);
         Reflect.on(gen).set("override", OverrideMode.always);
         Reflect.on(gen).set("svgBoundsType", BoundsType.sensitive);
-        // output
-        new File("./target/generated-png/").mkdirs();
     }
 
     @Parameters
@@ -69,9 +74,9 @@ public class BoundsExtractionTest {
     }
 
     @Test
-    public void test() throws MalformedURLException, IOException, TranscoderException {
+    public void test() throws MalformedURLException, IOException, TranscoderException, InstantiationException, IllegalAccessException {
     	// verify bounds
-        QualifiedResource svg = QualifiedResource.fromSvgFile(new File("./target/test-classes/" + filename));
+        QualifiedResource svg = QualifiedResource.fromSvgFile(new File(PATH_IN + filename));
         Rectangle rect = gen.extractSVGBounds(svg);
         Assert.assertNotNull(rect);
         Assert.assertEquals(Math.ceil(expectedWidth), rect.getWidth(), 0);
@@ -81,8 +86,8 @@ public class BoundsExtractionTest {
         final String name = svg.getName();
         for (Density d : Density.values()) {
         	Reflect.on(svg).set("name", name + "_" + d.name());
-	        gen.transcode(svg, d, rect, new File("./target/generated-png/"), null);
-	        BufferedImage image = ImageIO.read(new FileInputStream(new File("./target/generated-png/" + svg.getName() + ".png")));
+	        gen.transcode(svg, d, rect, new File(GenDrawableTestSuite.PATH_OUT), null);
+	        BufferedImage image = ImageIO.read(new FileInputStream(new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase())));
 	        Assert.assertEquals(Math.floor(svg.getDensity().ratio(d) * Math.ceil(expectedWidth)), image.getWidth(), 0);
 	        Assert.assertEquals(Math.floor(svg.getDensity().ratio(d) * Math.ceil(expectedHeight)), image.getHeight(), 0);
         }

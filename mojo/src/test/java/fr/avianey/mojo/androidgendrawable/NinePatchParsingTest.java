@@ -1,5 +1,6 @@
 package fr.avianey.mojo.androidgendrawable;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,6 +29,8 @@ import fr.avianey.mojo.androidgendrawable.NinePatch.Zone;
 
 @RunWith(Parameterized.class)
 public class NinePatchParsingTest {
+
+	private static final String PATH_IN  = "./target/test-classes/" + NinePatchParsingTest.class.getSimpleName() + "/";
 
     private final String fileName;
     private final String resourceName;
@@ -204,7 +207,7 @@ public class NinePatchParsingTest {
     
     @Test
     public void fromJson() throws URISyntaxException, JsonIOException, JsonSyntaxException, IOException {
-        try (final Reader reader = new InputStreamReader(this.getClass().getResourceAsStream(fileName))) {
+        try (final Reader reader = new InputStreamReader(new FileInputStream(PATH_IN + fileName))) {
             Type t = new TypeToken<Set<NinePatch>>() {}.getType();
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);

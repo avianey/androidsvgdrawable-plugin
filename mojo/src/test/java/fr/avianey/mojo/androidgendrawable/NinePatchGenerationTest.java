@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 
 import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.FilenameUtils;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -28,6 +29,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
+import fr.avianey.mojo.androidgendrawable.suite.GenDrawableTestSuite;
 
 @RunWith(Parameterized.class)
 public class NinePatchGenerationTest {
@@ -56,6 +59,8 @@ public class NinePatchGenerationTest {
 		
 	}
 
+	private static final String PATH_IN  = "./target/test-classes/" + NinePatchGenerationTest.class.getSimpleName() + "/";
+
     private final String ninePatchConfig;
     private final String resourceName;
     private final Density targetDensity;
@@ -67,13 +72,13 @@ public class NinePatchGenerationTest {
     public static void setup() {
         gen = new Gen();
         // setup
+        Reflect.on(gen).set("outputFormat", GenDrawableTestSuite.OUTPUT_FORMAT);
+        Reflect.on(gen).set("jpgQuality", 85);
+        Reflect.on(gen).set("jpgBackgroundColor", 0xFF0000FF);
         Reflect.on(gen).set("override", OverrideMode.always);
         Reflect.on(gen).set("svgBoundsType", BoundsType.sensitive);
-        // output
-        new File("./target/generated-png/").mkdirs();
     }
 
-    @SuppressWarnings("unchecked")
     public NinePatchGenerationTest(
     		String resourceName, String ninePatchConfig, 
     		Density targetDensity,
@@ -85,7 +90,6 @@ public class NinePatchGenerationTest {
     }
     
 	@Parameters
-    @SuppressWarnings("serial")
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
@@ -125,22 +129,32 @@ public class NinePatchGenerationTest {
     }
     
     @Test
-    public void fromJson() throws URISyntaxException, JsonIOException, JsonSyntaxException, IOException, TranscoderException {
-        try (final Reader reader = new InputStreamReader(new FileInputStream("./target/test-classes/" + ninePatchConfig))) {
+    public void fromJson() throws URISyntaxException, JsonIOException, JsonSyntaxException, IOException, TranscoderException, InstantiationException, IllegalAccessException {
+        try (final Reader reader = new InputStreamReader(new FileInputStream(PATH_IN + ninePatchConfig))) {
             Type t = new TypeToken<Set<NinePatch>>() {}.getType();
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);
-            QualifiedResource svg = QualifiedResource.fromSvgFile(new File("./target/test-classes/" + resourceName));
+            QualifiedResource svg = QualifiedResource.fromSvgFile(new File(PATH_IN + resourceName));
             NinePatch ninePatch = ninePatchMap.get(svg);
             
             Assert.assertNotNull(ninePatch);
-            
-            Rectangle bounds = gen.extractSVGBounds(svg);
+
             final String name = svg.getName();
         	Reflect.on(svg).set("name", name + "_" + targetDensity.name());
-	        gen.transcode(svg, targetDensity, bounds, new File("./target/generated-png/"), ninePatch);
-	        BufferedImage image = ImageIO.read(new FileInputStream(new File("./target/generated-png/" + svg.getName() + ".9.png")));
-	        tester.test(image);
+        	Rectangle bounds = gen.extractSVGBounds(svg);
+	        gen.transcode(svg, targetDensity, bounds, new File(GenDrawableTestSuite.PATH_OUT), ninePatch);
+	        final File ninePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + ".9." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase());
+            final File nonNinePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase());
+            
+            if (GenDrawableTestSuite.OUTPUT_FORMAT.hasNinePatchSupport()) {
+            	Assert.assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " does not exists although the output format supports nine patch", ninePatchFile.exists());
+            	Assert.assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " file does not exists although the output format supports nine patch", !nonNinePatchFile.exists());
+	            BufferedImage image = ImageIO.read(new FileInputStream(ninePatchFile));
+		        tester.test(image);
+            } else {
+            	Assert.assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " exists although the output format does not support nine patch", !ninePatchFile.exists());
+            	Assert.assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " does not exists although the output format does not support nine patch", nonNinePatchFile.exists());
+            }
         }
     }
     

@@ -18,5 +18,9 @@ public enum OutputFormat {
     public Class<? extends ImageTranscoder> getTranscoderClass() {
         return transcoderClass;
     }
+
+	public boolean hasNinePatchSupport() {
+		return PNG.equals(this);
+	}
     
 }
