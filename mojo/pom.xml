@@ -43,6 +43,13 @@
         </developer>
     </developers>
   
+  
+  <properties>
+    <mavenVersion>3.1.1</mavenVersion>
+    <plexusVersion>1.5.5</plexusVersion>
+    <maven.site.path>plugin-testing-archives/LATEST</maven.site.path>
+  </properties>
+  
 	<build>
 
         <pluginManagement>
@@ -190,10 +197,15 @@
 			<version>3.2</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.1.1</version>
+        </dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-utils</artifactId>
-			<version>3.0.1</version>
+			<version>3.0.17</version>
 		</dependency>
         <!-- plugin -->
         <dependency>
@@ -206,11 +218,6 @@
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
         </dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
@@ -232,7 +239,7 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>		
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joor</artifactId>

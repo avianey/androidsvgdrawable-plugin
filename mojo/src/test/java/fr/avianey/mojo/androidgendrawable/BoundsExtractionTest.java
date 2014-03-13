@@ -21,13 +21,13 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import fr.avianey.mojo.androidgendrawable.suite.GenDrawableTestSuite;
+import fr.avianey.mojo.androidgendrawable.util.Constants;
 
 @RunWith(Parameterized.class)
 public class BoundsExtractionTest {
 
-	private static final float 	MM_PER_INCH 	= 25.4f;
 	private static final int   	DPI 		   	= Density.mdpi.getDpi();
-	private static final float 	DPMM 			= DPI / (float) MM_PER_INCH;
+	private static final float 	DPMM 			= DPI / (float) Constants.MM_PER_INCH;
 	private static final float 	DPCM	 		= DPMM * 10;
 	
     private static Gen gen;
@@ -51,7 +51,7 @@ public class BoundsExtractionTest {
         // setup
         Reflect.on(gen).set("outputFormat", GenDrawableTestSuite.OUTPUT_FORMAT);
         Reflect.on(gen).set("jpgQuality", 85);
-        Reflect.on(gen).set("jpgBackgroundColor", 0xFF0000FF);
+        Reflect.on(gen).set("jpgBackgroundColor", -1);
         Reflect.on(gen).set("override", OverrideMode.always);
         Reflect.on(gen).set("svgBoundsType", BoundsType.sensitive);
     }

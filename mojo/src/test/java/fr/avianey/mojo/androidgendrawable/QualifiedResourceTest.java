@@ -87,7 +87,6 @@ public class QualifiedResourceTest {
                         // error cases
                         {"mdpi-fr-land.svg", null, null, null, null, false},
                         {"name-nodpi.svg", null, null, null, null, false},
-                        {"name-mdpi-fr-land", null, null, null, null, false},
                         {"", null, null, null, null, false},
                         {null, null, null, null, null, false},
                         {"name.svg", null, null, null, null, false}

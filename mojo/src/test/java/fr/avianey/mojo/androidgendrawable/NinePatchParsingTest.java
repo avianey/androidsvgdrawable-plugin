@@ -216,7 +216,7 @@ public class NinePatchParsingTest {
             Mockito.when(mockedResource.getName()).thenReturn(resourceName);
             Mockito.when(mockedResource.getTypedQualifiers()).thenReturn(typedQualifiers);
             
-            NinePatch ninePatch = ninePatchMap.get(mockedResource);
+            NinePatch ninePatch = ninePatchMap.getBestMatch(mockedResource);
             Assert.assertTrue(resultExpected ^ (ninePatch == null));
             
             if (ninePatch != null) {

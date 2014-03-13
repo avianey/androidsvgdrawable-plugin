@@ -74,7 +74,7 @@ public class NinePatchGenerationTest {
         // setup
         Reflect.on(gen).set("outputFormat", GenDrawableTestSuite.OUTPUT_FORMAT);
         Reflect.on(gen).set("jpgQuality", 85);
-        Reflect.on(gen).set("jpgBackgroundColor", 0xFF0000FF);
+        Reflect.on(gen).set("jpgBackgroundColor", -1);
         Reflect.on(gen).set("override", OverrideMode.always);
         Reflect.on(gen).set("svgBoundsType", BoundsType.sensitive);
     }
@@ -135,7 +135,7 @@ public class NinePatchGenerationTest {
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);
             QualifiedResource svg = QualifiedResource.fromSvgFile(new File(PATH_IN + resourceName));
-            NinePatch ninePatch = ninePatchMap.get(svg);
+            NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
             
             Assert.assertNotNull(ninePatch);
 

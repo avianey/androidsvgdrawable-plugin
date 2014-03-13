@@ -1,5 +1,6 @@
 package fr.avianey.mojo.androidgendrawable;
 
+import java.util.EnumMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,6 +109,20 @@ public class Qualifier {
             return regexp;
         }
 
+    }
+    
+    /**
+     * Returns the String representing the qualifiers in the Android plateform expected order
+     * @param qualifiers
+     * @return
+     */
+    static String toOrderedQualifiedString(final EnumMap<Type, String> qualifiers) {
+    	StringBuilder builder = new StringBuilder("");
+        for (Type type : qualifiers.keySet()) {
+            builder.append("-");
+            builder.append(qualifiers.get(type));
+        }
+        return builder.toString();
     }
     
 }

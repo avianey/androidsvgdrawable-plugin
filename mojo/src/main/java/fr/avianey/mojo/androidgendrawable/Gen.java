@@ -152,7 +152,7 @@ public class Gen extends AbstractMojo {
      * 
      * @since 1.1.0
      */
-	@Parameter(defaultValue = "${from}")
+	@Parameter
     private File svgMaskDirectory;
 
     /**
@@ -161,8 +161,17 @@ public class Gen extends AbstractMojo {
      * 
      * @since 1.1.0
      */
-	@Parameter(defaultValue = "${from}")
+	@Parameter
     private File svgMaskResourcesDirectory;
+
+    /**
+     * If set to true a mask combination will be ignored when a <strong>.svgmask</strong> use the same 
+     * <strong>.svg<strong> resources in at least two different &lt;image&gt; tags.
+     * 
+     * @since 1.1.0
+     */
+	@Parameter(defaultValue = "true")
+    private boolean useSvgOneInMask;
     
     /**
      * Override existing generated resources.
@@ -221,11 +230,12 @@ public class Gen extends AbstractMojo {
     private int jpgQuality;
     
     /**
-     * The background color to use when {@link OutputFormat#JPG} is specified.
+     * The background color to use when {@link OutputFormat#JPG} is specified.<br/>
+     * Default value is 0xFFFFFFFF (white)
      * 
      * @since 1.1.0
      */
-	@Parameter(defaultValue = "0xFFFFFFFF")
+	@Parameter(defaultValue = "-1")
     private int jpgBackgroundColor;
     
     @SuppressWarnings("unchecked")
@@ -248,6 +258,7 @@ public class Gen extends AbstractMojo {
         
         NinePatchMap ninePatchMap = new NinePatchMap();
         if (ninePatchConfig != null && ninePatchConfig.isFile()) {
+            getLog().info("Loading NinePatch configuration file " + ninePatchConfig.getAbsolutePath());
             try (final Reader reader = new FileReader(ninePatchConfig)) {
                 Type t = new TypeToken<Set<NinePatch>>(){}.getType();
                 Set<NinePatch> _ninePatchMap = (Set<NinePatch>) (new GsonBuilder().create().fromJson(reader, t));
@@ -255,12 +266,55 @@ public class Gen extends AbstractMojo {
             } catch (IOException e) {
                 getLog().error(e);
             }
+        } else {
+            getLog().info("No NinePatch configuration file specified");
         }
+        
+        /*****************************
+         * List input svgmask to use *
+         *****************************/
+
+        if (svgMaskDirectory == null) {
+        	svgMaskDirectory = from;
+        }
+        if (svgMaskResourcesDirectory == null) {
+        	svgMaskResourcesDirectory = from;
+        }
+        getLog().info("Listing SVGMASK files to use from " + svgMaskDirectory.getAbsolutePath());
+        final List<SvgMask> svgMask = new ArrayList<SvgMask>();
+        if (from.isDirectory()) {
+            for (File f : from.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    if (file.isFile() && "svgmask".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
+                        try {
+                        	svgMask.add(new SvgMask(QualifiedResource.fromSvgFile(file)));
+                            return true;
+                        } catch (Exception e) {
+                            getLog().error(e);
+                        }
+                    	getLog().warn("Invalid SVGMASK file : " + file.getAbsolutePath());
+                    }
+                    if (ninePatchConfig != null 
+                    		&& !ninePatchConfig.getAbsolutePath().equals(file.getAbsolutePath())
+                    		&& !"svg".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
+                    	getLog().debug("Skipping " + file.getAbsolutePath());
+                    }
+                    return false;
+                }
+            })) {
+                // log matching svgmask inputs
+                getLog().debug("Found SVGMASK file to use : " + f.getAbsolutePath());
+            }
+        } else {
+            throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
+        }
+        getLog().info("SVGMASK files found : " + Joiner.on(", ").join(svgMask));
         
         /*****************************
          * List input svg to convert *
          *****************************/
-        
+
+        getLog().info("Listing SVG files to convert from " + from.getAbsolutePath());
         final List<QualifiedResource> svgToConvert = new ArrayList<QualifiedResource>();
         if (from.isDirectory()) {
             for (File f : from.listFiles(new FileFilter() {
@@ -272,15 +326,18 @@ public class Gen extends AbstractMojo {
                         } catch (Exception e) {
                             getLog().error(e);
                         }
+                    	getLog().warn("Invalid SVG file : " + file.getAbsolutePath());
                     }
-                    if (ninePatchConfig != null && !ninePatchConfig.getAbsolutePath().equals(file.getAbsolutePath())) {
-                    	getLog().warn("Invalid input file : " + file.getAbsolutePath());
+                    if (ninePatchConfig != null 
+                    		&& !ninePatchConfig.getAbsolutePath().equals(file.getAbsolutePath())
+                    		&& !"svgmask".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
+                    	getLog().debug("Skipping " + file.getAbsolutePath());
                     }
                     return false;
                 }
             })) {
                 // log matching svg inputs
-                getLog().debug("Found svg file to convert : " + f.getAbsolutePath());
+                getLog().debug("Found SVG file to convert : " + f.getAbsolutePath());
             }
         } else {
             throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
@@ -299,7 +356,7 @@ public class Gen extends AbstractMojo {
                 getLog().info("Transcoding " + FilenameUtils.getName(svg.getAbsolutePath()) + " to targeted densities");
                 Rectangle bounds = extractSVGBounds(svg);
                 if (getLog().isDebugEnabled()) {
-                    getLog().debug(">> Parsing : dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
+                    getLog().debug("source dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
                 }
                 if (highResIcon != null && highResIcon.equals(svg.getName())) {
                     _highResIcon = svg;
@@ -317,7 +374,7 @@ public class Gen extends AbstractMojo {
                     }
                     if (destination.exists()) {
                         getLog().debug("Transcoding " + svg.getName() + " to " + destination.getName());
-                        transcode(svg, d, bounds, destination, ninePatchMap.get(svg));
+                        transcode(svg, d, bounds, destination, ninePatchMap.getBestMatch(svg));
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
                         		"Set createMissingDirectories to true if you want it to be created if missing...");
@@ -470,7 +527,7 @@ public class Gen extends AbstractMojo {
         Float width = new Float(Math.floor(targetWidth));
         Float height = new Float(Math.floor(targetHeight));
         if (getLog().isDebugEnabled()) {
-            getLog().debug(">> Transcoding : dimensions [width=" + width + " - length=" + height +"]");
+            getLog().debug("target dimensions [width=" + width + " - length=" + height +"]");
         }
         ImageTranscoder t = outputFormat.getTranscoderClass().newInstance();
         if (t instanceof JPEGTranscoder) {
@@ -566,7 +623,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], w, ratio);
             final int size = NinePatch.size(seg[0], seg[1], w, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug(">> NinePatch : stretch(x) [start=" + start + " - size=" + size + "]");
+                getLog().debug("ninepatch stretch(x) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(start + 1, 0, size, 1);
         }
@@ -575,7 +632,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], h, ratio);
             final int size = NinePatch.size(seg[0], seg[1], h, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug(">> NinePatch : stretch(y) [start=" + start + " - size=" + size + "]");
+                getLog().debug("ninepatch stretch(y) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(0, start + 1, 1, size);
         }
@@ -585,7 +642,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], w, ratio);
             final int size = NinePatch.size(seg[0], seg[1], w, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug(">> NinePatch : content(x) [start=" + start + " - size=" + size + "]");
+                getLog().debug("ninepatch content(x) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(start + 1, h + 1, size, 1);
         }
@@ -594,7 +651,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], h, ratio);
             final int size = NinePatch.size(seg[0], seg[1], h, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug(">> NinePatch : content(y) [start=" + start + " - size=" + size + "]");
+                getLog().debug("ninepatch content(y) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(w + 1, start + 1, 1, size);
         }

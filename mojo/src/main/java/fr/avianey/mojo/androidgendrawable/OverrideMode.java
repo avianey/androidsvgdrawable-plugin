@@ -7,7 +7,7 @@ public enum OverrideMode {
     
     always, never, ifModified;
     
-    public boolean override(File src, File dest, OutputFormat outputFormat, File ninePatchConfig, boolean isNinePatch) {
+    public boolean override(QualifiedResource src, File dest, OutputFormat outputFormat, File ninePatchConfig, boolean isNinePatch) {
         if (!dest.exists() || always.equals(this)) {
             return true;
         } else if (never.equals(this)) {

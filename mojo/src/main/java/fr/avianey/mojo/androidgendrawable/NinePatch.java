@@ -91,7 +91,7 @@ public class NinePatch {
             set.add(ninePatch);
             // extract qualifiers
             if (ninePatch.qualifiers != null) {
-                ninePatch.typedQualifiers = new EnumMap<>(Type.class);
+                ninePatch.typedQualifiers = new EnumMap<Type, String>(Type.class);
                 for (String qualifier : ninePatch.qualifiers) {
                     for (Type t : EnumSet.allOf(Type.class)) {
                         String value = new Acceptor(t).accept(qualifier);

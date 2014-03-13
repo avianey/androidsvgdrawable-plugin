@@ -1,14 +1,18 @@
 package fr.avianey.mojo.androidgendrawable;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import fr.avianey.mojo.androidgendrawable.Qualifier.Type;
 
-public class NinePatchMap extends HashMap<String, Set<NinePatch>> {
-
-    private static final long serialVersionUID = 1L;
+public class NinePatchMap {
+    
+    private final Map<String, Entry<Pattern, Set<NinePatch>>> entries = new HashMap<String, Entry<Pattern, Set<NinePatch>>>(); 
     
     /**
      * Get the {@link NinePatch} that match the desired name and all of the {@link Qualifier}
@@ -16,13 +20,13 @@ public class NinePatchMap extends HashMap<String, Set<NinePatch>> {
      * @param requiredQualifiers
      * @return
      */
-    public NinePatch get(QualifiedResource svg) {
-        Set<NinePatch> ninePatchSet = get(svg.getName());
+    public NinePatch getBestMatch(QualifiedResource svg) {
+        Set<NinePatch> ninePatchSet = getMatching(svg.getName());
         if (ninePatchSet == null) {
             // the resource is not a NinePatch
             return null;
         } else {
-            Map<Type, String> _qualifiers = new HashMap<>(svg.getTypedQualifiers());
+            Map<Type, String> _qualifiers = new HashMap<Type, String>(svg.getTypedQualifiers());
             _qualifiers.remove(Type.density);
             NinePatch _ninePatch = null;
             for (NinePatch ninePatch : ninePatchSet) {
@@ -55,5 +59,31 @@ public class NinePatchMap extends HashMap<String, Set<NinePatch>> {
             return _ninePatch;
         }
     }
+
+	private Set<NinePatch> getMatching(final String svgName) {
+		final Set<NinePatch> ninePatchSet = new HashSet<NinePatch>();
+		for (Entry<Pattern, Set<NinePatch>> e : entries.values()) {
+			if (e.getKey().matcher(svgName).matches()) {
+				ninePatchSet.addAll(e.getValue());
+			}
+		}
+		return ninePatchSet;
+	}
+
+	public Set<NinePatch> get(final String regexp) {
+		Entry<Pattern, Set<NinePatch>> e = entries.get(regexp);
+		return e == null ? null : e.getValue();
+	}
+
+	public Set<NinePatch> put(final String regexp, Set<NinePatch> value) {
+		Entry<Pattern, Set<NinePatch>> e = new AbstractMap.SimpleEntry<Pattern, Set<NinePatch>>(Pattern.compile(regexp), value);
+		entries.put(regexp, e);
+		return value;
+	}
+
+	public Set<NinePatch> remove(final String regexp) {
+		Entry<Pattern, Set<NinePatch>> e = entries.remove(regexp);
+		return e == null ? null : e.getValue();
+	}
     
 }
