@@ -134,7 +134,7 @@ public class NinePatchGenerationTest {
             Type t = new TypeToken<Set<NinePatch>>() {}.getType();
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);
-            QualifiedResource svg = QualifiedResource.fromSvgFile(new File(PATH_IN + resourceName));
+            QualifiedResource svg = QualifiedResource.fromFile(new File(PATH_IN + resourceName));
             NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
             
             Assert.assertNotNull(ninePatch);

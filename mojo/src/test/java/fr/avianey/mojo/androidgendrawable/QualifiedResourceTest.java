@@ -100,7 +100,7 @@ public class QualifiedResourceTest {
         
         QualifiedResource qr = null;
         try {
-            qr = QualifiedResource.fromSvgFile(file);
+            qr = QualifiedResource.fromFile(file);
         } catch (Exception e) {}
         
         Assert.assertEquals(successExpected, qr != null);

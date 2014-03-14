@@ -76,7 +76,7 @@ public class BoundsExtractionTest {
     @Test
     public void test() throws MalformedURLException, IOException, TranscoderException, InstantiationException, IllegalAccessException {
     	// verify bounds
-        QualifiedResource svg = QualifiedResource.fromSvgFile(new File(PATH_IN + filename));
+        QualifiedResource svg = QualifiedResource.fromFile(new File(PATH_IN + filename));
         Rectangle rect = gen.extractSVGBounds(svg);
         Assert.assertNotNull(rect);
         Assert.assertEquals(Math.ceil(expectedWidth), rect.getWidth(), 0);

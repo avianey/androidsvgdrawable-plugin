@@ -15,7 +15,12 @@ public class NinePatchMap {
     private final Map<String, Entry<Pattern, Set<NinePatch>>> entries = new HashMap<String, Entry<Pattern, Set<NinePatch>>>(); 
     
     /**
-     * Get the {@link NinePatch} that match the desired name and all of the {@link Qualifier}
+     * Get the {@link NinePatch} that <strong>best match</strong> the desired {@link QualifiedResource} :
+     * <ol>
+     * <li>The {@link QualifiedResource} name match the {@link NinePatch} regexp</li>
+     * <li>The {@link QualifiedResource} qualifiers contains all the {@link NinePatch} ones</li>
+     * <li>No other {@link NinePatch} verifying 1) and 2) and containing more qualifiers</li>
+     * </ol>
      * @param name
      * @param requiredQualifiers
      * @return
@@ -31,29 +36,45 @@ public class NinePatchMap {
             NinePatch _ninePatch = null;
             for (NinePatch ninePatch : ninePatchSet) {
                 if (_qualifiers.isEmpty() && ninePatch.getTypedQualifiers().isEmpty()) {
+                	// no qualifiers in resource
+                	// no qualifier in ninepatch
+                	// => exact match (first one found)
                     return ninePatch;
-                } else if (!_qualifiers.isEmpty() && !ninePatch.getTypedQualifiers().isEmpty()) {
+                } else if (!_qualifiers.isEmpty()) {
+                	// resource qualifiers list is not empty
+                	// ensure that all ninepatch qualifier types are covered
                     if (_qualifiers.keySet().containsAll(ninePatch.getTypedQualifiers().keySet())) {
+                    	// resource qualifier types are compatible
+                    	// check the qualifier values
                         boolean matches = true;
                         for (Type t : ninePatch.getTypedQualifiers().keySet()) {
-                            if (!_qualifiers.get(t).equals(ninePatch.getTypedQualifiers().get(t))) {
+                            if (!ninePatch.getTypedQualifiers().get(t).equals(_qualifiers.get(t))) {
                                 matches = false;
                                 break;
                             }
                         }
+                        // if values are OK, check if the current ninepatch covers more qualifiers than the previously matching ninePatch 
                         if (matches && (_ninePatch == null || ninePatch.getTypedQualifiers().keySet().containsAll(_ninePatch.getTypedQualifiers().keySet()))) {
-                            // nine patch covers all of the requirements
-                            // and no best nine patch was already discovered
+                            // nine patch covers all of the requirements 1) and 2)
+                            // and no best (containing more resource qualifier types) nine patch was already discovered
                             _ninePatch = ninePatch;
                             if (_ninePatch.getTypedQualifiers().size() == _qualifiers.size()) {
                                 // cannot be better
+                            	// => exact match (first one found)
                                 break;
                             }
                         }
                     } else {
-                        // nine patch is more restrictive
+                        // ninepatch is more restrictive as it contains at least one qualifier type
+                    	// the resource does not contains
+                    	// => skip it
                         continue;
                     }
+                } else {
+                	// ninepatch has no qualifier requirement
+                	// resource is qualified so the ninepatch cannot apply
+                	// => skip it
+                	continue;
                 }
             }
             return _ninePatch;

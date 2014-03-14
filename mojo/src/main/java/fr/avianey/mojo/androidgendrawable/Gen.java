@@ -171,10 +171,11 @@ public class Gen extends AbstractMojo {
      * @since 1.1.0
      */
 	@Parameter(defaultValue = "true")
-    private boolean useSvgOneInMask;
+    private boolean useSameSvgOnlyOnceInMask;
     
     /**
-     * Override existing generated resources.
+     * Override existing generated resources.<br/>
+     * It's recommended to use {@link OverrideMode#always} for tests and production releases.
      * 
      * @since 1.0.0
      * @see OverrideMode
@@ -287,7 +288,7 @@ public class Gen extends AbstractMojo {
                 public boolean accept(File file) {
                     if (file.isFile() && "svgmask".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
                         try {
-                        	svgMask.add(new SvgMask(QualifiedResource.fromSvgFile(file)));
+                        	svgMask.add(new SvgMask(QualifiedResource.fromFile(file)));
                             return true;
                         } catch (Exception e) {
                             getLog().error(e);
@@ -321,7 +322,7 @@ public class Gen extends AbstractMojo {
                 public boolean accept(File file) {
                     if (file.isFile() && "svg".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
                         try {
-                            svgToConvert.add(QualifiedResource.fromSvgFile(file));
+                            svgToConvert.add(QualifiedResource.fromFile(file));
                             return true;
                         } catch (Exception e) {
                             getLog().error(e);

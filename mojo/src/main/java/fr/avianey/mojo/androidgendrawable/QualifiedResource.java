@@ -41,7 +41,7 @@ public class QualifiedResource extends File {
      * @param file
      * @return
      */
-    public static final QualifiedResource fromSvgFile(final File file) {
+    public static final QualifiedResource fromFile(final File file) {
         Preconditions.checkNotNull(file);
         final String fileName = FilenameUtils.getBaseName(file.getAbsolutePath());
         Preconditions.checkArgument(fileName.length() > 0);

@@ -8,10 +8,10 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +33,15 @@ public class NinePatchMatchingTest {
     private final String resourceName;
     private final Map<Qualifier.Type, String> typedQualifiers;
     private final boolean resultExpected;
+    private final String nameExpected;
 
     public NinePatchMatchingTest(String fileName, String resourceName, 
-            String qualifiedString, boolean resultExpected) {
+            String qualifiedString, boolean resultExpected, String nameExpected) {
          this.fileName = fileName;
          this.resourceName = resourceName;
          this.typedQualifiers = Qualifier.fromQualifiedString(qualifiedString);
          this.resultExpected = resultExpected;
+         this.nameExpected = nameExpected;
     }
     
 	@Parameters
@@ -48,44 +50,60 @@ public class NinePatchMatchingTest {
                 new Object[][] {
                         {"9patch-no-regexp.json", "matching_name",
                             null,
-                            true
+                            true,
+                            "matching_name"
+                        },
+                        {"9patch-no-regexp.json", "non_matching_name",
+                            null,
+                            false,
+                            null
                         },
                         {"9patch-simple-regexp.json", "matching_name",
                             null,
-                            true
+                            true,
+                            "matching_.*"
                         },
                         {"9patch-simple-regexp.json", "non_matching_name",
                             null,
-                            false
+                            false,
+                            null
                         },
                         {"9patch-multiple-regexp-1.json", "matching_name",
                             "long",
-                            false
+                            false,
+                            null
                         },
                         {"9patch-multiple-regexp-1.json", "matching_name",
                             "land",
-                            true
-                        }//,
-//                        {"9patch-multiple-regexp-2.json", "matching_name",
-//                            "w700dp-land-fr-xlarge",
-//                            true
-//                        },
-//                        {"9patch-multiple-regexp-2.json", "matching_name",
-//                            "w700dp-land-fr-xlarge",
-//                            true
-//                        },
-//                        {"9patch-multiple-regexp-2.json", "matching_name",
-//                            "w700dp-port-h400dp",
-//                            true
-//                        },
-//                        {"9patch-multiple-regexp-2.json", "matching_name",
-//                            "w700dp-land-h400dp",
-//                            false
-//                        },
-//                        {"9patch-multiple-regexp-2.json", "matching_name",
-//                            "xlarge",
-//                            true
-//                        }
+                            true,
+                            "matching_.*"
+                        },
+                        {"9patch-multiple-regexp-2.json", "matching_name",
+                            "w700dp-land-fr-xlarge",
+                            true,
+                            "ma.*"
+                            
+                        },
+                        {"9patch-multiple-regexp-2.json", "matching_name",
+                            "w700dp-land-fr",
+                            true,
+                            "matching_.*"
+                        },
+                        {"9patch-multiple-regexp-2.json", "matching_name",
+                            "w700dp-port-h400dp",
+                            false,
+                            null
+                        },
+                        {"9patch-multiple-regexp-2.json", "matching_name",
+                            "w700dp-land-h400dp",
+                            false,
+                            null
+                        },
+                        {"9patch-multiple-regexp-2.json", "matching_name",
+                            "xlarge",
+                            false,
+                            null
+                        }
                 });
     }
     
@@ -102,6 +120,9 @@ public class NinePatchMatchingTest {
             
             NinePatch ninePatch = ninePatchMap.getBestMatch(mockedResource);
             Assert.assertTrue(resultExpected ^ (ninePatch == null));
+            if (resultExpected && ninePatch != null) {
+            	Assert.assertEquals(nameExpected, Reflect.on(ninePatch).get("name"));
+            }
         }
     }
     
