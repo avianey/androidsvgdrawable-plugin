@@ -153,7 +153,7 @@ public class SvgMask {
 					qualifiers.remove(Type.density);
 					qualifiers.put(Type.density, resource.getDensity().name());
 					final String name = tmpFileName.toString();
-					final File file = new File(dest, name + "-" + Qualifier.toOrderedQualifiedString(qualifiers));
+					final File file = new File(dest, name + "-" + Qualifier.toQualifiedString(qualifiers));
 					
 					QualifiedResource mask = new QualifiedResource(file, name, qualifiers) {
 						private static final long serialVersionUID = 1L;

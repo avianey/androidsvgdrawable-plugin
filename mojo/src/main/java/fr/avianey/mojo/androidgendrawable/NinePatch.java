@@ -2,13 +2,12 @@ package fr.avianey.mojo.androidgendrawable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import fr.avianey.mojo.androidgendrawable.Qualifier.Acceptor;
+import com.google.common.base.Joiner;
+
 import fr.avianey.mojo.androidgendrawable.Qualifier.Type;
 
 /**
@@ -91,16 +90,8 @@ public class NinePatch {
             set.add(ninePatch);
             // extract qualifiers
             if (ninePatch.qualifiers != null) {
-                ninePatch.typedQualifiers = new EnumMap<Type, String>(Type.class);
-                for (String qualifier : ninePatch.qualifiers) {
-                    for (Type t : EnumSet.allOf(Type.class)) {
-                        String value = new Acceptor(t).accept(qualifier);
-                        if (value != null) {
-                            ninePatch.typedQualifiers.put(t, value);
-                            break;
-                        }
-                    }
-                }
+                ninePatch.typedQualifiers = Qualifier.fromQualifiedString(
+                        Joiner.on("-").join(ninePatch.qualifiers));
             } else {
                 ninePatch.typedQualifiers = Collections.EMPTY_MAP;
             }

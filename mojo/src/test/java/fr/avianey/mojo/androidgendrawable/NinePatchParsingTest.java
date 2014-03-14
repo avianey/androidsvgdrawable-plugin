@@ -58,85 +58,85 @@ public class NinePatchParsingTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
-                        {"9patch-1.json", "input_name1",
-                            new Integer[][] {{10, 20}, {30, 40}}, 
-                            new Integer[][] {{10, 40}}, 
-                            new Integer[][] {{10, 41}}, 
-                            new Integer[][] {{11, 40}},
-                            null,
-                            true
-                        },
-                        {"9patch-2.json", "input_name2",
-                            new Integer[][] {{10, 20}, {30, 40}}, 
-                            null, 
-                            new Integer[][] {{10, 41}}, 
-                            new Integer[][] {{11, 40}},
-                            null,
-                            true
-                        },
-                        {"9patch-3.json", "input_name3",
-                            new Integer[][] {{10, 20}, {30, 40}}, 
-                            new Integer[][] {{10, 40}}, 
-                            null, 
-                            null,
-                            null,
-                            true
-                        },
-                        {"9patch-4-land.json", "input_name4",
-                            new Integer[][] {{10, 20}, {30, 40}}, 
-                            new Integer[][] {{10, 40}}, 
-                            null, 
-                            null,
-                            new HashMap<Qualifier.Type, String>() {{
-                                put(Qualifier.Type.orientation, "land");
-                                put(Qualifier.Type.density, "mdpi");
-                            }},
-                            true
-                        },
-                        {"9patch-4-land.json", "input_name4",
-                            new Integer[][] {{10, 20}, {30, 40}}, 
-                            new Integer[][] {{10, 40}}, 
-                            null, 
-                            null,
-                            new HashMap<Qualifier.Type, String>() {{
-                                put(Qualifier.Type.orientation, "port");
-                                put(Qualifier.Type.density, "mdpi");
-                            }},
-                            false
-                        },
-                        {"9patch-5-land-vs-port.json", "input_name5",
-                            new Integer[][] {{10, 20}, {30, 40}}, 
-                            new Integer[][] {{10, 40}}, 
-                            null, 
-                            null,
-                            new HashMap<Qualifier.Type, String>() {{
-                                put(Qualifier.Type.orientation, "land");
-                                put(Qualifier.Type.density, "mdpi");
-                            }},
-                            true
-                        },
-                        {"9patch-5-land-vs-port.json", "input_name5",
-                            new Integer[][] {{11, 21}, {31, 41}}, 
-                            new Integer[][] {{11, 41}}, 
-                            null, 
-                            null,
-                            new HashMap<Qualifier.Type, String>() {{
-                                put(Qualifier.Type.orientation, "port");
-                                put(Qualifier.Type.density, "hdpi");
-                            }},
-                            true
-                        },
-                        {"9patch-6-best-match.json", "input_name6",
-                            new Integer[][] {{11, 21}, {31, 41}}, 
-                            new Integer[][] {{11, 41}}, 
-                            null, 
-                            null,
-                            new HashMap<Qualifier.Type, String>() {{
-                                put(Qualifier.Type.orientation, "port");
-                                put(Qualifier.Type.density, "ldpi");
-                            }},
-                            true
-                        },
+//                        {"9patch-1.json", "input_name1",
+//                            new Integer[][] {{10, 20}, {30, 40}}, 
+//                            new Integer[][] {{10, 40}}, 
+//                            new Integer[][] {{10, 41}}, 
+//                            new Integer[][] {{11, 40}},
+//                            null,
+//                            true
+//                        },
+//                        {"9patch-2.json", "input_name2",
+//                            new Integer[][] {{10, 20}, {30, 40}}, 
+//                            null, 
+//                            new Integer[][] {{10, 41}}, 
+//                            new Integer[][] {{11, 40}},
+//                            null,
+//                            true
+//                        },
+//                        {"9patch-3.json", "input_name3",
+//                            new Integer[][] {{10, 20}, {30, 40}}, 
+//                            new Integer[][] {{10, 40}}, 
+//                            null, 
+//                            null,
+//                            null,
+//                            true
+//                        },
+//                        {"9patch-4-land.json", "input_name4",
+//                            new Integer[][] {{10, 20}, {30, 40}}, 
+//                            new Integer[][] {{10, 40}}, 
+//                            null, 
+//                            null,
+//                            new HashMap<Qualifier.Type, String>() {{
+//                                put(Qualifier.Type.orientation, "land");
+//                                put(Qualifier.Type.density, "mdpi");
+//                            }},
+//                            true
+//                        },
+//                        {"9patch-4-land.json", "input_name4",
+//                            new Integer[][] {{10, 20}, {30, 40}}, 
+//                            new Integer[][] {{10, 40}}, 
+//                            null, 
+//                            null,
+//                            new HashMap<Qualifier.Type, String>() {{
+//                                put(Qualifier.Type.orientation, "port");
+//                                put(Qualifier.Type.density, "mdpi");
+//                            }},
+//                            false
+//                        },
+//                        {"9patch-5-land-vs-port.json", "input_name5",
+//                            new Integer[][] {{10, 20}, {30, 40}}, 
+//                            new Integer[][] {{10, 40}}, 
+//                            null, 
+//                            null,
+//                            new HashMap<Qualifier.Type, String>() {{
+//                                put(Qualifier.Type.orientation, "land");
+//                                put(Qualifier.Type.density, "mdpi");
+//                            }},
+//                            true
+//                        },
+//                        {"9patch-5-land-vs-port.json", "input_name5",
+//                            new Integer[][] {{11, 21}, {31, 41}}, 
+//                            new Integer[][] {{11, 41}}, 
+//                            null, 
+//                            null,
+//                            new HashMap<Qualifier.Type, String>() {{
+//                                put(Qualifier.Type.orientation, "port");
+//                                put(Qualifier.Type.density, "hdpi");
+//                            }},
+//                            true
+//                        },
+//                        {"9patch-6-best-match.json", "input_name6",
+//                            new Integer[][] {{11, 21}, {31, 41}}, 
+//                            new Integer[][] {{11, 41}}, 
+//                            null, 
+//                            null,
+//                            new HashMap<Qualifier.Type, String>() {{
+//                                put(Qualifier.Type.orientation, "port");
+//                                put(Qualifier.Type.density, "ldpi");
+//                            }},
+//                            true
+//                        },
                         {"9patch-6-best-match.json", "input_name6",
                             new Integer[][] {{12, 22}, {32, 42}}, 
                             new Integer[][] {{12, 42}}, 
@@ -246,10 +246,10 @@ public class NinePatchParsingTest {
             for (int i = 0; i < actual.length; i++) {
                 Assert.assertNotNull(expected[i]);
                 Assert.assertNotNull(actual[i]);
-                Assert.assertEquals(actual[i].length, expected[i].length);
+                Assert.assertEquals(expected[i].length, actual[i].length);
                 for (int j = 0; j < actual.length; j++) {
                     Assert.assertNotNull(expected[i][j]);
-                    Assert.assertEquals(actual[i][j], expected[i][j].intValue());
+                    Assert.assertEquals(expected[i][j].intValue(), actual[i][j]);
                 }
             }
         }

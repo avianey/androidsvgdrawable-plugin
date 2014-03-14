@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,12 +34,11 @@ public class NinePatchMatchingTest {
     private final Map<Qualifier.Type, String> typedQualifiers;
     private final boolean resultExpected;
 
-    @SuppressWarnings("unchecked")
     public NinePatchMatchingTest(String fileName, String resourceName, 
-            Map<Qualifier.Type, String> typedQualifiers, boolean resultExpected) {
+            String qualifiedString, boolean resultExpected) {
          this.fileName = fileName;
          this.resourceName = resourceName;
-         this.typedQualifiers = typedQualifiers != null ? typedQualifiers : Collections.EMPTY_MAP;
+         this.typedQualifiers = Qualifier.fromQualifiedString(qualifiedString);
          this.resultExpected = resultExpected;
     }
     
@@ -59,7 +57,35 @@ public class NinePatchMatchingTest {
                         {"9patch-simple-regexp.json", "non_matching_name",
                             null,
                             false
-                        }
+                        },
+                        {"9patch-multiple-regexp-1.json", "matching_name",
+                            "long",
+                            false
+                        },
+                        {"9patch-multiple-regexp-1.json", "matching_name",
+                            "land",
+                            true
+                        }//,
+//                        {"9patch-multiple-regexp-2.json", "matching_name",
+//                            "w700dp-land-fr-xlarge",
+//                            true
+//                        },
+//                        {"9patch-multiple-regexp-2.json", "matching_name",
+//                            "w700dp-land-fr-xlarge",
+//                            true
+//                        },
+//                        {"9patch-multiple-regexp-2.json", "matching_name",
+//                            "w700dp-port-h400dp",
+//                            true
+//                        },
+//                        {"9patch-multiple-regexp-2.json", "matching_name",
+//                            "w700dp-land-h400dp",
+//                            false
+//                        },
+//                        {"9patch-multiple-regexp-2.json", "matching_name",
+//                            "xlarge",
+//                            true
+//                        }
                 });
     }
     

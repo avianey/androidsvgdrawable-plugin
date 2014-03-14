@@ -1,6 +1,8 @@
 package fr.avianey.mojo.androidgendrawable;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +34,7 @@ public class Qualifier {
         }
     }
     
-    public static class Acceptor {
+    private static class Acceptor {
 
         private final String regexp;
         
@@ -116,13 +118,57 @@ public class Qualifier {
      * @param qualifiers
      * @return
      */
-    static String toOrderedQualifiedString(final EnumMap<Type, String> qualifiers) {
+    static String toQualifiedString(final EnumMap<Type, String> qualifiers) {
     	StringBuilder builder = new StringBuilder("");
         for (Type type : qualifiers.keySet()) {
             builder.append("-");
             builder.append(qualifiers.get(type));
         }
         return builder.toString();
+    }
+    
+    /**
+     * Parse a qualified String into a {@link Map} of qualified values
+     * @param qualifiedString
+     * @return
+     */
+    static EnumMap<Type, String> fromQualifiedString(final String qualifiedString) {
+        final EnumMap<Type, String> typedQualifiers = new EnumMap<Type, String>(Type.class);
+        if (qualifiedString == null) {
+            return typedQualifiers;
+        }
+        String qualifiers = qualifiedString;
+        while (qualifiers.length() > 0) {
+            // remove leading "-"
+            int i = -1;
+            while (qualifiers.indexOf("-", i) == i + 1) {
+                i++;
+            }
+            if (i >= 0) {
+                qualifiers = qualifiers.substring(i + 1);
+            }
+            
+            String qualifier = null;
+            for (Type type : EnumSet.allOf(Type.class)) {
+                Acceptor a = new Acceptor(type);
+                qualifier = a.accept(qualifiers);
+                if (qualifier != null) {
+                    qualifiers = qualifiers.substring(qualifier.length());
+                    typedQualifiers.put(type, qualifier);
+                    break;
+                }
+            }
+            
+            if (qualifier == null) {
+                if (qualifiers.indexOf("-") < 0) {
+                    break;
+                } else {
+                    qualifiers = qualifiers.substring(qualifiers.indexOf("-") + 1);
+                }
+            }
+            
+        }
+        return typedQualifiers;
     }
     
 }

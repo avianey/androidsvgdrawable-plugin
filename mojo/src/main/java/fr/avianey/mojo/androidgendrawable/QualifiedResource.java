@@ -2,14 +2,12 @@ package fr.avianey.mojo.androidgendrawable;
 
 import java.io.File;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.base.Preconditions;
 
-import fr.avianey.mojo.androidgendrawable.Qualifier.Acceptor;
 import fr.avianey.mojo.androidgendrawable.Qualifier.Type;
 
 public class QualifiedResource extends File {
@@ -34,7 +32,7 @@ public class QualifiedResource extends File {
         if (fallback == null || !fallback.equals(density)) {
         	qualifiers.put(Type.density, density.name());
         }
-        builder.append(Qualifier.toOrderedQualifiedString(qualifiers));
+        builder.append(Qualifier.toQualifiedString(qualifiers));
         return new File(to, builder.toString());
     }
     
@@ -44,7 +42,6 @@ public class QualifiedResource extends File {
      * @return
      */
     public static final QualifiedResource fromSvgFile(final File file) {
-        
         Preconditions.checkNotNull(file);
         final String fileName = FilenameUtils.getBaseName(file.getAbsolutePath());
         Preconditions.checkArgument(fileName.length() > 0);
@@ -55,40 +52,7 @@ public class QualifiedResource extends File {
         Preconditions.checkArgument(unqualifiedName != null && unqualifiedName.matches("\\w+"));
         
         // qualifiers
-        final EnumMap<Type, String> typedQualifiers = new EnumMap<Type, String>(Type.class);
-        String qualifiers = fileName.substring(fileName.indexOf("-") + 1);
-        Preconditions.checkArgument(qualifiers.length() > 0);
-        
-        while (qualifiers.length() > 0) {
-            // remove leading "-"
-            int i = -1;
-            while (qualifiers.indexOf("-", i) == i + 1) {
-                i++;
-            }
-            if (i >= 0) {
-                qualifiers = qualifiers.substring(i + 1);
-            }
-            
-            String qualifier = null;
-            for (Type type : EnumSet.allOf(Type.class)) {
-                Acceptor a = new Acceptor(type);
-                qualifier = a.accept(qualifiers);
-                if (qualifier != null) {
-                    qualifiers = qualifiers.substring(qualifier.length());
-                    typedQualifiers.put(type, qualifier);
-                    break;
-                }
-            }
-            
-            if (qualifier == null) {
-                if (qualifiers.indexOf("-") < 0) {
-                    break;
-                } else {
-                    qualifiers = qualifiers.substring(qualifiers.indexOf("-") + 1);
-                }
-            }
-            
-        }
+        final EnumMap<Type, String> typedQualifiers = Qualifier.fromQualifiedString(fileName.substring(fileName.indexOf("-") + 1));
         
         // a density qualifier must be provided
         Preconditions.checkNotNull(typedQualifiers.get(Type.density));

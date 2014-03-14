@@ -76,7 +76,12 @@ public class NinePatchMap {
 	}
 
 	public Set<NinePatch> put(final String regexp, Set<NinePatch> value) {
-		Entry<Pattern, Set<NinePatch>> e = new AbstractMap.SimpleEntry<Pattern, Set<NinePatch>>(Pattern.compile(regexp), value);
+		Entry<Pattern, Set<NinePatch>> e = entries.get(regexp);
+		if (e == null) {
+		    e = new AbstractMap.SimpleEntry<Pattern, Set<NinePatch>>(Pattern.compile(regexp), value);
+		} else {
+		    e.getValue().addAll(value);
+		}
 		entries.put(regexp, e);
 		return value;
 	}
