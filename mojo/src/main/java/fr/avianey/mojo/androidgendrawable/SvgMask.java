@@ -3,6 +3,7 @@ package fr.avianey.mojo.androidgendrawable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -37,7 +38,6 @@ import org.xml.sax.SAXException;
 
 import fr.avianey.mojo.androidgendrawable.Qualifier.Type;
 
-// TODO : use svg only once in mask
 public class SvgMask {
 	
 	private static final Pattern REF_PATTERN = Pattern.compile("^#\\{(.*)\\}$");
@@ -63,10 +63,10 @@ public class SvgMask {
 	 * @throws SAXException 
 	 * @throws XPathExpressionException 
 	 */
-	// TODO : overridemode & svgonlyonceinmask
-	// TODO : new parameter appendMaskNameToMaskedSvg (append|prepend)
-	public Collection<QualifiedResource> generatesMaskedResources(File dest, final Collection<QualifiedResource> availableResources,
-			final boolean useSameSvgOnlyOnceInMask) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+	public Collection<QualifiedResource> generatesMaskedResources(
+	        File dest, final Collection<QualifiedResource> availableResources,
+			final boolean useSameSvgOnlyOnceInMask,
+			final OverrideMode overrideMode) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 		// generates output directory
 		dest.mkdirs();
 		
@@ -88,7 +88,7 @@ public class SvgMask {
                 return uri;
             }
             @Override
-            public Iterator getPrefixes(String val) {
+            public Iterator<?> getPrefixes(String val) {
                 throw new IllegalAccessError("Not implemented!");
             }
             @Override
@@ -148,7 +148,7 @@ public class SvgMask {
 						// replace href attribute with svg file path
 						QualifiedResource current = currents.get(i);
 						MaskNode maskNode = maskNodes.get(i);
-						maskNode.imageNode.setNodeValue("file://" + current.getAbsolutePath());
+						maskNode.imageNode.setNodeValue("file:///" + current.getAbsolutePath());
 						// concat name
 						tmpFileName.append("_");
 						tmpFileName.append(currents.get(i).getName());
@@ -190,8 +190,9 @@ public class SvgMask {
 						};
 						
 						// write masked svg
-						// TODO : take override mode into account here ?
-	//					if (mask.lastModified() > file.lastModified()) {
+						if (file.lastModified() == 0
+						        || OverrideMode.always.equals(overrideMode)
+						        || (OverrideMode.ifModified.equals(overrideMode) && mask.lastModified() > file.lastModified())) {
 							TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(svgmaskDom);
@@ -200,7 +201,7 @@ public class SvgMask {
 								transformer.transform(source, result);
 								maskedResources.add(mask);
 							}
-	//					}
+						}
 						
 					}
 				}
@@ -246,13 +247,14 @@ public class SvgMask {
 		 * @return
 		 */
 		public boolean accepts(final Collection<QualifiedResource> availableResources) {
-			final Set<Map.Entry<Type, String>> maskQualifiers = SvgMask.this.resource.getTypedQualifiers().entrySet();
-			Set<Map.Entry<Type, String>> svgQualifiers;
-			maskQualifiers.remove(SvgMask.this.resource.getDensity());
+			final Set<Map.Entry<Type, String>> maskQualifiers = new HashSet<Map.Entry<Type, String>>(SvgMask.this.resource.getTypedQualifiers().entrySet());
+			Set<Map.Entry<Type, String>> svgQualifiers = new HashSet<Map.Entry<Type, String>>();
+			maskQualifiers.remove(new AbstractMap.SimpleEntry<Type, String>(Type.density, SvgMask.this.resource.getDensity().name()));
 			for (QualifiedResource r : availableResources) {
 				if (r.getName().matches(regexp)) {
-					svgQualifiers = r.getTypedQualifiers().entrySet();
-					svgQualifiers.remove(r.getDensity());
+				    svgQualifiers.clear();
+					svgQualifiers.addAll(r.getTypedQualifiers().entrySet());
+					svgQualifiers.remove(new AbstractMap.SimpleEntry<Type, String>(Type.density, r.getDensity().name()));
 					if (maskQualifiers.containsAll(svgQualifiers)) {
 						// the mask is valid for this svg
 						matchingResources.add(r);

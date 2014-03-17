@@ -52,7 +52,7 @@ public class BoundsExtractionTest {
         Reflect.on(gen).set("outputFormat", GenDrawableTestSuite.OUTPUT_FORMAT);
         Reflect.on(gen).set("jpgQuality", 85);
         Reflect.on(gen).set("jpgBackgroundColor", -1);
-        Reflect.on(gen).set("override", OverrideMode.always);
+        Reflect.on(gen).set("overrideMode", OverrideMode.always);
         Reflect.on(gen).set("svgBoundsType", BoundsType.sensitive);
     }
 

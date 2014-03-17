@@ -17,12 +17,15 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
@@ -45,8 +48,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLength;
 import org.w3c.dom.svg.SVGSVGElement;
+import org.xml.sax.SAXException;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -164,6 +169,15 @@ public class Gen extends AbstractMojo {
 	@Parameter
     private File svgMaskResourcesDirectory;
 
+	/**
+	 * Path to the directory where masked svg files are generated.<br/>
+	 * "target/generated-svg"
+	 * 
+	 * @since 1.1.0
+	 */
+	@Parameter(readonly = true, defaultValue = "${project.build.directory}/generated-svg")
+	private File svgMaskedSvgOutputDirectory;
+	
     /**
      * If set to true a mask combination will be ignored when a <strong>.svgmask</strong> use the same 
      * <strong>.svg<strong> resources in at least two different &lt;image&gt; tags.
@@ -180,8 +194,8 @@ public class Gen extends AbstractMojo {
      * @since 1.0.0
      * @see OverrideMode
      */
-	@Parameter(defaultValue = "always")
-    private OverrideMode override;
+	@Parameter(defaultValue = "always", alias = "override")
+    private OverrideMode overrideMode;
 
     /**
      * <p>
@@ -272,78 +286,54 @@ public class Gen extends AbstractMojo {
         }
         
         /*****************************
-         * List input svgmask to use *
-         *****************************/
-
-        if (svgMaskDirectory == null) {
-        	svgMaskDirectory = from;
-        }
-        if (svgMaskResourcesDirectory == null) {
-        	svgMaskResourcesDirectory = from;
-        }
-        getLog().info("Listing SVGMASK files to use from " + svgMaskDirectory.getAbsolutePath());
-        final List<SvgMask> svgMask = new ArrayList<SvgMask>();
-        if (from.isDirectory()) {
-            for (File f : from.listFiles(new FileFilter() {
-                public boolean accept(File file) {
-                    if (file.isFile() && "svgmask".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
-                        try {
-                        	svgMask.add(new SvgMask(QualifiedResource.fromFile(file)));
-                            return true;
-                        } catch (Exception e) {
-                            getLog().error(e);
-                        }
-                    	getLog().warn("Invalid SVGMASK file : " + file.getAbsolutePath());
-                    }
-                    if (ninePatchConfig != null 
-                    		&& !ninePatchConfig.getAbsolutePath().equals(file.getAbsolutePath())
-                    		&& !"svg".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
-                    	getLog().debug("Skipping " + file.getAbsolutePath());
-                    }
-                    return false;
-                }
-            })) {
-                // log matching svgmask inputs
-                getLog().debug("Found SVGMASK file to use : " + f.getAbsolutePath());
-            }
-        } else {
-            throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
-        }
-        getLog().info("SVGMASK files found : " + Joiner.on(", ").join(svgMask));
-        
-        /*****************************
          * List input svg to convert *
          *****************************/
 
         getLog().info("Listing SVG files to convert from " + from.getAbsolutePath());
-        final List<QualifiedResource> svgToConvert = new ArrayList<QualifiedResource>();
-        if (from.isDirectory()) {
-            for (File f : from.listFiles(new FileFilter() {
-                public boolean accept(File file) {
-                    if (file.isFile() && "svg".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
-                        try {
-                            svgToConvert.add(QualifiedResource.fromFile(file));
-                            return true;
-                        } catch (Exception e) {
-                            getLog().error(e);
-                        }
-                    	getLog().warn("Invalid SVG file : " + file.getAbsolutePath());
-                    }
-                    if (ninePatchConfig != null 
-                    		&& !ninePatchConfig.getAbsolutePath().equals(file.getAbsolutePath())
-                    		&& !"svgmask".equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
-                    	getLog().debug("Skipping " + file.getAbsolutePath());
-                    }
-                    return false;
+        final Collection<QualifiedResource> svgToConvert = listQualifiedResources(from, "svg");
+        getLog().info("SVG files found : " + Joiner.on(", ").join(svgToConvert));
+        
+        /*****************************
+         * List input svgmask to use *
+         *****************************/
+
+        if (svgMaskDirectory == null) {
+            svgMaskDirectory = from;
+        }
+        if (svgMaskResourcesDirectory == null) {
+            svgMaskResourcesDirectory = svgMaskDirectory;
+        }
+        getLog().info("Listing SVGMASK files to use from " + svgMaskDirectory.getAbsolutePath());
+        final Collection<QualifiedResource> svgMasks = listQualifiedResources(svgMaskDirectory, "svgmask");
+        final Collection<QualifiedResource> svgMaskResources = new ArrayList<QualifiedResource>();
+        getLog().info("SVGMASK files found : " + Joiner.on(", ").join(svgMasks));
+        if (!svgMasks.isEmpty()) {
+            // list masked resources
+            if (svgMaskResourcesDirectory.equals(from)) {
+                svgMaskResources.addAll(svgToConvert);
+            } else {
+                svgMaskResources.addAll(listQualifiedResources(svgMaskResourcesDirectory, "svg"));
+            }
+            getLog().info("SVG files use for masking : " + Joiner.on(", ").join(svgMaskResources));
+            // generate masked svg
+            for (QualifiedResource maskFile : svgMasks) {
+                try {
+                    svgToConvert.addAll(new SvgMask(maskFile).generatesMaskedResources(svgMaskedSvgOutputDirectory, svgMaskResources, useSameSvgOnlyOnceInMask, overrideMode));
+                } catch (XPathExpressionException e) {
+                    getLog().error(e);
+                } catch (TransformerException e) {
+                    getLog().error(e);
+                } catch (ParserConfigurationException e) {
+                    getLog().error(e);
+                } catch (SAXException e) {
+                    getLog().error(e);
+                } catch (IOException e) {
+                    getLog().error(e);
                 }
-            })) {
-                // log matching svg inputs
-                getLog().debug("Found SVG file to convert : " + f.getAbsolutePath());
             }
         } else {
-            throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
+            getLog().info("No SVGMASK found");
         }
-        getLog().info("SVG files found : " + Joiner.on(", ").join(svgToConvert));
 
         QualifiedResource _highResIcon = null;
         Rectangle _highResIconBounds = null;
@@ -557,7 +547,14 @@ public class Gen extends AbstractMojo {
             .append(outputFormat.name().toLowerCase())
             .toString();
         
-        if (override.override(svg, new File(finalName), outputFormat, ninePatchConfig, ninePatch != null)) {
+        final File finalFile = new File(finalName);
+        
+        if (finalFile.lastModified() == 0
+                || OverrideMode.always.equals(overrideMode)
+                || (OverrideMode.ifModified.equals(overrideMode) 
+                        && ((svg.lastModified() > finalFile.lastModified()) 
+                                || (ninePatch != null 
+                                && ninePatchConfig.lastModified() > finalFile.lastModified())))) {
         	
         	// unit conversion for size not in pixel
         	t.addTranscodingHint(ImageTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
@@ -660,4 +657,40 @@ public class Gen extends AbstractMojo {
         ImageIO.write(ninePatchImage, "png", new File(finalName));
     }
 
+    /**
+     * List {@link QualifiedResource} from an input directory.
+     * @param from
+     * @param extension
+     * @return
+     * @throws MojoExecutionException
+     */
+    private Collection<QualifiedResource> listQualifiedResources(final File from, final String extension) throws MojoExecutionException {
+        Preconditions.checkNotNull(extension);
+        final Collection<QualifiedResource> resources = new ArrayList<QualifiedResource>();
+        if (from.isDirectory()) {
+            for (File f : from.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    if (file.isFile() && extension.equalsIgnoreCase(FilenameUtils.getExtension(file.getAbsolutePath()))) {
+                        try {
+                            resources.add(QualifiedResource.fromFile(file));
+                            return true;
+                        } catch (Exception e) {
+                            getLog().error(e);
+                        }
+                        getLog().warn("Invalid " + extension + " file : " + file.getAbsolutePath());
+                    } else {
+                        getLog().debug("Skipping " + file.getAbsolutePath());
+                    }
+                    return false;
+                }
+            })) {
+                // log matching svgmask inputs
+                getLog().debug("Found " + extension + " file to use : " + f.getAbsolutePath());
+            }
+        } else {
+            throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
+        }
+        return resources;
+    }
+    
 }
