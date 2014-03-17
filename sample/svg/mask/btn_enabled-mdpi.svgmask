@@ -229,7 +229,7 @@
   <image
 	 x="0" y="0" width="10" height="12"
      xlink:href="#{.*}"
-     clip-path="url(#clipPath3866)" />
+     clip-path="url(#clipPath3801)" />
   <path
      sodipodi:nodetypes="ccccc"
      inkscape:connector-curvature="0"

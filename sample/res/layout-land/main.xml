@@ -25,7 +25,7 @@
         android:text="@string/qualifier" 
         android:layout_below="@id/phone_layout"
         android:color="@android:color/white"
-        android:background="@drawable/btn_blue"
+        android:background="@drawable/btn_red"
         android:layout_marginTop="6dip"
         android:layout_centerHorizontal="true"/>
     
