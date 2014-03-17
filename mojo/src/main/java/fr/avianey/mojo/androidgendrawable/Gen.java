@@ -289,9 +289,9 @@ public class Gen extends AbstractMojo {
          * List input svg to convert *
          *****************************/
 
-        getLog().info("Listing SVG files to convert from " + from.getAbsolutePath());
+        getLog().info("Listing SVG files in " + from.getAbsolutePath());
         final Collection<QualifiedResource> svgToConvert = listQualifiedResources(from, "svg");
-        getLog().info("SVG files found : " + Joiner.on(", ").join(svgToConvert));
+        getLog().info("SVG files : " + Joiner.on(", ").join(svgToConvert));
         
         /*****************************
          * List input svgmask to use *
@@ -303,10 +303,10 @@ public class Gen extends AbstractMojo {
         if (svgMaskResourcesDirectory == null) {
             svgMaskResourcesDirectory = svgMaskDirectory;
         }
-        getLog().info("Listing SVGMASK files to use from " + svgMaskDirectory.getAbsolutePath());
+        getLog().info("Listing SVGMASK files in " + svgMaskDirectory.getAbsolutePath());
         final Collection<QualifiedResource> svgMasks = listQualifiedResources(svgMaskDirectory, "svgmask");
         final Collection<QualifiedResource> svgMaskResources = new ArrayList<QualifiedResource>();
-        getLog().info("SVGMASK files found : " + Joiner.on(", ").join(svgMasks));
+        getLog().info("SVGMASK files : " + Joiner.on(", ").join(svgMasks));
         if (!svgMasks.isEmpty()) {
             // list masked resources
             if (svgMaskResourcesDirectory.equals(from)) {
@@ -314,11 +314,14 @@ public class Gen extends AbstractMojo {
             } else {
                 svgMaskResources.addAll(listQualifiedResources(svgMaskResourcesDirectory, "svg"));
             }
-            getLog().info("SVG files use for masking : " + Joiner.on(", ").join(svgMaskResources));
+            getLog().info("SVG files to mask : " + Joiner.on(", ").join(svgMaskResources));
             // generate masked svg
             for (QualifiedResource maskFile : svgMasks) {
+                getLog().info("Generating masked files for " + maskFile);
                 try {
-                    svgToConvert.addAll(new SvgMask(maskFile).generatesMaskedResources(svgMaskedSvgOutputDirectory, svgMaskResources, useSameSvgOnlyOnceInMask, overrideMode));
+                	Collection<QualifiedResource> generatedResources = new SvgMask(maskFile).generatesMaskedResources(svgMaskedSvgOutputDirectory, svgMaskResources, useSameSvgOnlyOnceInMask, overrideMode);
+                    getLog().debug("+ " + Joiner.on(", ").join(generatedResources));
+                    svgToConvert.addAll(generatedResources);
                 } catch (XPathExpressionException e) {
                     getLog().error(e);
                 } catch (TransformerException e) {
@@ -332,7 +335,7 @@ public class Gen extends AbstractMojo {
                 }
             }
         } else {
-            getLog().info("No SVGMASK found");
+            getLog().info("No SVGMASK file found.");
         }
 
         QualifiedResource _highResIcon = null;
@@ -347,7 +350,7 @@ public class Gen extends AbstractMojo {
                 getLog().info("Transcoding " + FilenameUtils.getName(svg.getAbsolutePath()) + " to targeted densities");
                 Rectangle bounds = extractSVGBounds(svg);
                 if (getLog().isDebugEnabled()) {
-                    getLog().debug("source dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
+                    getLog().debug("+ source dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
                 }
                 if (highResIcon != null && highResIcon.equals(svg.getName())) {
                     _highResIcon = svg;
@@ -368,7 +371,7 @@ public class Gen extends AbstractMojo {
                         transcode(svg, d, bounds, destination, ninePatchMap.getBestMatch(svg));
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
-                        		"Set createMissingDirectories to true if you want it to be created if missing...");
+                        		"Set 'createMissingDirectories' to true if you want it to be created if missing...");
                     }
                 }
             } catch (MalformedURLException e) {
@@ -518,7 +521,7 @@ public class Gen extends AbstractMojo {
         Float width = new Float(Math.floor(targetWidth));
         Float height = new Float(Math.floor(targetHeight));
         if (getLog().isDebugEnabled()) {
-            getLog().debug("target dimensions [width=" + width + " - length=" + height +"]");
+            getLog().debug("+ target dimensions [width=" + width + " - length=" + height +"]");
         }
         ImageTranscoder t = outputFormat.getTranscoderClass().newInstance();
         if (t instanceof JPEGTranscoder) {
@@ -584,12 +587,12 @@ public class Gen extends AbstractMojo {
                 toNinePatch(istream, finalName, ninePatch, svg.getDensity().ratio(targetDensity));
             }
         } else {
-            getLog().debug(finalName + " last modified " + new File(finalName).lastModified());
-            getLog().debug(svg.getAbsolutePath() + " last modified " + svg.lastModified());
-            if (ninePatch != null) {
-                getLog().debug(ninePatchConfig.getAbsolutePath() + " last modified " + ninePatchConfig.lastModified());
-            }
             getLog().debug(finalName + " already exists and is up to date... skiping generation!");
+            getLog().debug("+ " + finalName + " last modified on " + new File(finalName).lastModified());
+            getLog().debug("+ " + svg.getAbsolutePath() + " last modified on " + svg.lastModified());
+            if (ninePatch != null) {
+                getLog().debug("+ " + ninePatchConfig.getAbsolutePath() + " last modified on " + ninePatchConfig.lastModified());
+            }
         }
     }
     
@@ -621,7 +624,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], w, ratio);
             final int size = NinePatch.size(seg[0], seg[1], w, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug("ninepatch stretch(x) [start=" + start + " - size=" + size + "]");
+                getLog().debug("+ ninepatch stretch(x) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(start + 1, 0, size, 1);
         }
@@ -630,7 +633,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], h, ratio);
             final int size = NinePatch.size(seg[0], seg[1], h, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug("ninepatch stretch(y) [start=" + start + " - size=" + size + "]");
+                getLog().debug("+ ninepatch stretch(y) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(0, start + 1, 1, size);
         }
@@ -640,7 +643,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], w, ratio);
             final int size = NinePatch.size(seg[0], seg[1], w, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug("ninepatch content(x) [start=" + start + " - size=" + size + "]");
+                getLog().debug("+ ninepatch content(x) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(start + 1, h + 1, size, 1);
         }
@@ -649,7 +652,7 @@ public class Gen extends AbstractMojo {
             final int start = NinePatch.start(seg[0], seg[1], h, ratio);
             final int size = NinePatch.size(seg[0], seg[1], h, ratio);
             if (getLog().isDebugEnabled()) {
-                getLog().debug("ninepatch content(y) [start=" + start + " - size=" + size + "]");
+                getLog().debug("+ ninepatch content(y) [start=" + start + " - size=" + size + "]");
             }
             g.fillRect(w + 1, start + 1, 1, size);
         }
@@ -679,13 +682,13 @@ public class Gen extends AbstractMojo {
                         }
                         getLog().warn("Invalid " + extension + " file : " + file.getAbsolutePath());
                     } else {
-                        getLog().debug("Skipping " + file.getAbsolutePath());
+                        getLog().debug("+ skipping " + file.getAbsolutePath());
                     }
                     return false;
                 }
             })) {
                 // log matching svgmask inputs
-                getLog().debug("Found " + extension + " file to use : " + f.getAbsolutePath());
+                getLog().debug("+ found " + extension + " file : " + f.getAbsolutePath());
             }
         } else {
             throw new MojoExecutionException(from.getAbsolutePath() + " is not a directory");
