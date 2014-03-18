@@ -46,6 +46,7 @@ public class SvgMask {
 	
 	public SvgMask(final QualifiedResource resource) {
 		this.resource = resource;
+		// TODO extract nodes here
 	}
 
 	public QualifiedResource getResource() {
