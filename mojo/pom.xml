@@ -42,13 +42,12 @@
             <name>Antoine Vianey</name>
         </developer>
     </developers>
-  
-  
-  <properties>
-    <mavenVersion>3.1.1</mavenVersion>
-    <plexusVersion>1.5.5</plexusVersion>
-    <maven.site.path>plugin-testing-archives/LATEST</maven.site.path>
-  </properties>
+
+	<properties>
+		<mavenVersion>3.1.1</mavenVersion>
+		<plexusVersion>1.5.5</plexusVersion>
+		<maven.site.path>plugin-testing-archives/LATEST</maven.site.path>
+	</properties>
   
 	<build>
 
@@ -61,7 +60,7 @@
                     <configuration>
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <useReleaseProfile>false</useReleaseProfile>
-                        <arguments>${arguments} -Psonatype-oss-release</arguments>
+                        <arguments>-Psonatype-oss-release</arguments>
                     </configuration>
                 </plugin>
             </plugins>
@@ -256,9 +255,9 @@
 
     <!-- 
 	mvn clean release:clean -s settings.xml
-	mvn release:prepare -s settings.xml -Darguments=
+	mvn release:prepare -s settings.xml
 	manual push
-	mvn release:perform -s settings.xml -Darguments=
+	mvn release:perform -s settings.xml
 	-->
     <profiles>
         <profile>

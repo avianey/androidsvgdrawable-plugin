@@ -12,7 +12,7 @@
    height="12"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="btn_pressed-mdpi.svg">
   <metadata
      id="metadata73">
@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -40,8 +40,8 @@
      id="namedview71"
      showgrid="false"
      inkscape:zoom="21.399857"
-     inkscape:cx="4.5738104"
-     inkscape:cy="7.4078068"
+     inkscape:cx="-10.005726"
+     inkscape:cy="2.4427753"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -216,27 +216,26 @@
        x="0"
        y="0"
        style="fill:#b22234" />
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath3866">
-      <path
-         sodipodi:nodetypes="ccccc"
-         inkscape:connector-curvature="0"
-         id="path3868"
-         d="M 0,12 0,2 10,2 10,12 z"
-         clip-path="none"
-         style="fill:#000000;fill-opacity:1;stroke:none" />
-    </clipPath>
   </defs>
   <image
-	 x="0" y="0" width="10" height="12"
+     x="0"
+     y="0"
+     width="10"
+     height="12"
      xlink:href="#{.*}"
-     clip-path="url(#clipPath3866)" />
+     clip-path="none"
+     id="image34" />
   <path
      sodipodi:nodetypes="ccccc"
      inkscape:connector-curvature="0"
      id="rect3114-3-7"
-     d="M 0,12 0,2 10,2 10,12 z"
+     d="M 0,2 0,12 10,12 10,2 z"
      clip-path="none"
      style="opacity:0.2;fill:#000000;fill-opacity:1;stroke:none" />
+  <path
+     sodipodi:nodetypes="ccccc"
+     inkscape:connector-curvature="0"
+     id="rect4268"
+     d="M 0,2 0,0 10,0 10,2 z"
+     style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:none" />
 </svg>

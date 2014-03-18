@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"  
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    android:background="@drawable/background" >
     
     <LinearLayout 
         android:id="@+id/phone_layout"
@@ -23,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/qualifier" 
+        android:padding="2dip"
         android:layout_below="@id/phone_layout"
         android:color="@android:color/white"
         android:background="@drawable/btn_blue"

@@ -26,26 +26,14 @@
     </dependencies>
 
     <build>
-        
         <plugins>
-            
             <plugin>
                 <groupId>fr.avianey.mojo</groupId>
                 <artifactId>androidgendrawable-maven-plugin</artifactId>
 				<version>1.0.2-SNAPSHOT</version>
                 <configuration>
-                    <!-- where to pick the svg -->
-                    <from>${project.basedir}/svg</from>
                     <!-- where to generate them -->
                     <to>${project.basedir}/res</to>
-					
-					<svgMaskDirectory>${project.basedir}/svg/mask</svgMaskDirectory>
-					<svgMaskResourcesDirectory>${project.basedir}/svg/mask/svg</svgMaskResourcesDirectory>
-					
-                    <!-- use key/value pairs to replace original resource names (key) by other names (value) -->
-                    <rename>
-                        <phone_to_rename>phone</phone_to_rename>
-                    </rename>
                     <!-- skip already generated resources (always|never|ifModified) -->
                     <override>always</override>
                     <!-- create or skip missing directories -->
@@ -59,13 +47,40 @@
                     </targetedDensities>
                     <!-- use no qualifier for mdpi drawables -->
                     <fallbackDensity>mdpi</fallbackDensity>
-                    <!-- use the app icon to generate the High Res Icon for Google Play -->
-                    <highResIcon>icon</highResIcon>
-                    <!-- NinePatch config file -->
-                    <ninePatchConfig>${project.basedir}/svg/9patch.json</ninePatchConfig>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>gendrawable-png</id>
+                        <configuration>
+                            <!-- where to pick the svg -->
+                            <from>${project.basedir}/svg-png</from>
+                            <!-- svg mask and resources to mask -->
+                            <svgMaskDirectory>${project.basedir}/svg-png/mask</svgMaskDirectory>
+                            <svgMaskResourcesDirectory>${project.basedir}/svg-png/mask/svg</svgMaskResourcesDirectory>
+                            <!-- use key/value pairs to replace original resource names (key) by other names (value) -->
+                            <rename>
+                                <phone_to_rename>phone</phone_to_rename>
+                            </rename>
+                            <!-- use the app icon to generate the High Res Icon for Google Play -->
+                            <highResIcon>icon</highResIcon>
+                            <!-- NinePatch config file -->
+                            <ninePatchConfig>${project.basedir}/svg-png/9patch.json</ninePatchConfig>
+                            <!-- output format -->
+                            <outputFormat>PNG</outputFormat>
+                        </configuration>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>gen</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>gendrawable-jpg</id>
+                        <configuration>
+                            <!-- where to pick the svg -->
+                            <from>${project.basedir}/svg-jpg</from>
+                            <!-- output format -->
+                            <outputFormat>JPG</outputFormat>
+                        </configuration>
                         <phase>initialize</phase>
                         <goals>
                             <goal>gen</goal>
@@ -121,7 +136,6 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            
         </plugins>
     </build>
 
