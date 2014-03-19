@@ -3,7 +3,7 @@ Android Gen Drawable Maven plugin
 
 [![Build Status](https://travis-ci.org/avianey/androidgendrawable-maven-plugin.png?branch=master)](https://travis-ci.org/avianey/androidgendrawable-maven-plugin)  
 
-Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as portrait, landscape, small, large, us, fr, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color or a text value, this Maven plugin generates for you density specific drawable resources from qualified SVG files. The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time in as many bitmaps as needed and correctly placed into qualified drawable directories...at least one for each targeted screen density !  
+Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as `portrait`, `landscape`, `small`, `large`, `us`, `fr`, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color or a text value, this Maven plugin generates for you density specific bitmap drawable resources from qualified SVG files. The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time into as many as needed bitmaps and organized into configuration-specific drawable directories... at least one for each targeted screen density !  
 
 ```xml
 <plugin>
@@ -13,85 +13,106 @@ Every Android application should provide [alternative resources](http://develope
 </plugin>
 ```
 
-This plugin supports any configuration qualifier available on the Android platform and can generate [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) drawable as well :-)
+    mvn gendrawable:gen
+
+This plugin supports any configuration `<qualifier>` available on the Android platform and can generate [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) drawable as well. To increase your productivity, a mask functionnality allow you to define generic layers, filters, clip-path, etc...  and to reuse them accross multiple SVG files.  
+
+As of version `1.1.0`, the plugin cannot be used with openJdk1.7+.
+
+Enjoy :-) !
 
 -   [Input SVG files](#input-svg-files)
    -   [Expected SVG file names](#expected-file-names)
    -   [SVG Bounding Box](#bounding-box)
+   -   [Generated bitmaps](#generated-bitmaps)
 -   [Nine-Patch support](#nine-patch-support)
 -   [SVG Masking](#svg-masking)
+   -   [MASK file format](#mask-file-format)
+   -   [Generated MASKED files](#generated-mask-files)
 -   [How to use the plugin](#how-to-use-the-plugin)
 	-   [POM configuration](#pom-configuration)
 	-   [Plugin options](#plugin-options)
 -   [Sample](#sample)
 -   [License](#license)
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
+
 ## Input SVG files 
+
+This plugin is based on [Apache Batik 1.7](http://xmlgraphics.apache.org/batik/) and thus support most of the [SVG 1.1 Specification](http://www.w3.org/TR/SVG11/). See the [Batik status page](http://xmlgraphics.apache.org/batik/status.html) for the list of supported, not-supported and partially supported SVG 1.1 features.
 
 #### Expected file names
 
-SVG file name must match the following pattern : `\w+(-{qualifier})+.svg`  
+Input SVG file name must match the following pattern : `\w+(-{qualifier})+.svg` where :
 
--   the generated images are named against `\w+.png`, `\w+.jpg` or `\w+.9.png` if it's a nine-patch drawable
--   files are generated into a `/res/drawable(-{qualifier})*` directory  
+-   `\w+` is the SVG *unqualified* name part
+-   `(-{qualifier})+` is the SVG *qualified* name part
 
-Each SVG file **MUST** provide a reference density qualifier in its name. The generated images (JPG or PNG) will be scaled relatively to this reference density. The generated files for the reference density will have the dimensions defined by the SVG bounding box.  
+Each SVG file **MUST** provide a valid reference density qualifier in its name. The generated bitmap (JPG or PNG) will be scaled relatively to its reference density. The generated bitmap for the reference density will have the same dimensions as defined by the SVG bounding box.  
 
 Example of valid SVG file name :
 
--   icon-mdpi.svg
--   flag-fr-land-mdpi.svg
--   more_complex_name-land-mdpi-fr-sw700dp.svg  
+-   `icon-mdpi.svg`
+-   `flag-fr-land-mdpi.svg`
+-   `more_complex_name-land-mdpi-fr-sw700dp.svg`  
 
-Qualifiers can appear in any order within the SVG file name. The plugin takes care of re-ordering the qualifiers properlyas expected by the Android plateform. For a full list of supported qualifiers, see [Providing Alternative Resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) on the Android developper website.
+Qualifiers can appear in any order within the SVG file name. The plugin takes care for you of re-ordering the qualifiers properly as expected by the Android plateform. For a full list of supported qualifiers, see [Providing Alternative Resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) on the Android developper website.
 
 Example of invalid SVG file name :
 
--  icon.svg
+-  `icon.svg`
 	-  no density qualifier
--  flag-fr.svg
+-  `flag-fr.svg`
 	-  no density qualifier
--  invalid-classifier-mdpi.svg
+-  `invalid-classifier-mdpi.svg`
 	-  `classifier` is not a valid Android resource qualifier
--  &eacute;l&eacute;phant-mdpi.svg
+-  `éléphant-mdpi.svg`
 	-  invalide `\w` character
 
 #### Bounding Box
 
-As explained above, each SVG file name **MUST** provide a density qualifier. This qualifier is used to compute the scaled `width` and `height` for the generated images. The reference `width` and `height` for the density declared in the SVG file name are those defined on the `<svg>` root element of the SVG file :
+As explained above, each input SVG file name **MUST** provide a density qualifier. This qualifier is used to compute the scaled `width` and `height` of the generated bitmaps. The reference `width` and `height` for the reference density are those defined on the `width` and `height` attributes of the `<svg>` root element of the input SVG file :
 
 ```xml
 <svg
-   x="0px"
-   y="0px"
+   x="0"
+   y="0"
    width="96"
    height="96"
 ```
 	  
-This will define the bounding box of the drawable content. Everything that is drawn outside off this bounding box will not be rendered in the generated bitmap drawable. `x` and `y` attributes are default to 0px if not present. 
+This will define the bounding box of the drawable content. Everything that is drawn outside off this bounding box will not be rendered in the generated bitmaps. `x` and `y` attributes are default to `0px` if not present. 
 
-Inkscape provides a way to make the SVG bounding box match the content edges :  
+Inkscape provides a way to make the SVG bounding box described above match the content edges :  
 
 1. Open File > Document Properties `[CTRL]`+`[SHIFT]`+`[D]`
 2. In the Page tab Page Size > Custom Size > Resize page to content
 
 If you want the bounding box to be larger than the content (with extra border), you'll need to add an extra transparent shape that is larger than the content and that match the desired width and height before using this method.  
   
-It is preferable for your SVG file dimensions to be a multiple of **32** and adjusted to **mdpi** so they can be scaled to any density without rounding the bounding box. The **"width"** and **"height"** attributes of the <svg> element are rouded to the smallest integer that is greater than or equal to the value of the attribute. **Use round integer value expressed in pixels ("px") or without unit of length as much as possible...**   
+You **SHOULD** adjust your input SVG file `width` and `height` to be a multiple of `32` and set its reference density to `mdpi` so they can be scaled to any density without rounding the bounding box. The `width` and `height` attributes of the `<svg>` element are rouded (when necessary) to the smallest integer that is greater than or equal to the value of the scaled attribute. You **SHOULD** use round integer value expressed in pixels `px` or without unit of length as much as possible...   
 
 It's also possible to use valid SVG unit of length such as `mm`, `cm`, `pt`, `in`. Use it with caution :-).  
 
+#### Generated bitmaps
+
+The generated bitmaps are named against `\w+.png`, `\w+.jpg` or `\w+.9.png` if it's a nine-patch drawable and are generated into a `/res/drawable(-{qualifier})*` directory where :  
+
+-   `\w+` is the unqualified part of the input SVG file
+-   `(-{qualifier})*` is the re-ordered qualified part of the input SVG file
+   -   Except for the density qualifier
+
 #### Nine-Patch support
 
-If you want to generate a NinePatch Drawable, you must provide the **stretchable area** and **padding box** definitions as defined in the Android documentation related to [nine-patch](http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch). The configuration file is a JSON Array containing one entry for each SVG to convert into NinePatch drawable :
+If you want to generate bitmaps as NinePatch Drawable, you **MUST** provide the **stretchable area** and **padding box** definitions as defined in the Android documentation related to [nine-patch](http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch). The Nine-Patch configuration file consists in a JSON Array containing at least on entry :
 
 ```javascript
 [
     {
         "name" : "phone.*",  // \w+ part of the SVG file name (JAVA regexp)
         "qualifiers" : [ // optionnal array of qualifiers to filter SVG input 
-			"land" // this config applies only to \w+.*-land.*.svg files
-		], 
+            "land" // this config applies only to \w+.*-land.*.svg files
+        ], 
         "stretch" : { // the stretchable area configuration
             "x" : [ // segments of the top edge of the NinePatch
                 [3, 43],
@@ -118,51 +139,53 @@ If you want to generate a NinePatch Drawable, you must provide the **stretchable
 ```
 If no segment is provided along an edge, the whole edge will be filled.  
 
-If you have different SVG with the same name but with different qualifiers, you can provide a specific 9-Patch configuration by using an array of qualifiers. The 9-Patch configuration will only apply to SVG which file name match **ALL** the provided qualifiers.
+If you have different SVG with the same name but with different qualifiers, you can provide a specific Nine-Patch configuration by using an array of qualifiers. A Nine-Patch configuration apply only to input SVG files which qualified name part match **ALL** of the Nine-Patch qualifiers.
 
 ## SVG Masking
 
-#### SVGMASK file format
+SVGMASK takes advantage of the SVG `<image>` element and allow you to define generic layers, masks and filters as well as Nine-Patch configuration for the generated bitmaps.
 
-SVGMASK files are particular SVG files named against the same rule as [input SVG files](#input-svg-files) except for the `.svgmask` extension and containing at least one *capturing* `<image>` element with a `xlink:href` which value matches `#\{(.*)\}` and where the captured part of the attribute value is a valid JAVA Pattern :   
+#### MASK file format
+
+SVGMASK files are particular SVG files named against the same rule as [input SVG files](#input-svg-files) except for the `.svgmask` extension. SVGMASK files **MUST** contain at least one *capturing* `<image>` element with a `xlink:href` attribute which value matches against `#\{(.*)\}` and where the captured part of the attribute value is a valid [JAVA Pattern](http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html) :   
 
 -   `<image x="0" y="0" width="10" height="10" xlink:href="#{btn_.*}"/>`
 -   `<image x="0" y="0" width="10" height="10" xlink:href="#{[a-z]{2}}"/>`
 
-Standard `<image>` elements can still be use with reference to toher DOM element or other files :
+SVGMASK files **MAY** contains more than one *capturing* `<image>` element as well as standard SVG `<image>` elements.  
 
--   `<image x="0" y="0" width="10" height="10" xlink:href="/path/to/other.svg"/>`
--   `<image x="0" y="0" width="10" height="10" xlink:href="#svgID1234"/>`
+Each *capturing* `<image>` element a list of matching
+An input SVG file can be captured by a *capturing* `<image>` element of a SVGMASK. Captured input SVG files **MUST** verify the two following conditions :  
 
-For each *capturing* `<image>` element a list of matching input SVG file is established. Matching input SVG files **MUST** verify the two following conditions :  
+-   The unqualified name of the input SVG file match the capturing regexp of the *capturing* `<image>` element
+-   The qualified name of the input SVG file contains all of the qualifiers values defined in the SVGMASK qualified name
+   -   The density qualifier of the SVGMASK file is not taken into account 
 
--   The unqualified name match the capturing regexp
--   Contains all of the SVGMASK qualifiers except the density qualifier 
+#### Generated masked files
 
-#### Generated masked SVG
+SVGMASK files are not directly converted into bitmaps. SVGMASK files are converted into temporary SVG files that are added to the list of [input SVG files](#input-svg-files) to convert. Temporary SVG files are copies of the SVGMASK files DOM in which the `xlink:href` attribute value of each *capturing* `<image>` is replaced by a `file:///` URI linking to an input SVG file.
 
-SVGMASK are not directly converted into bitmaps. SVGMASK files are converted into temporary SVG files that are added to the list of [input SVG files](#input-svg-files) to convert. Temporary SVG files is a copy of the SVGMASK file in which the `xlink:href` attribute values of each *capturing* `<image>` element has been replace by a `file:///` link to an input SVG file.
+A carthesian product is made between each set of captured input SVG file for each *capturing* `<image>` element of the SVGMASK file. A temporary SVG file is created for each `xlink:href` attribute combination in the resulting product set except for combinations that contains input SVG files with incompatible qualifiers. Incompatible SVG files are input SVG files that defines different values for a same configuration qualifier type.
 
-For each *capturing* `<image>` element inside the SVGMASK file, exactly one temporary SVG file is generated for each matching SVG input file. If a SVGMASK file contains more than one *capturing* `<image>` element, then a carthesian product is made between each set of matching SVG input file.  In the resulting product set, combination of input SVG files with incompatible qualifiers are skipped.  Two input SVG files are incompatible if they define a different value for the same qualifier type (except the density one).
+Combination that use the same URI for two *capturing* `<image>` element can be skipped or not depending on the value of the `useSameSvgOnlyOnceInMask` maven parameter.
 
-The `useSameSvgOnlyOnceInMask` can be use to control if an input SVG file can be use more than once in the same combination of the resulting product set.
+For each kept product set entry the generated temporary SVG file name is the concatenation of :
 
-The generated temporary SVG file for each product set entry is the concatenation of :
-
--   The SVGMASK unqualified name
--   The input SVG file for each used input
-	-   in the order of the `<image>` element that used the SVG file
--   The union of the qualifiers for the SVGMASK and the input SVG files
+1.  The SVGMASK unqualified name
+2.  The input SVG file unqualified name for each *capturing* `<image>` element `xlink:href` URI
+	-   in the order of the *capturing* `<image>` element in the SVG file DOM
+3.  The union of the qualifier values for the SVGMASK and all of the linked input SVG files
 	-   The density qualifier of the SVGMASK is used
 	-   The SVGMASK bounding box is used as reference
+	-   Linked input SVG files are scalled according to the `<image>`element specifications
 
-#### Generated bitmaps
+Resulting bitmaps are generated from temporary SVG files :
 
-Generated bitmaps are then created using the same rules as standard input SVG file.
+-   see [Generated bitmaps](#generated-bitmaps)
 
-#### SVGMASK and Nine-Patch 
+Nine-Patch configuration file elements **MAY** reference temporary SVG files : 
 
-Nine-Patch configuration is compatible with SVGMASK.
+-   see [Nine-Patch support](nine-patch-support)
 
 ## How to use the plugin
 
@@ -224,15 +247,9 @@ The plugin can be configured using the following options :
 ###### from (since 1.0.0) :
 
 Path to the directory that contains the SVG files to generate drawable from.  
-SVG files **MUST** be named according the following rules and **MUST** contain a density qualifier (mdpi,hdpi,...) :
+SVG files **MUST** be named according the following rules and **MUST** contain a valid density qualifier (ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi, tvdpi) :
 
 -   `\w+(-{qualifier})+.svg`  
-
-Generated drawable will be named :
-
--   `\w+.png`
-
-The density qualifier provided in the SVG file name indicates that the Bounding Box size defined in the `<svg>` tag of the SVG file is the target size of the generated drawable for this density. Generated drawable for other densities are scaled according the `3:4:6:8:12:16` scaling ratio defined in the [Supporting Multiple Screens section](http://developer.android.com/guide/practices/screens_support.html) of the Android developers site.   
 
 ###### to (since 1.0.0) :
 
@@ -251,9 +268,9 @@ Path to the 9-Patch JSON configuration file.
 
 Whether or not already existing and up to date PNG should be override at build time :
 
--   `always` : PNG are always recreated
--   `never` : PNG are never recreated if a PNG with the same file name already exists
--   `ifModified` : PNG are recreated only if the SVG file is more recent than the existing PNG file  
+-   `always` : bitmaps are always recreated
+-   `never` : bitmaps are never recreated if a bitmaps with the same file name already exists
+-   `ifModified` : bitmaps are recreated only if the SVG file is more recent than the existing bitmaps file  
 
 Default value is set to `always`.
 
@@ -323,9 +340,9 @@ Default is `true`.
 
 ## Sample
 
-The sample application use this plugin to generate all of its drawables and illustrates the use of every single option of the plugin.  
+The sample application use this plugin to generate all of its drawables and illustrates the use of every single option of the plugin. Simply run :  
 
-    mvn gendrawable:gen
+    mvn clean install
 
 #### Generates density specific PNG from one SVG file :
 
