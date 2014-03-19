@@ -72,14 +72,14 @@ This will define the bounding box of the drawable content. Everything that is dr
 
 Inkscape provides a way to make the SVG bounding box match the content edges :  
 
-1. Open File > Document Properties [CTRL]+[SHIFT]+[D]
+1. Open File > Document Properties `[CTRL]`+`[SHIFT]`+`[D]`
 2. In the Page tab Page Size > Custom Size > Resize page to content
 
 If you want the bounding box to be larger than the content (with extra border), you'll need to add an extra transparent shape that is larger than the content and that match the desired width and height before using this method.  
   
 It is preferable for your SVG file dimensions to be a multiple of **32** and adjusted to **mdpi** so they can be scaled to any density without rounding the bounding box. The **"width"** and **"height"** attributes of the <svg> element are rouded to the smallest integer that is greater than or equal to the value of the attribute. **Use round integer value expressed in pixels ("px") or without unit of length as much as possible...**   
 
-It's also possible to use valid SVG unit of length such as "cm", "pt", "in". Use it with caution :-).  
+It's also possible to use valid SVG unit of length such as `mm`, `cm`, `pt`, `in`. Use it with caution :-).  
 
 #### Nine-Patch support
 
@@ -124,25 +124,45 @@ If you have different SVG with the same name but with different qualifiers, you 
 
 #### SVGMASK file format
 
-SVGMASK files are particular SVG files named against the same rule as [input SVG files](#input-svg-files) except for the `.svgmask` extension and containing at least one `<image>` element with a `xlink:href` attribute value that matches `#\{(.*)\}` and where the captured part of the attribute value is a valid JAVA Pattern.
+SVGMASK files are particular SVG files named against the same rule as [input SVG files](#input-svg-files) except for the `.svgmask` extension and containing at least one *capturing* `<image>` element with a `xlink:href` which value matches `#\{(.*)\}` and where the captured part of the attribute value is a valid JAVA Pattern :   
 
-Example of mask `<image>` elements :
+-   `<image x="0" y="0" width="10" height="10" xlink:href="#{btn_.*}"/>`
+-   `<image x="0" y="0" width="10" height="10" xlink:href="#{[a-z]{2}}"/>`
 
--   `<image x="0" y="0" width="10" height="10" xlink:href="#{}"/>`
--   `<image x="0" y="0" width="10" height="10" xlink:href="#{}"/>`
-
-Example of non mask `<image>` elements :
+Standard `<image>` elements can still be use with reference to toher DOM element or other files :
 
 -   `<image x="0" y="0" width="10" height="10" xlink:href="/path/to/other.svg"/>`
 -   `<image x="0" y="0" width="10" height="10" xlink:href="#svgID1234"/>`
 
+For each *capturing* `<image>` element a list of matching input SVG file is established. Matching input SVG files **MUST** verify the two following conditions :  
+
+-   The unqualified name match the capturing regexp
+-   Contains all of the SVGMASK qualifiers except the density qualifier 
+
 #### Generated masked SVG
 
-SVGMASK are not directly converted into bitmaps. SVGMASK files are converted into temporary plain SVG files to be converted like standard [input SVG files](#input-svg-files).
+SVGMASK are not directly converted into bitmaps. SVGMASK files are converted into temporary SVG files that are added to the list of [input SVG files](#input-svg-files) to convert. Temporary SVG files is a copy of the SVGMASK file in which the `xlink:href` attribute values of each *capturing* `<image>` element has been replace by a `file:///` link to an input SVG file.
+
+For each *capturing* `<image>` element inside the SVGMASK file, exactly one temporary SVG file is generated for each matching SVG input file. If a SVGMASK file contains more than one *capturing* `<image>` element, then a carthesian product is made between each set of matching SVG input file.  In the resulting product set, combination of input SVG files with incompatible qualifiers are skipped.  Two input SVG files are incompatible if they define a different value for the same qualifier type (except the density one).
+
+The `useSameSvgOnlyOnceInMask` can be use to control if an input SVG file can be use more than once in the same combination of the resulting product set.
+
+The generated temporary SVG file for each product set entry is the concatenation of :
+
+-   The SVGMASK unqualified name
+-   The input SVG file for each used input
+	-   in the order of the `<image>` element that used the SVG file
+-   The union of the qualifiers for the SVGMASK and the input SVG files
+	-   The density qualifier of the SVGMASK is used
+	-   The SVGMASK bounding box is used as reference
 
 #### Generated bitmaps
 
+Generated bitmaps are then created using the same rules as standard input SVG file.
+
 #### SVGMASK and Nine-Patch 
+
+Nine-Patch configuration is compatible with SVGMASK.
 
 ## How to use the plugin
 
@@ -206,13 +226,13 @@ The plugin can be configured using the following options :
 Path to the directory that contains the SVG files to generate drawable from.  
 SVG files **MUST** be named according the following rules and **MUST** contain a density qualifier (mdpi,hdpi,...) :
 
--   **\w+(-{qualifier})+.svg**  
+-   `\w+(-{qualifier})+.svg`  
 
 Generated drawable will be named :
 
--   **\w+.png**  
+-   `\w+.png`
 
-The density qualifier provided in the SVG file name indicates that the Bounding Box size defined in the **<svg>** tag of the SVG file is the target size of the generated drawable for this density. Generated drawable for other densities are scaled according the **3:4:6:8:12:16** scaling ratio defined in the [Supporting Multiple Screens section](http://developer.android.com/guide/practices/screens_support.html) of the Android developers site.   
+The density qualifier provided in the SVG file name indicates that the Bounding Box size defined in the `<svg>` tag of the SVG file is the target size of the generated drawable for this density. Generated drawable for other densities are scaled according the `3:4:6:8:12:16` scaling ratio defined in the [Supporting Multiple Screens section](http://developer.android.com/guide/practices/screens_support.html) of the Android developers site.   
 
 ###### to (since 1.0.0) :
 
