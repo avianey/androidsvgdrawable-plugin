@@ -26,8 +26,8 @@
 
     <scm>
         <url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
-        <developerConnection>scm:git:git@github.com/avianey/androidgendrawable-maven-plugin.git</developerConnection>
-        <connection>scm:git:git://github.com/avianey/androidgendrawable-maven-plugin.git</connection>
+        <developerConnection>scm:git:https://github.com/avianey/androidgendrawable-maven-plugin.git</developerConnection>
+        <connection>scm:git:https://github.com/avianey/androidgendrawable-maven-plugin.git</connection>
         <tag>HEAD</tag>
   </scm>
 
