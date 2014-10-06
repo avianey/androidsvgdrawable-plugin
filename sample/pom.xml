@@ -8,7 +8,7 @@
 	<groupId>fr.avianey.mojo</groupId>
 	<artifactId>androidgendrawable-sample</artifactId>
 	<packaging>apk</packaging>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<name>AndroidGenDrawable Maven Plugin Sample Project</name>
 	<url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
 
@@ -30,7 +30,7 @@
             <plugin>
                 <groupId>fr.avianey.mojo</groupId>
                 <artifactId>androidgendrawable-maven-plugin</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.1.1-SNAPSHOT</version>
                 <configuration>
                     <!-- where to generate them -->
                     <to>${project.basedir}/res</to>
