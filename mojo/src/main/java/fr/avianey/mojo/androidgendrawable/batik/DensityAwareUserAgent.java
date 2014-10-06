@@ -12,6 +12,7 @@ import fr.avianey.mojo.androidgendrawable.util.Constants;
  * @author avianey
  */
 public class DensityAwareUserAgent extends UserAgentAdapter {
+	
 	private float dpi;
 	
 	public DensityAwareUserAgent(float dpi) {

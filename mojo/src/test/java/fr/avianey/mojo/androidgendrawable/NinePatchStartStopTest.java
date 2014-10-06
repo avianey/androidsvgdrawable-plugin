@@ -19,7 +19,7 @@ public class NinePatchStartStopTest {
     public NinePatchStartStopTest(int start, int stop, int d, Density in, Density out, int expectedStart, int expectedSize) {
          this.start = start;
          this.stop = stop;
-         this.d = d;
+         this.d = (int) Math.max(Math.floor(d * in.ratio(out)), 1);
          this.in = in;
          this.out = out;
          this.expectedSize = expectedSize;
@@ -35,14 +35,14 @@ public class NinePatchStartStopTest {
                         {0,     31,     64,     Density.mdpi,   Density.xhdpi,    0,      64},
                         {0,     31,     96,     Density.mdpi,   Density.xxhdpi,   0,      96},
                         {0,     31,     128,    Density.mdpi,   Density.xxxhdpi,  0,      128},
-                        {0,     31,     24,     Density.mdpi,   Density.ldpi,     0,      18},
+                        {0,     31,     32,     Density.mdpi,   Density.ldpi,     0,      24},
                         
                         {16,    31,     32,     Density.mdpi,   Density.mdpi,     16,     16},
                         {2,     31,     48,     Density.mdpi,   Density.hdpi,     3,      45},
                         {4,     31,     64,     Density.mdpi,   Density.xhdpi,    8,      56},
                         {8,     31,     96,     Density.mdpi,   Density.xxhdpi,   24,     72},
                         {16,    31,     128,    Density.mdpi,   Density.xxxhdpi,  64,     64},
-                        {31,    31,     24,     Density.mdpi,   Density.ldpi,     17,     1},
+                        {31,    31,     32,     Density.mdpi,   Density.ldpi,     23,     1},
                         
                         {16,    16,     32,     Density.mdpi,   Density.mdpi,     16,     1},
                         {2,     2,      48,     Density.mdpi,   Density.hdpi,     3,      1},
@@ -98,7 +98,10 @@ public class NinePatchStartStopTest {
                         
                         // Issue #2
                         {4,     5,      10,     Density.mdpi,   Density.mdpi,     4,      2},
-                        {4,     5,      12,     Density.mdpi,   Density.mdpi,     4,      2}
+                        {4,     5,      12,     Density.mdpi,   Density.mdpi,     4,      2},
+                        
+                        // Downscaling #12
+                        {0,     47,     48,     Density.mdpi,   Density.ldpi,     0,      36}
                         
                 });
     }
@@ -109,7 +112,7 @@ public class NinePatchStartStopTest {
         Assert.assertEquals(expectedStart, computedStart);
         // start is in the box
         Assert.assertTrue("Start point is < 0", computedStart >= 0);
-        Assert.assertTrue("Start point is outside boundaries", computedStart <= d * in.ratio(out));
+        Assert.assertTrue("Start point is outside boundaries", computedStart < d);
     }
     
     @Test
@@ -119,7 +122,7 @@ public class NinePatchStartStopTest {
         Assert.assertTrue("Computed size is < 1", computedSize >= 1);
         // end is in the box
     	int computedStart = NinePatch.start(start, stop, d, in.ratio(out));
-        Assert.assertTrue("End point is outside boundaries " + (computedStart + computedSize - 1) + " > " + (d * in.ratio(out)), computedStart + computedSize - 1 <= d * in.ratio(out));
+        Assert.assertTrue("End point is outside boundaries " + (computedStart + computedSize - 1) + " >= " + d, computedStart + computedSize - 1 < d);
     }
 
 }

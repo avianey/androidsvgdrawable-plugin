@@ -394,6 +394,8 @@ public class Gen extends AbstractMojo {
         if (_highResIcon != null) {
             try {
                 // TODO : add a garbage density (NO_DENSITY) for the highResIcon
+            	// TODO : make highResIcon size configurable
+            	// TODO : generates other play store assets
                 getLog().info("Generating high resolution icon");
                 transcode(_highResIcon, Density.mdpi, _highResIconBounds, new File("."), 512, 512, null);
             } catch (IOException e) {
@@ -518,8 +520,8 @@ public class Gen extends AbstractMojo {
      * @throws InstantiationException 
      */
     private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
-        Float width = new Float(Math.floor(targetWidth));
-        Float height = new Float(Math.floor(targetHeight));
+        final Float width = Math.max(new Float(Math.floor(targetWidth)), 1);
+        final Float height = Math.max(new Float(Math.floor(targetHeight)), 1);
         if (getLog().isDebugEnabled()) {
             getLog().debug("+ target dimensions [width=" + width + " - length=" + height +"]");
         }
@@ -617,44 +619,72 @@ public class Gen extends AbstractMojo {
         
         // draw patch
         g.setColor(Color.BLACK);
+        
         Zone stretch = ninePatch.getStretch();
-        int[][] segment = null;
-        segment = stretch.getX() == null ? new int[][] {{0, w}} : stretch.getX();
-        for (int[] seg : segment) {
-            final int start = NinePatch.start(seg[0], seg[1], w, ratio);
-            final int size = NinePatch.size(seg[0], seg[1], w, ratio);
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("+ ninepatch stretch(x) [start=" + start + " - size=" + size + "]");
-            }
-            g.fillRect(start + 1, 0, size, 1);
-        }
-        segment = stretch.getY() == null ? new int[][] {{0, h}} : stretch.getY();
-        for (int[] seg : segment) {
-            final int start = NinePatch.start(seg[0], seg[1], h, ratio);
-            final int size = NinePatch.size(seg[0], seg[1], h, ratio);
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("+ ninepatch stretch(y) [start=" + start + " - size=" + size + "]");
-            }
-            g.fillRect(0, start + 1, 1, size);
-        }
         Zone content = ninePatch.getContent();
-        segment = content.getX() == null ? new int[][] {{0, w}} : content.getX();
-        for (int[] seg : segment) {
-            final int start = NinePatch.start(seg[0], seg[1], w, ratio);
-            final int size = NinePatch.size(seg[0], seg[1], w, ratio);
+        
+        if (stretch.getX() == null) {
             if (getLog().isDebugEnabled()) {
-                getLog().debug("+ ninepatch content(x) [start=" + start + " - size=" + size + "]");
+                getLog().debug("+ ninepatch stretch(x) [start=0 - size=" + w + "]");
             }
-            g.fillRect(start + 1, h + 1, size, 1);
+        	g.fillRect(1, 0, w, 1);
+        } else {
+	        for (int[] seg : stretch.getX()) {
+	            final int start = NinePatch.start(seg[0], seg[1], w, ratio);
+	            final int size = NinePatch.size(seg[0], seg[1], w, ratio);
+	            if (getLog().isDebugEnabled()) {
+	                getLog().debug("+ ninepatch stretch(x) [start=" + start + " - size=" + size + "]");
+	            }
+	            g.fillRect(start + 1, 0, size, 1);
+	        }
         }
-        segment = content.getY() == null ? new int[][] {{0, h}} : content.getY();
-        for (int[] seg : segment) {
-            final int start = NinePatch.start(seg[0], seg[1], h, ratio);
-            final int size = NinePatch.size(seg[0], seg[1], h, ratio);
+
+        if (stretch.getY() == null) {
             if (getLog().isDebugEnabled()) {
-                getLog().debug("+ ninepatch content(y) [start=" + start + " - size=" + size + "]");
+                getLog().debug("+ ninepatch stretch(y) [start=0 - size=" + h + "]");
             }
-            g.fillRect(w + 1, start + 1, 1, size);
+        	g.fillRect(0, 1, 1, h);
+        } else {
+	        for (int[] seg : stretch.getY()) {
+	            final int start = NinePatch.start(seg[0], seg[1], h, ratio);
+	            final int size = NinePatch.size(seg[0], seg[1], h, ratio);
+	            if (getLog().isDebugEnabled()) {
+	                getLog().debug("+ ninepatch stretch(y) [start=" + start + " - size=" + size + "]");
+	            }
+	            g.fillRect(0, start + 1, 1, size);
+	        }
+        }
+        
+        if (content.getX() == null) {
+            if (getLog().isDebugEnabled()) {
+                getLog().debug("+ ninepatch content(x) [start=0 - size=" + w + "]");
+            }
+        	g.fillRect(1, h + 1, w, 1);
+        } else {
+	        for (int[] seg : content.getX()) {
+	            final int start = NinePatch.start(seg[0], seg[1], w, ratio);
+	            final int size = NinePatch.size(seg[0], seg[1], w, ratio);
+	            if (getLog().isDebugEnabled()) {
+	                getLog().debug("+ ninepatch content(x) [start=" + start + " - size=" + size + "]");
+	            }
+	            g.fillRect(start + 1, h + 1, size, 1);
+	        }
+        }
+
+        if (content.getY() == null) {
+            if (getLog().isDebugEnabled()) {
+                getLog().debug("+ ninepatch content(y) [start=0 - size=" + h + "]");
+            }
+        	g.fillRect(w + 1, 1, 1, h);
+        } else {
+	        for (int[] seg : content.getY()) {
+	            final int start = NinePatch.start(seg[0], seg[1], h, ratio);
+	            final int size = NinePatch.size(seg[0], seg[1], h, ratio);
+	            if (getLog().isDebugEnabled()) {
+	                getLog().debug("+ ninepatch content(y) [start=" + start + " - size=" + size + "]");
+	            }
+	            g.fillRect(w + 1, start + 1, 1, size);
+	        }
         }
         
         ImageIO.write(ninePatchImage, "png", new File(finalName));

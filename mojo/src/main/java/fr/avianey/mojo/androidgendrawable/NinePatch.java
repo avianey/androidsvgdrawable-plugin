@@ -24,7 +24,7 @@ import fr.avianey.mojo.androidgendrawable.Qualifier.Type;
  * Coordinates must be include within the svg bounds (width and height).
  * 
  * @version 1
- * @author avianey
+ * @author antoine vianey
  */
 public class NinePatch {
 
@@ -104,7 +104,7 @@ public class NinePatch {
      * The start cannot be higher than d...
      * @param start
      * @param stop
-     * @param d : normalized dimension of the density specific drawable (ratio applied)
+     * @param d
      * @param ratio
      * @return
      */
@@ -112,7 +112,7 @@ public class NinePatch {
         return Math.max(
         		0, 
         		Math.min(
-        				(int) Math.ceil(d * ratio) - 1, 
+        				d - 1, 
         				(int) Math.floor(start * ratio)));
     }
     
@@ -121,14 +121,14 @@ public class NinePatch {
      * The size cannot be lower than 1 and greater than (d - start)...
      * @param start
      * @param stop
-     * @param d : normalized dimension of the density specific drawable (ratio applied)
+     * @param d
      * @param ratio
      * @return
      */
     public static final int size(int start, int stop, int d, double ratio) {
         return Math.max(
         		1, Math.min(
-		        		(int) Math.ceil(d * ratio) - start(start, stop, d, ratio), 
+		        		d - start(start, stop, d, ratio), 
 		        		Math.max(1, (int) Math.floor((stop - start + 1) * ratio))));
     }
     

@@ -230,7 +230,7 @@
 		</dependency>
 		-->
 		<dependency>
-			<groupId>fr.avianey.apache-xmlgraphics</groupId>
+		    <groupId>fr.avianey.apache-xmlgraphics</groupId>
 		    <artifactId>batik</artifactId>
 		    <version>1.8pre-20141006</version>
 		</dependency>
@@ -301,14 +301,5 @@
             </distributionManagement>
         </profile>
     </profiles>
-
-	<!--  
-	<repositories>
-		<repository>
-			<id>oss-test-release</id>
-			<url>https://oss.sonatype.org/content/repositories/[staging]</url>
-		</repository>
-	</repositories>
-	-->
 
 </project>

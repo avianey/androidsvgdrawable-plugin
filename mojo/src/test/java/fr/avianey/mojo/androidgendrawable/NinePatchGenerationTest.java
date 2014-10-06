@@ -94,7 +94,7 @@ public class NinePatchGenerationTest {
         return Arrays.asList(
                 new Object[][] {
                         {
-                            "ninepatch-mdpi.svg", "9patch.json",
+                            "ninepatch-mdpi.svg", "ninepatch.json",
                             Density.mdpi,
                             new int[][] {
                                     {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, // stretch x
@@ -110,7 +110,7 @@ public class NinePatchGenerationTest {
                             }
                         },
                         {
-                            "ninepatch-mdpi.svg", "9patch.json",
+                            "ninepatch-mdpi.svg", "ninepatch.json",
                             Density.hdpi,
                             new int[][] {
                                     {4, 0}, {12, 0}, // stretch x
@@ -125,6 +125,78 @@ public class NinePatchGenerationTest {
                                     {16, 6}, {16, 10}, // content y
                             }
                         },
+                        
+                    	// https://github.com/avianey/androidgendrawable-maven-plugin/issues/12
+                    	// size can't be < 1 when scaling down svg to a lower density
+                        {
+                            "width_1-mdpi.svg", "width_1.json",
+                            Density.ldpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+
+                    	// https://github.com/avianey/androidgendrawable-maven-plugin/issues/14
+                    	// corners must be transparents
+                        {
+                            "simple_square-mdpi.svg", "simple_square.json",
+                            Density.mdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "simple_square-mdpi.svg", "simple_square.json",
+                            Density.ldpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "simple_square-mdpi.svg", "simple_square.json",
+                            Density.hdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "simple_square-mdpi.svg", "simple_square.json",
+                            Density.xhdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "width_too_large-mdpi.svg", "width_too_large.json",
+                            Density.mdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "width_too_large-mdpi.svg", "width_too_large.json",
+                            Density.ldpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "width_too_large-mdpi.svg", "width_too_large.json",
+                            Density.hdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "width_too_large-mdpi.svg", "width_too_large.json",
+                            Density.xhdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "width_too_large-mdpi.svg", "width_too_large.json",
+                            Density.xxhdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        },
+                        {
+                            "width_too_large-mdpi.svg", "width_too_large.json",
+                            Density.xxxhdpi,
+                            new int[][] {},
+                            new int[][] {}
+                        }
                 });
     }
     
@@ -151,6 +223,15 @@ public class NinePatchGenerationTest {
             	Assert.assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " file does not exists although the output format supports nine patch", !nonNinePatchFile.exists());
 	            BufferedImage image = ImageIO.read(new FileInputStream(ninePatchFile));
 		        tester.test(image);
+		        // test corner pixels
+		        int w = image.getWidth();
+		        int h = image.getHeight();
+		        new PixelTester(new int[][] {}, new int[][] {
+		        		{0, 0},
+		        		{0, h - 1},
+		        		{w - 1, 0},
+		        		{w - 1, h - 1}
+		        }).test(image);
             } else {
             	Assert.assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " exists although the output format does not support nine patch", !ninePatchFile.exists());
             	Assert.assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " does not exists although the output format does not support nine patch", nonNinePatchFile.exists());
