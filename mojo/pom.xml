@@ -133,7 +133,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
-					<pushChanges>true</pushChanges>
+					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -261,8 +261,8 @@
 	</dependencies>
 
     <!-- 
-	mvn clean release:clean -s settings.xml
-	mvn release:prepare -s settings.xml
+	mvn clean release:clean
+	mvn release:prepare
 	manual push
 	mvn release:perform -s settings.xml
 	-->
