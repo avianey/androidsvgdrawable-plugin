@@ -47,6 +47,7 @@
 		<mavenVersion>3.1.1</mavenVersion>
 		<plexusVersion>1.5.5</plexusVersion>
 		<maven.site.path>plugin-testing-archives/LATEST</maven.site.path>
+		<javadoc.additionalparam></javadoc.additionalparam>
 	</properties>
   
 	<build>
@@ -94,6 +95,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9.1</version>
+				<configuration>
+                    <additionalparam>${javadoc.additionalparam}</additionalparam>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -300,6 +304,15 @@
                 </repository>
             </distributionManagement>
         </profile>
+		<profile>
+            <id>javadoc-xdoclint</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<javadoc.additionalparam>-Xdoclint:none</javadoc.additionalparam>
+			</properties>
+		</profile>
     </profiles>
 
 </project>
