@@ -9,15 +9,13 @@ Every Android application should provide [alternative resources](http://develope
 <plugin>
     <groupId>fr.avianey.mojo</groupId>
     <artifactId>androidgendrawable-maven-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.1</version>
 </plugin>
 ```
 
     mvn gendrawable:gen
 
 This plugin supports any configuration `<qualifier>` available on the Android platform and can generate [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) drawable as well. To increase your productivity, a mask functionnality allow you to define generic layers, filters, clip-path, etc...  and to reuse them accross multiple SVG files.  
-
-As of version `1.1.0`, the plugin cannot be used with openJdk1.7+.
 
 Enjoy :-) !
 
