@@ -1,318 +1,100 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.avianey.mojo</groupId>
-	<artifactId>androidgendrawable-maven-plugin</artifactId>
-	<packaging>maven-plugin</packaging>
-	<version>1.1.2-SNAPSHOT</version>
-	<name>AndroidGenDrawable Maven Plugin</name>
-	<url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
-	
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
-    
-    <description>Generates qualified, density specific PNG drawables from SVG at build time for your Android projects.</description>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <name>AndroidSvgDrawable Maven Plugin</name>
+    <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+    <parent>
+        <groupId>fr.avianey.androidsvgdrawable</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
 
-    <scm>
-        <url>https://github.com/avianey/androidgendrawable-maven-plugin</url>
-        <developerConnection>scm:git:https://github.com/avianey/androidgendrawable-maven-plugin.git</developerConnection>
-        <connection>scm:git:https://github.com/avianey/androidgendrawable-maven-plugin.git</connection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>http://github.com/avianey/androidgendrawable-maven-plugin/issues</url>
-    </issueManagement>
-
-    <developers>
-        <developer>
-            <id>avianey</id>
-            <name>Antoine Vianey</name>
-        </developer>
-    </developers>
-
-	<properties>
-		<mavenVersion>3.1.1</mavenVersion>
-		<plexusVersion>1.5.5</plexusVersion>
-		<maven.site.path>plugin-testing-archives/LATEST</maven.site.path>
-		<javadoc.additionalparam />
-	</properties>
-  
-	<build>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.4.2</version>
-                    <configuration>
-                        <mavenExecutorId>forked-path</mavenExecutorId>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <arguments>-Psonatype-oss-release</arguments>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-					<goalPrefix>gendrawable</goalPrefix>
-				</configuration>
-				<executions>
-					<execution>
-						<id>mojo-descriptor</id>
-						<goals>
-							<goal>descriptor</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>help-goal</id>
-						<goals>
-							<goal>helpmojo</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-				<configuration>
-                    <additionalparam>${javadoc.additionalparam}</additionalparam>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                    <goalPrefix>svgdrawable</goalPrefix>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>mojo-descriptor</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>descriptor</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>help-goal</id>
+                        <goals>
+                            <goal>helpmojo</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <configuration>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                    <attach>true</attach>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<pushChanges>false</pushChanges>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.16</version>
-		        <configuration>
-					<excludes>
-                        <exclude>**/BoundsExtractionTest.java</exclude>
-						<exclude>**/NinePatchGenerationTest.java</exclude>
-					</excludes>
-		        </configuration>
-	            <executions>
-	                <execution>
-	                    <phase>test</phase>
-	                    <id>png-tests</id>
-	                    <configuration>
-		                    <includes>
-		                        <include>**/*PNGSuite.java</include>
-		                    </includes>
-                            <systemProperties>
-                                <property>
-                                    <name>outputFormat</name>
-                                    <value>PNG</value>
-                                </property>
-                            </systemProperties>
-	                    </configuration>
-	                    <goals>
-							<goal>test</goal>
-						</goals>
-	                </execution>
-	                <execution>
-	                    <phase>test</phase>
-	                    <id>jpg-tests</id>
-	                    <configuration>
-		                    <includes>
-		                        <include>**/*JPGSuite.java</include>
-		                    </includes>
-							<systemProperties>
-								<property>
-									<name>outputFormat</name>
-									<value>JPG</value>
-								</property>
-							</systemProperties>
-	                    </configuration>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-	                </execution>
-	            </executions>
-	        </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
-	<dependencies>
+    <dependencies>
         <!-- maven -->
-		<dependency>
-			<groupId>org.apache.maven.plugin-tools</groupId>
-			<artifactId>maven-plugin-annotations</artifactId>
-			<version>3.2</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.2</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>3.1.1</version>
         </dependency>
-		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-utils</artifactId>
-			<version>3.0.17</version>
-		</dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>3.0.17</version>
+        </dependency>
         <!-- plugin -->
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>16.0.1</version>
+            <groupId>fr.avianey.androidsvgdrawable</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-		<!--
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-transcoder</artifactId>
-			<version>1.7</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.xmlgraphics</groupId>
-		    <artifactId>batik-codec</artifactId>
-		    <version>1.7</version>
-		</dependency>
-		-->
-		<dependency>
-		    <groupId>fr.avianey.apache-xmlgraphics</groupId>
-		    <artifactId>batik</artifactId>
-		    <version>1.8pre-20141006</version>
-		</dependency>
-		<dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>2.4</version>
-		</dependency>
-        <!-- tests -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>		
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>joor</artifactId>
-            <version>0.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-	</dependencies>
+    </dependencies>
 
-    <!-- 
-	mvn clean release:clean
-	mvn release:prepare
-	manual push
-	mvn release:perform -s settings.xml
-	-->
     <profiles>
         <profile>
             <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
-            <distributionManagement>
-                <repository>
-                    <id>sonatype-nexus-staging</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-                </repository>
-            </distributionManagement>
         </profile>
-		<profile>
-            <id>javadoc-xdoclint</id>
-			<activation>
-				<jdk>1.8</jdk>
-			</activation>
-			<properties>
-				<javadoc.additionalparam>-Xdoclint:none</javadoc.additionalparam>
-			</properties>
-		</profile>
     </profiles>
 
 </project>
