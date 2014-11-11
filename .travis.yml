@@ -2,5 +2,5 @@ language: java
 jdk:
   - oraclejdk7
   - openjdk7
-install: "mvn install -f ./mojo/pom.xml -DskipTests=true"
-script: "mvn test -f ./mojo/pom.xml"
+install: "mvn install -DskipTests=true"
+script: "mvn test"
