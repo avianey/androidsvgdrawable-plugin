@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
+import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
 
 /**
@@ -31,10 +32,14 @@ public class SvgDrawableGradlePlugin implements Plugin<Project> {
 
     private static final String EXTENSION_NAME = "svgDrawable";
     private static final String TASK_NAME = "svgDrawable";
+    
+    public static class Parameters extends SvgDrawablePlugin.Parameters {
+        public Density[] densities;
+    }
 
     @Override
     public void apply(Project project) {
-        project.getExtensions().create(EXTENSION_NAME, SvgDrawablePlugin.Parameters.class);
+        project.getExtensions().create(EXTENSION_NAME, Parameters.class);
         project.getTasks().create(TASK_NAME, SvgTask.class);
     }
     
@@ -42,10 +47,7 @@ public class SvgDrawableGradlePlugin implements Plugin<Project> {
 
         @TaskAction
         public void svgToPng() {
-            SvgDrawablePlugin.Parameters parameters = (SvgDrawablePlugin.Parameters) getProject().getExtensions().getByName(EXTENSION_NAME);
-            if (parameters == null) {
-                parameters = new SvgDrawablePlugin.Parameters();
-            }
+            Parameters parameters = (Parameters) getProject().getExtensions().getByName(EXTENSION_NAME);
             final SvgDrawablePlugin plugin = new SvgDrawablePlugin(parameters, new GradleLogger(getProject().getLogger()));
             plugin.execute();
         }

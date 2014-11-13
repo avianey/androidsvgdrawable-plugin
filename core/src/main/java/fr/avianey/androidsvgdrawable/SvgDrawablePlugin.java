@@ -32,8 +32,10 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,7 +95,7 @@ public class SvgDrawablePlugin {
         public File to;
         public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
         public OverrideMode overrideMode;
-        public Set<Density> targetedDensities;
+        public Density[] targetedDensities;
         public Map<String, String> rename;
         public Density fallbackDensity = DEFAULT_FALLBACK_DENSITY;
         public String highResIcon;
@@ -129,7 +131,7 @@ public class SvgDrawablePlugin {
     public void execute() {
         // validating target densities specified in pom.xml
         // untargetted densities will be ignored except for the fallback density if specified
-        final Set<Density> _targetDensities = parameters.targetedDensities;
+        final Set<Density> _targetDensities = new HashSet<>(Arrays.asList(parameters.targetedDensities));
         if (_targetDensities.isEmpty()) {
             _targetDensities.addAll(EnumSet.allOf(Density.class));
         }

@@ -1,14 +1,14 @@
 Android Gen Drawable Maven plugin
 =================================
 
-[![Build Status](https://travis-ci.org/avianey/androidgendrawable-maven-plugin.png?branch=master)](https://travis-ci.org/avianey/androidgendrawable-maven-plugin)  
+[![Build Status](https://travis-ci.org/avianey/androidsvgdrawable-plugin.png?branch=master)](https://travis-ci.org/avianey/androidsvgdrawable-plugin)  
 
 Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as `portrait`, `landscape`, `small`, `large`, `us`, `fr`, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color or a text value, this Maven plugin generates for you density specific bitmap drawable resources from qualified SVG files. The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time into as many as needed bitmaps and organized into configuration-specific drawable directories... at least one for each targeted screen density !  
 
 ```xml
 <plugin>
     <groupId>fr.avianey.mojo</groupId>
-    <artifactId>androidgendrawable-maven-plugin</artifactId>
+    <artifactId>androidsvgdrawable-plugin</artifactId>
     <version>1.1.1</version>
 </plugin>
 ```
@@ -196,7 +196,7 @@ To use the plugin in your Android Maven projects you need to add the following p
 	...
     <plugin>
         <groupId>fr.avianey.mojo</groupId>
-        <artifactId>androidgendrawable-maven-plugin</artifactId>
+        <artifactId>androidsvgdrawable-plugin</artifactId>
         <configuration>
             <!-- where to pick the svg -->
             <from>${project.basedir}/svg</from>
@@ -363,14 +363,14 @@ The sample application use this plugin to generate all of its drawables and illu
 ###### generated PNG in **drawable-land-xxxhdpi** :
 ![generated drawable for land][drawable-land-xxxhdpi]
 
-[generated]: http://avianey.github.io/androidgendrawable-maven-plugin/generated.png "Generated resource directories"
-[drawable-fr-land-xxxhdpi]: http://avianey.github.io/androidgendrawable-maven-plugin/drawable-fr-land-xxxhdpi.png "Landscape xxxhdpi french flag"
-[drawable-land-xxxhdpi]: http://avianey.github.io/androidgendrawable-maven-plugin/drawable-land-xxxhdpi.png "Landscape xxxhdpi USA flag"
-[flag-hdpi]: http://avianey.github.io/androidgendrawable-maven-plugin/flag-hdpi.png "Generated hdpi flag"
-[flag-mdpi]: http://avianey.github.io/androidgendrawable-maven-plugin/flag-mdpi.png "Generated mdpi flag"
-[flag-xhdpi]: http://avianey.github.io/androidgendrawable-maven-plugin/flag-xhdpi.png "Generated xhdpi flag"
-[flag-xxhdpi]: http://avianey.github.io/androidgendrawable-maven-plugin/flag-xxhdpi.png "Generated xxhdpi flags"
-[svg-files]: http://avianey.github.io/androidgendrawable-maven-plugin/svg-files.png "Input SVG files"
+[generated]: http://avianey.github.io/androidsvgdrawable-plugin/generated.png "Generated resource directories"
+[drawable-fr-land-xxxhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/drawable-fr-land-xxxhdpi.png "Landscape xxxhdpi french flag"
+[drawable-land-xxxhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/drawable-land-xxxhdpi.png "Landscape xxxhdpi USA flag"
+[flag-hdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-hdpi.png "Generated hdpi flag"
+[flag-mdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-mdpi.png "Generated mdpi flag"
+[flag-xhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-xhdpi.png "Generated xhdpi flag"
+[flag-xxhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-xxhdpi.png "Generated xxhdpi flags"
+[svg-files]: http://avianey.github.io/androidsvgdrawable-plugin/svg-files.png "Input SVG files"
 
 ## License
 

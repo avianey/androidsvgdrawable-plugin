@@ -17,7 +17,6 @@ package fr.avianey.androidsvgdrawable.maven;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -86,7 +85,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo {
      * @since 1.0.0
      */
     @Parameter
-    private Set<Density> targetedDensities;
+    private Density[] targetedDensities;
 
     /**
      * Use alternatives names for PNG resources<br/>
