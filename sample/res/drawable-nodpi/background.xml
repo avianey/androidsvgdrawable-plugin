@@ -1,4 +1,0 @@
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/bg_tile"
-    android:gravity="center"
-    android:tileMode="repeat" />

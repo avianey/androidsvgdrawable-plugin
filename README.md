@@ -1,9 +1,11 @@
-Android Gen Drawable Maven plugin
-=================================
+Android SVG Drawable plugin
+=========================
 
 [![Build Status](https://travis-ci.org/avianey/androidsvgdrawable-plugin.png?branch=master)](https://travis-ci.org/avianey/androidsvgdrawable-plugin)  
 
-Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as `portrait`, `landscape`, `small`, `large`, `us`, `fr`, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color or a text value, this Maven plugin generates for you density specific bitmap drawable resources from qualified SVG files. The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time into as many as needed bitmaps and organized into configuration-specific drawable directories... at least one for each targeted screen density !  
+Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as `portrait`, `landscape`, `small`, `large`, `us`, `fr`, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color, a shadow size or a text value, this  plugin generates for you **density specific** bitmap drawable resources from qualified SVG files **at build time**.  
+
+The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time into as many as needed bitmaps and organized into configuration-specific drawable directories... at least one for each targeted screen density !  
 
 ```xml
 <plugin>
