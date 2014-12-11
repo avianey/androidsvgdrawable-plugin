@@ -212,6 +212,7 @@ public class SvgMask {
 						if (file.lastModified() == 0
 						        || OverrideMode.always.equals(overrideMode)
 						        || (OverrideMode.ifModified.equals(overrideMode) && mask.lastModified() > file.lastModified())) {
+						    // TODO ? clean generated directory each time
 							TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(svgmaskDom);

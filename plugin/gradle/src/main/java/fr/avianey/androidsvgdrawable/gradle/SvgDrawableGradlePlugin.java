@@ -26,7 +26,7 @@ import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin.Parameters;
 
 /**
- * Goal which generates drawable from Scalable Vector Graphics (SVG) files.
+ * Task that generates drawable from Scalable Vector Graphics (SVG) files.
  *
  * @author antoine vianey
  */
@@ -47,7 +47,8 @@ public class SvgDrawableGradlePlugin implements Plugin<Project> {
         public void svgToPng() {
             Parameters parameters = (Parameters) getProject().getExtensions().getByName(EXTENSION_NAME);
             if (parameters.svgMaskedSvgOutputDirectory == null) {
-                parameters.svgMaskedSvgOutputDirectory = new File(getProject().getBuildDir(), "enerated-svg");
+                // TODO : cleanup
+                parameters.svgMaskedSvgOutputDirectory = new File(getProject().getBuildDir(), "generated-svg");
             }
             final SvgDrawablePlugin plugin = new SvgDrawablePlugin(parameters, new GradleLogger(getProject().getLogger()));
             plugin.execute();
