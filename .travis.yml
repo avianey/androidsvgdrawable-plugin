@@ -2,5 +2,5 @@ language: java
 jdk:
   - oraclejdk7
   - openjdk7
-install: "mvn install -DskipTests=true"
-script: "mvn test"
+install: "mvn install -f ./plugin/pom.xml -DskipTests=true"
+script: "mvn test -f ./plugin/pom.xml"
