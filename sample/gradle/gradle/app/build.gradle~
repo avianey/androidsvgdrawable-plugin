@@ -1,0 +1,48 @@
+apply plugin: 'android'
+apply plugin: "fr.avianey.androidsvgdrawable"
+
+android {
+    compileSdkVersion 'android-L'
+    buildToolsVersion "21.1.1"
+
+    defaultConfig {
+        applicationId "fr.avianey.androidsvgdrawable.sample"
+        minSdkVersion 'L'
+        targetSdkVersion 'L'
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+svgDrawable {
+    from = file('src/main/svg-png')
+    to = file('src/main/res')
+    createMissingDirectories = true
+    overrideMode = 'ifModified'
+    fallbackDensity = 'mdpi'
+    densities = ['ldpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    svgMaskDirectory = file('src/main/svg-png/mask')
+    svgMaskResourcesDirectory = file('src/main/svg-png/mask/svg')
+    rename = [phone_to_rename: 'phone']
+    highResIcon = 'icon'
+    ninePatchConfig = file('src/main/svg-png/9patch.json')
+    outputFormat = 'PNG'
+}
+project.afterEvaluate {
+    preBuild.dependsOn('svgDrawable')
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
