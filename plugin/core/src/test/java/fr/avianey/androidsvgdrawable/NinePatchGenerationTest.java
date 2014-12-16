@@ -47,6 +47,7 @@ import com.google.gson.reflect.TypeToken;
 
 import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
 import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 
 @RunWith(Parameterized.class)
 public class NinePatchGenerationTest {
@@ -86,7 +87,7 @@ public class NinePatchGenerationTest {
     
     @BeforeClass
     public static void setup() {
-        SvgDrawablePlugin.Parameters parameters = new SvgDrawablePlugin.Parameters();
+        TestParameters parameters = new TestParameters();
         parameters.outputFormat = GenDrawableTestSuite.OUTPUT_FORMAT;
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
     }

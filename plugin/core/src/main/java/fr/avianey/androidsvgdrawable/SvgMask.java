@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,7 +100,7 @@ public class SvgMask {
         xPath.setNamespaceContext(new NamespaceContext() {
             public String getNamespaceURI(String prefix) {
                 String uri = null;
-                if (prefix.equals("_gendrawable")) {
+                if (prefix.equals("_svgdrawable")) {
                     uri = svgNamespace;
                 }
                 return uri;
@@ -116,8 +115,8 @@ public class SvgMask {
             }
         });
 		
-        // use dummy '_gendrawable' prefix which is unlikely to be set for the svg namespace
-        NodeList value = (NodeList) xPath.evaluate("//_gendrawable:image", svgmaskDom, XPathConstants.NODESET);
+        // use dummy '_svgdrawable' prefix which is unlikely to be set for the svg namespace
+        NodeList value = (NodeList) xPath.evaluate("//_svgdrawable:image", svgmaskDom, XPathConstants.NODESET);
 		List<MaskNode> maskNodes = new ArrayList<MaskNode>();
 		for (int i = 0; i < value.getLength(); i++) {
 			Node imageNode = value.item(i);
@@ -159,7 +158,7 @@ public class SvgMask {
 					// we don't care about using the same svg twice or more
 					// or the current combination contains distinct svg files only
 					
-					final AtomicLong lastModified = new AtomicLong(resource.lastModified());
+					long lastModified = resource.lastModified();
 					final StringBuilder tmpFileName = new StringBuilder(resource.getName());
 					final EnumMap<Type, String> qualifiers = new EnumMap<Type, String>(Type.class);
 					boolean skip = false;
@@ -184,8 +183,8 @@ public class SvgMask {
 						// union the qualifiers
 						qualifiers.putAll(current.getTypedQualifiers());
 						// update lastModified
-						if (current.lastModified() > lastModified.get()) {
-							lastModified.set(current.lastModified());
+						if (current.lastModified() > lastModified) {
+							lastModified = current.lastModified();
 						}
 					}
 					
@@ -198,29 +197,24 @@ public class SvgMask {
 						qualifiers.remove(Type.density);
 						qualifiers.put(Type.density, resource.getDensity().name());
 						final String name = tmpFileName.toString();
-						final File file = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + ".svg");
+						final File maskedPath = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + ".svg");
 						
-						QualifiedResource mask = new QualifiedResource(file, name, qualifiers) {
-							private static final long serialVersionUID = 1L;
-							@Override
-							public long lastModified() {
-								return lastModified.get();
-							}
-						};
+						QualifiedResource maskedQualifiedResource = new MaskedQualifiedResource(maskedPath, name, lastModified, qualifiers);;
 						
 						// write masked svg
-						if (file.lastModified() == 0
-						        || OverrideMode.always.equals(overrideMode)
-						        || (OverrideMode.ifModified.equals(overrideMode) && mask.lastModified() > file.lastModified())) {
-						    // TODO ? clean generated directory each time
-							TransformerFactory transformerFactory = TransformerFactory.newInstance();
+						if (overrideMode.shouldOverride(maskedQualifiedResource, maskedPath, null)) {
+						    TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(svgmaskDom);
-							if (mask.exists() || mask.createNewFile()) {
-								StreamResult result = new StreamResult(new FileOutputStream(mask));
+							if (maskedQualifiedResource.exists() || maskedQualifiedResource.createNewFile()) {
+								StreamResult result = new StreamResult(new FileOutputStream(maskedQualifiedResource));
 								transformer.transform(source, result);
-								maskedResources.add(mask);
+								maskedResources.add(maskedQualifiedResource);
 							}
+						} else {
+						    // no need to re-generate masked file
+						    // delegates override or not to final file generation process
+                            maskedResources.add(maskedQualifiedResource);
 						}
 						
 					}
@@ -285,5 +279,26 @@ public class SvgMask {
 		}
 		
 	}
+	
+	/**
+	 * A {@link QualifiedResource} with a that have the {@link File#lastModified()} date of the most recent mask or masked resource.
+	 * @author antoine vianey
+	 */
+	private static final class MaskedQualifiedResource extends QualifiedResource {
+        
+        private static final long serialVersionUID = 1L;
+	    
+	    private final long lastModified;
+	    
+	    private MaskedQualifiedResource(final File path, final String name, final long lastModified, final EnumMap<Type, String> qualifiers) {
+	        super(path, name, qualifiers);
+	        this.lastModified = lastModified;
+	    }
+	    
+        @Override
+        public long lastModified() {
+            return lastModified;
+        }
+    };
 	
 }

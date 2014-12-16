@@ -4,6 +4,11 @@
 *.ear
 *.apk
 *.dex
+*.bin
+*~
+
+# idea #
+.idea/
 
 # Eclipse #
 target/

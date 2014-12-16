@@ -15,15 +15,13 @@
  */
 package fr.avianey.androidsvgdrawable.gradle;
 
-import java.io.File;
+import java.util.Set;
 
-import org.gradle.api.DefaultTask;
+import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskAction;
-
-import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
-import fr.avianey.androidsvgdrawable.SvgDrawablePlugin.Parameters;
+import org.gradle.api.Task;
 
 /**
  * Task that generates drawable from Scalable Vector Graphics (SVG) files.
@@ -32,28 +30,34 @@ import fr.avianey.androidsvgdrawable.SvgDrawablePlugin.Parameters;
  */
 public class SvgDrawableGradlePlugin implements Plugin<Project> {
 
-    private static final String EXTENSION_NAME = "svgDrawable";
-    private static final String TASK_NAME = "svgDrawable";
+    private static final String ANDROID_PLUGIN_CLASS = "com.android.build.gradle.AppPlugin";
 
     @Override
     public void apply(Project project) {
-        project.getExtensions().create(EXTENSION_NAME, Parameters.class);
-        project.getTasks().create(TASK_NAME, SvgTask.class);
-    }
-    
-    public static class SvgTask extends DefaultTask {
-
-        @TaskAction
-        public void svgToPng() {
-            Parameters parameters = (Parameters) getProject().getExtensions().getByName(EXTENSION_NAME);
-            if (parameters.svgMaskedSvgOutputDirectory == null) {
-                // TODO : cleanup
-                parameters.svgMaskedSvgOutputDirectory = new File(getProject().getBuildDir(), "generated-svg");
+        // Verify that Android plugin is applied
+        Plugin<?> androidPlugin = null;
+        for (Plugin<?> p : project.getPlugins()) {
+            if (ANDROID_PLUGIN_CLASS.equals(p.getClass().getCanonicalName())) {
+                androidPlugin = p;
+                break;
             }
-            final SvgDrawablePlugin plugin = new SvgDrawablePlugin(parameters, new GradleLogger(getProject().getLogger()));
-            plugin.execute();
         }
-        
+        if (androidPlugin == null) {
+            throw new GradleException("AndroidSvgDrawable MUST be used with the Android plugin.");
+        }
+
+        // Generate SVG on before Android plugin 'preBuild' task.
+        project.afterEvaluate(new Action<Project>() {
+            @Override
+            public void execute(Project project) {
+                Set<Task> preBuildTasks = project.getTasksByName("preBuild", false);
+                if (preBuildTasks.isEmpty()) {
+                    preBuildTasks.iterator().next().dependsOn(project.getTasks().withType(SvgDrawableTask.class));
+                } else {
+                    project.getLogger().warn("The Android plugin 'preBuild' task could not be found. Skipping SVG generation...");
+                }
+            }
+        });
     }
 
 }

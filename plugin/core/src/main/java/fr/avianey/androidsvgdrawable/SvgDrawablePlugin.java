@@ -81,7 +81,7 @@ import fr.avianey.androidsvgdrawable.util.Log;
  */
 public class SvgDrawablePlugin {
     
-    public static class Parameters {
+    public static interface Parameters {
         
         public static final Integer DEFAULT_JPG_BACKGROUND_COLOR = -1;
         public static final Integer DEFAULT_JPG_QUALITY = 85;
@@ -90,47 +90,40 @@ public class SvgDrawablePlugin {
         public static final OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
         public static final Density DEFAULT_FALLBACK_DENSITY = Density.mdpi;
         public static final Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
-        
-        public File from;
-        public File to;
-        public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
-        public OverrideMode overrideMode;
-        public Density[] targetedDensities;
-        public Map<String, String> rename;
-        public Density fallbackDensity = DEFAULT_FALLBACK_DENSITY;
-        public String highResIcon;
-        // nine patch
-        public File ninePatchConfig;
-        // masking
-        public File svgMaskDirectory;
-        public File svgMaskResourcesDirectory;
-        public File svgMaskedSvgOutputDirectory;
-        public boolean useSameSvgOnlyOnceInMask;
-        // format
-        public OutputFormat outputFormat = DEFAULT_OUTPUT_FORMAT;
-        public int jpgQuality = DEFAULT_JPG_QUALITY;
-        public int jpgBackgroundColor = DEFAULT_JPG_BACKGROUND_COLOR;
-        // deprecated
-        public BoundsType svgBoundsType = DEFAULT_BOUNDS_TYPE;
-        
-        @Override
-        public String toString() {
-            return "Parameters [from=" + from + ", to=" + to
-                    + ", createMissingDirectories=" + createMissingDirectories
-                    + ", overrideMode=" + overrideMode + ", targetedDensities="
-                    + Arrays.toString(targetedDensities) + ", rename=" + rename
-                    + ", fallbackDensity=" + fallbackDensity + ", highResIcon="
-                    + highResIcon + ", ninePatchConfig=" + ninePatchConfig
-                    + ", svgMaskDirectory=" + svgMaskDirectory
-                    + ", svgMaskResourcesDirectory="
-                    + svgMaskResourcesDirectory
-                    + ", svgMaskedSvgOutputDirectory="
-                    + svgMaskedSvgOutputDirectory
-                    + ", useSameSvgOnlyOnceInMask=" + useSameSvgOnlyOnceInMask
-                    + ", outputFormat=" + outputFormat + ", jpgQuality="
-                    + jpgQuality + ", jpgBackgroundColor=" + jpgBackgroundColor
-                    + ", svgBoundsType=" + svgBoundsType + "]";
-        }
+
+        File getFrom();
+
+        File getTo();
+
+        boolean isCreateMissingDirectories();
+
+        OverrideMode getOverrideMode();
+
+        Density[] getTargetedDensities();
+
+        Map<String, String> getRename();
+
+        Density getFallbackDensity();
+
+        String getHighResIcon();
+
+        File getNinePatchConfig();
+
+        File getSvgMaskDirectory();
+
+        File getSvgMaskResourcesDirectory();
+
+        File getSvgMaskedSvgOutputDirectory();
+
+        boolean isUseSameSvgOnlyOnceInMask();
+
+        OutputFormat getOutputFormat();
+
+        int getJpgQuality();
+
+        int getJpgBackgroundColor();
+
+        BoundsType getSvgBoundsType();
     
     }
     
@@ -148,33 +141,28 @@ public class SvgDrawablePlugin {
     }
 
     public void execute() {
-        if (getLog().isDebugEnabled()) {
-            getLog().debug(parameters.toString());
-        }
-        
-        
         // validating target densities specified in pom.xml
         // untargetted densities will be ignored except for the fallback density if specified
-        final Set<Density> _targetDensities = new HashSet<>(Arrays.asList(parameters.targetedDensities));
-        if (_targetDensities.isEmpty()) {
-            _targetDensities.addAll(EnumSet.allOf(Density.class));
+        final Set<Density> targetDensities = new HashSet<>(Arrays.asList(parameters.getTargetedDensities()));
+        if (targetDensities.isEmpty()) {
+            targetDensities.addAll(EnumSet.allOf(Density.class));
         }
-        final Density _fallbackDensity = parameters.fallbackDensity;
-        _targetDensities.add(_fallbackDensity);
-        getLog().info("Targeted densities : " + Joiner.on(", ").join(_targetDensities));
-        getLog().debug("Fallback density set to : " + parameters.fallbackDensity.toString());
+        final Density fallbackDensity = parameters.getFallbackDensity();
+        targetDensities.add(fallbackDensity);
+        getLog().info("Targeted densities : " + Joiner.on(", ").join(targetDensities));
+        getLog().debug("Fallback density set to : " + parameters.getFallbackDensity().toString());
         
         /********************************
          * Load NinePatch configuration *
          ********************************/
         
         NinePatchMap ninePatchMap = new NinePatchMap();
-        if (parameters.ninePatchConfig != null && parameters.ninePatchConfig.isFile()) {
-            getLog().info("Loading NinePatch configuration file " + parameters.ninePatchConfig.getAbsolutePath());
-            try (final Reader reader = new FileReader(parameters.ninePatchConfig)) {
+        if (parameters.getNinePatchConfig() != null && parameters.getNinePatchConfig().isFile()) {
+            getLog().info("Loading NinePatch configuration file " + parameters.getNinePatchConfig().getAbsolutePath());
+            try (final Reader reader = new FileReader(parameters.getNinePatchConfig())) {
                 Type t = new TypeToken<Set<NinePatch>>(){}.getType();
-                Set<NinePatch> _ninePatchMap = (Set<NinePatch>) (new GsonBuilder().create().fromJson(reader, t));
-                ninePatchMap = NinePatch.init(_ninePatchMap);
+                Set<NinePatch> ninePathSet = (Set<NinePatch>) (new GsonBuilder().create().fromJson(reader, t));
+                ninePatchMap = NinePatch.init(ninePathSet);
             } catch (IOException e) {
                 getLog().error(e);
             }
@@ -186,37 +174,41 @@ public class SvgDrawablePlugin {
          * List input svg to convert *
          *****************************/
 
-        getLog().info("Listing SVG files in " + parameters.from.getAbsolutePath());
-        final Collection<QualifiedResource> svgToConvert = listQualifiedResources(parameters.from, "svg");
+        getLog().info("Listing SVG files in " + parameters.getFrom().getAbsolutePath());
+        final Collection<QualifiedResource> svgToConvert = listQualifiedResources(parameters.getFrom(), "svg");
         getLog().info("SVG files : " + Joiner.on(", ").join(svgToConvert));
         
         /*****************************
          * List input svgmask to use *
          *****************************/
 
-        if (parameters.svgMaskDirectory == null) {
-            parameters.svgMaskDirectory = parameters.from;
+        File svgMaskDirectory = parameters.getSvgMaskDirectory(); 
+        File svgMaskResourcesDirectory = parameters.getSvgMaskResourcesDirectory(); 
+        if (svgMaskDirectory == null) {
+            svgMaskDirectory = parameters.getFrom();
         }
-        if (parameters.svgMaskResourcesDirectory == null) {
-            parameters.svgMaskResourcesDirectory = parameters.svgMaskDirectory;
+        if (svgMaskResourcesDirectory == null) {
+            svgMaskResourcesDirectory = svgMaskDirectory;
         }
-        getLog().info("Listing SVGMASK files in " + parameters.svgMaskDirectory.getAbsolutePath());
-        final Collection<QualifiedResource> svgMasks = listQualifiedResources(parameters.svgMaskDirectory, "svgmask");
+        getLog().info("Listing SVGMASK files in " + svgMaskDirectory.getAbsolutePath());
+        final Collection<QualifiedResource> svgMasks = listQualifiedResources(svgMaskDirectory, "svgmask");
         final Collection<QualifiedResource> svgMaskResources = new ArrayList<QualifiedResource>();
         getLog().info("SVGMASK files : " + Joiner.on(", ").join(svgMasks));
         if (!svgMasks.isEmpty()) {
             // list masked resources
-            if (parameters.svgMaskResourcesDirectory.equals(parameters.from)) {
+            if (svgMaskResourcesDirectory.equals(parameters.getFrom())) {
                 svgMaskResources.addAll(svgToConvert);
             } else {
-                svgMaskResources.addAll(listQualifiedResources(parameters.svgMaskResourcesDirectory, "svg"));
+                svgMaskResources.addAll(listQualifiedResources(svgMaskResourcesDirectory, "svg"));
             }
             getLog().info("SVG files to mask : " + Joiner.on(", ").join(svgMaskResources));
             // generate masked svg
             for (QualifiedResource maskFile : svgMasks) {
                 getLog().info("Generating masked files for " + maskFile);
                 try {
-                	Collection<QualifiedResource> generatedResources = new SvgMask(maskFile).generatesMaskedResources(parameters.svgMaskedSvgOutputDirectory, svgMaskResources, parameters.useSameSvgOnlyOnceInMask, parameters.overrideMode);
+                	Collection<QualifiedResource> generatedResources = new SvgMask(maskFile).generatesMaskedResources(
+                	        parameters.getSvgMaskedSvgOutputDirectory(), svgMaskResources, 
+                	        parameters.isUseSameSvgOnlyOnceInMask(), parameters.getOverrideMode());
                     getLog().debug("+ " + Joiner.on(", ").join(generatedResources));
                     svgToConvert.addAll(generatedResources);
                 } catch (XPathExpressionException | TransformerException | ParserConfigurationException | SAXException | IOException e) {
@@ -227,8 +219,8 @@ public class SvgDrawablePlugin {
             getLog().info("No SVGMASK file found.");
         }
 
-        QualifiedResource _highResIcon = null;
-        Rectangle _highResIconBounds = null;
+        QualifiedResource highResIcon = null;
+        Rectangle highResIconBounds = null;
         
         /*********************************
          * Create svg in res/* folder(s) *
@@ -241,18 +233,18 @@ public class SvgDrawablePlugin {
                 if (getLog().isDebugEnabled()) {
                     getLog().debug("+ source dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
                 }
-                if (parameters.highResIcon != null && parameters.highResIcon.equals(svg.getName())) {
-                    _highResIcon = svg;
-                    _highResIconBounds = bounds;
+                if (parameters.getHighResIcon() != null && parameters.getHighResIcon().equals(svg.getName())) {
+                    highResIcon = svg;
+                    highResIconBounds = bounds;
                 }
                 // for each target density :
                 // - find matching destinations :
                 //   - matches all extra qualifiers
                 //   - no other output with a qualifiers set that is a subset of this output
                 // - if no match, create required directories
-                for (Density d : _targetDensities) {
-                    File destination = svg.getOutputFor(d, parameters.to, _fallbackDensity);
-                    if (!destination.exists() && parameters.createMissingDirectories) {
+                for (Density d : targetDensities) {
+                    File destination = svg.getOutputFor(d, parameters.getTo(), fallbackDensity);
+                    if (!destination.exists() && parameters.isCreateMissingDirectories()) {
                         destination.mkdir();
                     }
                     if (destination.exists()) {
@@ -272,13 +264,13 @@ public class SvgDrawablePlugin {
          * Generates the play store high res icon *
          ******************************************/
         
-        if (_highResIcon != null) {
+        if (highResIcon != null) {
             try {
                 // TODO : add a garbage density (NO_DENSITY) for the highResIcon
             	// TODO : make highResIcon size configurable
             	// TODO : generates other play store assets
                 getLog().info("Generating high resolution icon");
-                transcode(_highResIcon, Density.mdpi, _highResIconBounds, new File("."), 512, 512, null);
+                transcode(highResIcon, Density.mdpi, highResIconBounds, new File("."), 512, 512, null);
             } catch (IOException | TranscoderException | InstantiationException | IllegalAccessException e) {
                 getLog().error(e);
 			}
@@ -320,8 +312,8 @@ public class SvgDrawablePlugin {
     	
     	// use computed bounds
     	getLog().warn("Take time to fix desired width and height attributes of the root <svg> node for this file... " +
-    			"ROI will be computed by magic using Batik " + parameters.svgBoundsType.name() + " bounds");
-    	return parameters.svgBoundsType.getBounds(getGraphicsNode(svgDocument, svg.getDensity().getDpi()));
+    			"ROI will be computed by magic using Batik " + parameters.getSvgBoundsType().name() + " bounds");
+    	return parameters.getSvgBoundsType().getBounds(getGraphicsNode(svgDocument, svg.getDensity().getDpi()));
     }
     
     /**
@@ -403,21 +395,21 @@ public class SvgDrawablePlugin {
         if (getLog().isDebugEnabled()) {
             getLog().debug("+ target dimensions [width=" + width + " - length=" + height +"]");
         }
-        ImageTranscoder t = parameters.outputFormat.getTranscoderClass().newInstance();
+        ImageTranscoder t = parameters.getOutputFormat().getTranscoderClass().newInstance();
         if (t instanceof JPEGTranscoder) {
         	// custom jpg hints
-	        t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, Math.min(1, Math.max(0, parameters.jpgQuality / 100f)));
-	        t.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, new Color(parameters.jpgBackgroundColor));
+	        t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, Math.min(1, Math.max(0, parameters.getJpgQuality() / 100f)));
+	        t.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, new Color(parameters.getJpgBackgroundColor()));
         }
         t.addTranscodingHint(ImageTranscoder.KEY_WIDTH, width);
         t.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, height);
         TranscoderInput input = new TranscoderInput(svg.toURI().toURL().toString());
         String outputName = svg.getName();
-        if (parameters.rename != null && parameters.rename.containsKey(outputName)) {
-            if (parameters.rename.get(outputName) != null && parameters.rename.get(outputName).matches("\\w+")) {
-                outputName = parameters.rename.get(outputName);
+        if (parameters.getRename() != null && parameters.getRename().containsKey(outputName)) {
+            if (parameters.getRename().get(outputName) != null && parameters.getRename().get(outputName).matches("\\w+")) {
+                outputName = parameters.getRename().get(outputName);
             } else {
-                getLog().warn(parameters.rename.get(outputName) + " is not a valid replacment name for " + outputName);
+                getLog().warn(parameters.getRename().get(outputName) + " is not a valid replacment name for " + outputName);
             }
         }
         
@@ -425,26 +417,20 @@ public class SvgDrawablePlugin {
         final String finalName = new StringBuilder(dest.getAbsolutePath())
             .append(System.getProperty("file.separator"))
             .append(outputName)
-            .append(ninePatch != null && parameters.outputFormat.hasNinePatchSupport() ? ".9" : "")
+            .append(ninePatch != null && parameters.getOutputFormat().hasNinePatchSupport() ? ".9" : "")
             .append(".")
-            .append(parameters.outputFormat.name().toLowerCase())
+            .append(parameters.getOutputFormat().name().toLowerCase())
             .toString();
         
         final File finalFile = new File(finalName);
         
-        if (finalFile.lastModified() == 0
-                || OverrideMode.always.equals(parameters.overrideMode)
-                || (OverrideMode.ifModified.equals(parameters.overrideMode) 
-                        && ((svg.lastModified() > finalFile.lastModified()) 
-                                || (ninePatch != null 
-                                && parameters.ninePatchConfig.lastModified() > finalFile.lastModified())))) {
-        	
+        if (parameters.getOverrideMode().shouldOverride(svg, finalFile, parameters.getNinePatchConfig())) {
         	// unit conversion for size not in pixel
         	t.addTranscodingHint(ImageTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
         	// set the ROI
         	t.addTranscodingHint(ImageTranscoder.KEY_AOI, bounds);
         	
-            if (ninePatch == null || !parameters.outputFormat.hasNinePatchSupport()) {
+            if (ninePatch == null || !parameters.getOutputFormat().hasNinePatchSupport()) {
             	if (ninePatch != null) {
             		getLog().warn("skipping the nine-patch configuration for the JPG output format !!!");
             	}
@@ -470,8 +456,8 @@ public class SvgDrawablePlugin {
             getLog().debug(finalName + " already exists and is up to date... skiping generation!");
             getLog().debug("+ " + finalName + " last modified on " + new File(finalName).lastModified());
             getLog().debug("+ " + svg.getAbsolutePath() + " last modified on " + svg.lastModified());
-            if (ninePatch != null && parameters.ninePatchConfig != null /* for tests */) {
-                getLog().debug("+ " + parameters.ninePatchConfig.getAbsolutePath() + " last modified on " + parameters.ninePatchConfig.lastModified());
+            if (ninePatch != null && parameters.getNinePatchConfig() != null /* for tests */) {
+                getLog().debug("+ " + parameters.getNinePatchConfig().getAbsolutePath() + " last modified on " + parameters.getNinePatchConfig().lastModified());
             }
         }
     }

@@ -38,13 +38,14 @@ import org.junit.runners.Parameterized.Parameters;
 import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
 import fr.avianey.androidsvgdrawable.util.Constants;
 import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 
 @RunWith(Parameterized.class)
 public class BoundsExtractionTest {
 
-	private static final int   	DPI 		   	= Density.mdpi.getDpi();
-	private static final float 	DPMM 			= DPI / (float) Constants.MM_PER_INCH;
-	private static final float 	DPCM	 		= DPMM * 10;
+	private static final int   DPI  = Density.mdpi.getDpi();
+	private static final float DPMM = DPI / (float) Constants.MM_PER_INCH;
+	private static final float DPCM = DPMM * 10;
 	
     private static SvgDrawablePlugin plugin;
 
@@ -63,7 +64,7 @@ public class BoundsExtractionTest {
     
     @BeforeClass
     public static void setup() {
-        SvgDrawablePlugin.Parameters parameters = new SvgDrawablePlugin.Parameters();
+        TestParameters parameters = new TestParameters();
         parameters.outputFormat = GenDrawableTestSuite.OUTPUT_FORMAT;
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
     }

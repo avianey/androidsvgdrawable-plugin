@@ -15,11 +15,32 @@
  */
 package fr.avianey.androidsvgdrawable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.File;
+
+import javax.annotation.Nullable;
+
 /**
+ * Set the override mode for generated files.
+ * 
  * @author antoine vianey
  */
 public enum OverrideMode {
     
     always, never, ifModified;
+    
+    public boolean shouldOverride(File src, File dest, @Nullable File intermediate) {
+        checkNotNull(src, "Source file MUST not be null");
+        checkNotNull(dest, "Destination path MUST not be null");
+        if (dest.lastModified() == 0 || always.equals(this)) {
+            // always re-create or destination file does not exists
+            return true;
+        } else if (ifModified.equals(this)) {
+            return src.lastModified() > dest.lastModified() 
+                    || (intermediate != null && intermediate.lastModified() > dest.lastModified());
+        }
+        return false;
+    }
     
 }

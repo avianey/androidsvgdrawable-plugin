@@ -1,5 +1,5 @@
 apply plugin: 'android'
-apply plugin: "fr.avianey.androidsvgdrawable"
+apply plugin: "androidsvgdrawable"
 
 android {
     compileSdkVersion 'android-L'
@@ -25,7 +25,7 @@ android {
     }
 }
 
-svgDrawable {
+task svgToPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     from = file('src/main/svg-png')
     to = file('src/main/res')
     createMissingDirectories = true
@@ -38,9 +38,6 @@ svgDrawable {
     highResIcon = 'icon'
     ninePatchConfig = file('src/main/svg-png/9patch.json')
     outputFormat = 'PNG'
-}
-project.afterEvaluate {
-    preBuild.dependsOn('svgDrawable')
 }
 
 dependencies {

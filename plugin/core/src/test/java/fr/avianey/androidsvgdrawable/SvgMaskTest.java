@@ -22,6 +22,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
 import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 
 @RunWith(Parameterized.class)
 public class SvgMaskTest {
@@ -43,7 +44,7 @@ public class SvgMaskTest {
     
     @BeforeClass
     public static void setup() {
-        plugin = new SvgDrawablePlugin(new SvgDrawablePlugin.Parameters(), new TestLogger());
+        plugin = new SvgDrawablePlugin(new TestParameters(), new TestLogger());
         //
         output = new File(PATH_OUT_PNG);
         output.mkdirs();

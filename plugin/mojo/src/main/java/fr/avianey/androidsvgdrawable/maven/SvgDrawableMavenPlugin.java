@@ -34,7 +34,7 @@ import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
  * @author antoine vianey
  */
 @Mojo(name = "gen")
-public class SvgDrawableMavenPlugin extends AbstractMojo {
+public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawablePlugin.Parameters {
 
     /**
      * Directory of the svg resources to generate drawable from.
@@ -131,7 +131,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo {
      * Path to the <strong>.svgmask</strong> directory.<br/>
      * The {@link SvgDrawableMavenPlugin#from} directory will be use if not specified.
      * 
-     * @since 1.1.0
+     * @since 1.0.0
      */
     @Parameter
     private File svgMaskDirectory;
@@ -234,26 +234,94 @@ public class SvgDrawableMavenPlugin extends AbstractMojo {
     private int jpgBackgroundColor;
 
     public void execute() {
-        final SvgDrawablePlugin.Parameters parameters = new SvgDrawablePlugin.Parameters();
-        parameters.from = from;
-        parameters.to = to;
-        parameters.createMissingDirectories = createMissingDirectories;
-        parameters.overrideMode = overrideMode;
-        parameters.targetedDensities = targetedDensities;
-        parameters.rename = rename;
-        parameters.fallbackDensity = fallbackDensity;
-        parameters.highResIcon = highResIcon;
-        parameters.ninePatchConfig = ninePatchConfig;
-        parameters.svgMaskDirectory = svgMaskDirectory;
-        parameters.svgMaskResourcesDirectory = svgMaskResourcesDirectory;
-        parameters.svgMaskedSvgOutputDirectory = svgMaskedSvgOutputDirectory;
-        parameters.useSameSvgOnlyOnceInMask = useSameSvgOnlyOnceInMask;
-        parameters.outputFormat = outputFormat;
-        parameters.jpgQuality = jpgQuality;
-        parameters.jpgBackgroundColor = jpgBackgroundColor;
-        parameters.svgBoundsType = svgBoundsType;
-        final SvgDrawablePlugin plugin = new SvgDrawablePlugin(parameters, new MavenLogger(getLog()));
+        final SvgDrawablePlugin plugin = new SvgDrawablePlugin(this, new MavenLogger(getLog()));
         plugin.execute();
+    }
+
+
+    @Override
+    public File getFrom() {
+        return from;
+    }
+
+    @Override
+    public File getTo() {
+        return to;
+    }
+
+    @Override
+    public boolean isCreateMissingDirectories() {
+        return createMissingDirectories;
+    }
+
+    @Override
+    public OverrideMode getOverrideMode() {
+        return overrideMode;
+    }
+
+    @Override
+    public Density[] getTargetedDensities() {
+        return targetedDensities;
+    }
+
+    @Override
+    public Map<String, String> getRename() {
+        return rename;
+    }
+
+    @Override
+    public Density getFallbackDensity() {
+        return fallbackDensity;
+    }
+
+    @Override
+    public String getHighResIcon() {
+        return highResIcon;
+    }
+
+    @Override
+    public File getNinePatchConfig() {
+        return ninePatchConfig;
+    }
+
+    @Override
+    public File getSvgMaskDirectory() {
+        return svgMaskDirectory;
+    }
+
+    @Override
+    public File getSvgMaskResourcesDirectory() {
+        return svgMaskResourcesDirectory;
+    }
+
+    @Override
+    public File getSvgMaskedSvgOutputDirectory() {
+        return svgMaskedSvgOutputDirectory;
+    }
+
+    @Override
+    public boolean isUseSameSvgOnlyOnceInMask() {
+        return useSameSvgOnlyOnceInMask;
+    }
+
+    @Override
+    public OutputFormat getOutputFormat() {
+        return outputFormat;
+    }
+
+    @Override
+    public int getJpgQuality() {
+        return jpgQuality;
+    }
+
+    @Override
+    public int getJpgBackgroundColor() {
+        return jpgBackgroundColor;
+    }
+
+    @Override
+    public BoundsType getSvgBoundsType() {
+        return svgBoundsType;
     }
 
 }
