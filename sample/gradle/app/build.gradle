@@ -40,6 +40,16 @@ task svgToPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     outputFormat = 'PNG'
 }
 
+task svgToJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
+    from = file('src/main/svg-jpg')
+    to = file('src/main/res')
+    createMissingDirectories = true
+    overrideMode = 'ifModified'
+    fallbackDensity = 'mdpi'
+    targetedDensities = ['ldpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    outputFormat = 'JPG'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

@@ -52,9 +52,9 @@ public class SvgDrawableGradlePlugin implements Plugin<Project> {
             public void execute(Project project) {
                 Set<Task> preBuildTasks = project.getTasksByName("preBuild", false);
                 if (preBuildTasks.isEmpty()) {
-                    preBuildTasks.iterator().next().dependsOn(project.getTasks().withType(SvgDrawableTask.class));
-                } else {
                     project.getLogger().warn("The Android plugin 'preBuild' task could not be found. Skipping SVG generation...");
+                } else {
+                    preBuildTasks.iterator().next().dependsOn(project.getTasks().withType(SvgDrawableTask.class));
                 }
             }
         });
