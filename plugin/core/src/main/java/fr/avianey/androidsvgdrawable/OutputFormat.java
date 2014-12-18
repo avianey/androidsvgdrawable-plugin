@@ -20,6 +20,8 @@ import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 
 /**
+ * Format of the generated resources
+ * 
  * @author antoine vianey
  */
 public enum OutputFormat {

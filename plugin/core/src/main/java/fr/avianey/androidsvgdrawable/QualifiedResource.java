@@ -26,6 +26,8 @@ import com.google.common.base.Preconditions;
 import fr.avianey.androidsvgdrawable.Qualifier.Type;
 
 /**
+ * A qualified {@link File} with a least a density qualifier.
+ * 
  * @author antoine vianey
  */
 public class QualifiedResource extends File {

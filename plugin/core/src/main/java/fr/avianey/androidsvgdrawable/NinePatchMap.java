@@ -30,7 +30,7 @@ import fr.avianey.androidsvgdrawable.Qualifier.Type;
  */
 public class NinePatchMap {
     
-    private final Map<String, Entry<Pattern, Set<NinePatch>>> entries = new HashMap<String, Entry<Pattern, Set<NinePatch>>>(); 
+    private final Map<String, Entry<Pattern, Set<NinePatch>>> entries = new HashMap<>(); 
     
     /**
      * Get the {@link NinePatch} that <strong>best match</strong> the desired {@link QualifiedResource} :
@@ -44,39 +44,39 @@ public class NinePatchMap {
      * @return
      */
     public NinePatch getBestMatch(QualifiedResource svg) {
-        Set<NinePatch> ninePatchSet = getMatching(svg.getName());
-        if (ninePatchSet == null) {
+        Set<NinePatch> matchingNinePatches = getMatching(svg.getName());
+        if (matchingNinePatches == null) {
             // the resource is not a NinePatch
             return null;
         } else {
-            Map<Type, String> _qualifiers = new HashMap<Type, String>(svg.getTypedQualifiers());
-            _qualifiers.remove(Type.density);
-            NinePatch _ninePatch = null;
-            for (NinePatch ninePatch : ninePatchSet) {
-                if (_qualifiers.isEmpty() && ninePatch.getTypedQualifiers().isEmpty()) {
+            Map<Type, String> svgQualifiers = new HashMap<>(svg.getTypedQualifiers());
+            svgQualifiers.remove(Type.density);
+            NinePatch bestMatchingNinePatch = null;
+            for (NinePatch ninePatch : matchingNinePatches) {
+                if (svgQualifiers.isEmpty() && ninePatch.getTypedQualifiers().isEmpty()) {
                 	// no qualifiers in resource
                 	// no qualifier in ninepatch
                 	// => exact match (first one found)
                     return ninePatch;
-                } else if (!_qualifiers.isEmpty()) {
+                } else if (!svgQualifiers.isEmpty()) {
                 	// resource qualifiers list is not empty
                 	// ensure that all ninepatch qualifier types are covered
-                    if (_qualifiers.keySet().containsAll(ninePatch.getTypedQualifiers().keySet())) {
+                    if (svgQualifiers.keySet().containsAll(ninePatch.getTypedQualifiers().keySet())) {
                     	// resource qualifier types are compatible
                     	// check the qualifier values
                         boolean matches = true;
                         for (Type t : ninePatch.getTypedQualifiers().keySet()) {
-                            if (!ninePatch.getTypedQualifiers().get(t).equals(_qualifiers.get(t))) {
+                            if (!ninePatch.getTypedQualifiers().get(t).equals(svgQualifiers.get(t))) {
                                 matches = false;
                                 break;
                             }
                         }
                         // if values are OK, check if the current ninepatch covers more qualifiers than the previously matching ninePatch 
-                        if (matches && (_ninePatch == null || ninePatch.getTypedQualifiers().keySet().containsAll(_ninePatch.getTypedQualifiers().keySet()))) {
+                        if (matches && (bestMatchingNinePatch == null || ninePatch.getTypedQualifiers().keySet().containsAll(bestMatchingNinePatch.getTypedQualifiers().keySet()))) {
                             // nine patch covers all of the requirements 1) and 2)
                             // and no best (containing more resource qualifier types) nine patch was already discovered
-                            _ninePatch = ninePatch;
-                            if (_ninePatch.getTypedQualifiers().size() == _qualifiers.size()) {
+                            bestMatchingNinePatch = ninePatch;
+                            if (bestMatchingNinePatch.getTypedQualifiers().size() == svgQualifiers.size()) {
                                 // cannot be better
                             	// => exact match (first one found)
                                 break;
@@ -95,12 +95,12 @@ public class NinePatchMap {
                 	continue;
                 }
             }
-            return _ninePatch;
+            return bestMatchingNinePatch;
         }
     }
 
 	private Set<NinePatch> getMatching(final String svgName) {
-		final Set<NinePatch> ninePatchSet = new HashSet<NinePatch>();
+		final Set<NinePatch> ninePatchSet = new HashSet<>();
 		for (Entry<Pattern, Set<NinePatch>> e : entries.values()) {
 			if (e.getKey().matcher(svgName).matches()) {
 				ninePatchSet.addAll(e.getValue());
@@ -117,7 +117,7 @@ public class NinePatchMap {
 	public Set<NinePatch> put(final String regexp, Set<NinePatch> value) {
 		Entry<Pattern, Set<NinePatch>> e = entries.get(regexp);
 		if (e == null) {
-		    e = new AbstractMap.SimpleEntry<Pattern, Set<NinePatch>>(Pattern.compile(regexp), value);
+		    e = new AbstractMap.SimpleEntry<>(Pattern.compile(regexp), value);
 		} else {
 		    e.getValue().addAll(value);
 		}

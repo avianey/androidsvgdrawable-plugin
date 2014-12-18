@@ -192,7 +192,7 @@ public class SvgDrawablePlugin {
         }
         getLog().info("Listing SVGMASK files in " + svgMaskDirectory.getAbsolutePath());
         final Collection<QualifiedResource> svgMasks = listQualifiedResources(svgMaskDirectory, "svgmask");
-        final Collection<QualifiedResource> svgMaskResources = new ArrayList<QualifiedResource>();
+        final Collection<QualifiedResource> svgMaskResources = new ArrayList<>();
         getLog().info("SVGMASK files : " + Joiner.on(", ").join(svgMasks));
         if (!svgMasks.isEmpty()) {
             // list masked resources
@@ -562,7 +562,7 @@ public class SvgDrawablePlugin {
      */
     private Collection<QualifiedResource> listQualifiedResources(final File from, final String extension) {
         Preconditions.checkNotNull(extension);
-        final Collection<QualifiedResource> resources = new ArrayList<QualifiedResource>();
+        final Collection<QualifiedResource> resources = new ArrayList<>();
         if (from.isDirectory()) {
             for (File f : from.listFiles(new FileFilter() {
                 public boolean accept(File file) {

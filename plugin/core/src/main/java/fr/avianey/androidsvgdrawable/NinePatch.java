@@ -99,7 +99,7 @@ public class NinePatch {
             // classify by name
             Set<NinePatch> set = map.get(ninePatch.name);
             if (set == null) {
-                set = new HashSet<NinePatch>();
+                set = new HashSet<>();
                 map.put(ninePatch.name, set);
             }
             set.add(ninePatch);

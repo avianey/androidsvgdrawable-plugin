@@ -22,9 +22,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Utility class that parse or generates qualified resource names
+ * 
  * @author antoine vianey
  */
-public class Qualifier {
+public final class Qualifier {
     
     /**
      * Exception thrown when the parsed input is not a valid resource directory name.

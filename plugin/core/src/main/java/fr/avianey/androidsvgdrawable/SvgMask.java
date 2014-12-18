@@ -63,7 +63,6 @@ public class SvgMask {
 	
 	public SvgMask(final QualifiedResource resource) {
 		this.resource = resource;
-		// TODO extract nodes here
 	}
 
 	public QualifiedResource getResource() {
@@ -282,6 +281,7 @@ public class SvgMask {
 	
 	/**
 	 * A {@link QualifiedResource} with a that have the {@link File#lastModified()} date of the most recent mask or masked resource.
+	 * 
 	 * @author antoine vianey
 	 */
 	private static final class MaskedQualifiedResource extends QualifiedResource {
