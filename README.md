@@ -61,7 +61,7 @@ Enjoy :wink: !
 
 Add maven central repository and the plugin reference to your build script :
 
-```
+```gradle
 buildscript {
     repositories {
         jcenter()
@@ -79,7 +79,7 @@ buildscript {
 
 You can configure one or more Task with the desired configuration into your build.gradle and apply the `androidsvgdrawable` plugin. Tasks will be executed for you when necessary to generate drawable resources :
 
-```
+```gradle
 apply plugin: 'android'
 apply plugin: "androidsvgdrawable"
 
@@ -274,23 +274,23 @@ Resulting bitmaps are generated from those temporary SVG files following the sam
 
 The plugin can be configured using the following options : 
 
-|Name|Format|Description|
-|-|-|-|
-|from|File|Path to the directory that contains the SVG files to generate drawable from. SVG files **MUST** be named against `\w+(-{qualifier})+.svg` and **MUST** contain a valid density qualifier (ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi, tvdpi)|
-|to|File|Path to the Android `res/` directory that contains the various `drawable/` directories.|
-|createMissingDirectories|boolean|Set it to `false` if you don't want the plugin to create missing drawable(-{qualifier})*/ directories. The default value is set to `true`.|
-|ninePatchConfig|File|Path to the 9-Patch JSON configuration file.|
-|override|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|
-|rename|Map|Use this map to change the name of the generated drawable. Note that names provided in the 9-patch configuration file applies to the `\w+` part of the SVG file name **BEFORE** any renaming.|
-|targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|
-|fallbackDensity|Enum|The density for unqualified drawable directories.  If set to `mdpi`, mdpi bitmaps will be generated into `/drawable` and not `/drawable-mdpi`. Default value is `mdpi`.|
-|highResIcon|String|The *unqualified* name of the SVG resource to use to generate an **High-Res** icon for the Play Store. The SVG **SHOULD** have a square Bounding Box (height = width) and will be generated in the current directory.|
-|outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|
-|jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|
-|jpgBackgroundColor|Integer|The background color used for the generated JPG bitmaps. Default is `0xFFFFFFFF` (opaque white).|
-|svgMaskDirectory|File|An optionnal directory to pick the SVGMASK files from. Default to the same directory as the `from` parameter.|
-|svgMaskResourcesDirectory|File|An optionnal directory to pick the SVG files to mask from. Default to the same directory as the `svgMaskDirectory` parameter.|
-|useSameSvgOnlyOnceInMask|boolean|Tell the plugin to skip SVGMASK combinations that use the same SVG resource more than once. Default is `true`.|
+| Name | Format | Description |  
+| :--- | :----- | :---------- |  
+|from|File|Path to the directory that contains the SVG files to generate drawable from. SVG files **MUST** be named against `\w+(-{qualifier})+.svg` and **MUST** contain a valid density qualifier (ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi, tvdpi)|  
+|to|File|Path to the Android `res/` directory that contains the various `drawable/` directories.|  
+|createMissingDirectories|boolean|Set it to `false` if you don't want the plugin to create missing drawable(-{qualifier})*/ directories. The default value is set to `true`.|  
+|ninePatchConfig|File|Path to the 9-Patch JSON configuration file.|  
+|override|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
+|rename|Map|Use this map to change the name of the generated drawable. Note that names provided in the 9-patch configuration file applies to the `\w+` part of the SVG file name **BEFORE** any renaming.|  
+|targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|  
+|fallbackDensity|Enum|The density for unqualified drawable directories.  If set to `mdpi`, mdpi bitmaps will be generated into `/drawable` and not `/drawable-mdpi`. Default value is `mdpi`.|  
+|highResIcon|String|The *unqualified* name of the SVG resource to use to generate an **High-Res** icon for the Play Store. The SVG **SHOULD** have a square Bounding Box (height = width) and will be generated in the current directory.|  
+|outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
+|jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|  
+|jpgBackgroundColor|Integer|The background color used for the generated JPG bitmaps. Default is `0xFFFFFFFF` (opaque white).|  
+|svgMaskDirectory|File|An optionnal directory to pick the SVGMASK files from. Default to the same directory as the `from` parameter.|  
+|svgMaskResourcesDirectory|File|An optionnal directory to pick the SVG files to mask from. Default to the same directory as the `svgMaskDirectory` parameter.|  
+|useSameSvgOnlyOnceInMask|boolean|Tell the plugin to skip SVGMASK combinations that use the same SVG resource more than once. Default is `true`.|  
 
 #### Typical Gradle configuration
 
