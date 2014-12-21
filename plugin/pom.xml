@@ -26,8 +26,8 @@
 
     <scm>
         <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
-        <developerConnection>scm:git:ssh://github.com:avianey/androidsvgdrawable-plugin.git</developerConnection>
-        <connection>scm:git:ssh://github.com:avianey/androidsvgdrawable-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:avianey/androidsvgdrawable-plugin.git</developerConnection>
+        <connection>scm:git:git@github.com:avianey/androidsvgdrawable-plugin.git</connection>
         <tag>HEAD</tag>
     </scm>
 
