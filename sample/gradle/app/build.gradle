@@ -25,21 +25,38 @@ android {
     }
 }
 
+// create a task to convert SVG to PNG
 task svgToPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
+    // specify where to pick SVG from
     from = file('src/main/svg-png')
+    // specify the android res folder
     to = file('src/main/res')
+    // create qualified directories if missing
     createMissingDirectories = true
+    // override files only if necessary
     overrideMode = 'ifModified'
+    // the /res/drawable directory will contains mdpi resources
     fallbackDensity = 'mdpi'
+    // let generate PNG for the following densities only
     targetedDensities = ['ldpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    // relative path of the file specifying nine patch specs
+    ninePatchConfig = file('src/main/svg-png/9patch.json')
+    // output format of the generated resources
+    outputFormat = 'PNG'
+
+    // this is an experimental feature
+    // it allow composition of SVG two generate resources for multiple combinations
     svgMaskDirectory = file('src/main/svg-png/mask')
     svgMaskResourcesDirectory = file('src/main/svg-png/mask/svg')
+
+    // svg resources can be renamed on the fly
     rename = [phone_to_rename: 'phone']
+
+    // the icon svg file will be used to generate the google play high res icon
     highResIcon = 'icon'
-    ninePatchConfig = file('src/main/svg-png/9patch.json')
-    outputFormat = 'PNG'
 }
 
+// multiple task can be used
 task svgToJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     from = file('src/main/svg-jpg')
     to = file('src/main/res')
