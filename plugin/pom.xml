@@ -26,8 +26,8 @@
 
     <scm>
         <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
-        <developerConnection>scm:git:https://github.com/avianey/androidsvgdrawable-plugin.git</developerConnection>
-        <connection>scm:git:https://github.com/avianey/androidsvgdrawable-plugin.git</connection>
+        <developerConnection>scm:git:ssh://github.com:avianey/androidsvgdrawable-plugin.git</developerConnection>
+        <connection>scm:git:ssh://github.com:avianey/androidsvgdrawable-plugin.git</connection>
         <tag>HEAD</tag>
     </scm>
 
@@ -110,13 +110,6 @@
                     <configuration>
                         <source>1.7</source>
                         <target>1.7</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <configuration>
-                        <pushChanges>false</pushChanges>
                     </configuration>
                 </plugin>
             </plugins>
