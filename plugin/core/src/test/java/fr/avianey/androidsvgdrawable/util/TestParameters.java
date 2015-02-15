@@ -17,7 +17,6 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public OverrideMode overrideMode = OverrideMode.always;
     public Density[] targetedDensities;
     public Map<String, String> rename;
-    public Density fallbackDensity = DEFAULT_FALLBACK_DENSITY;
     public String highResIcon;
 
     // nine patch
@@ -65,11 +64,6 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     @Override
     public Map<String, String> getRename() {
         return rename;
-    }
-
-    @Override
-    public Density getFallbackDensity() {
-        return fallbackDensity;
     }
 
     @Override

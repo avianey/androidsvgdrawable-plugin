@@ -88,7 +88,6 @@ public class SvgDrawablePlugin {
         public static final OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
         public static final BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
         public static final OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
-        public static final Density DEFAULT_FALLBACK_DENSITY = Density.mdpi;
         public static final Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
 
         File getFrom();
@@ -102,8 +101,6 @@ public class SvgDrawablePlugin {
         Density[] getTargetedDensities();
 
         Map<String, String> getRename();
-
-        Density getFallbackDensity();
 
         String getHighResIcon();
 
@@ -147,10 +144,7 @@ public class SvgDrawablePlugin {
         if (targetDensities.isEmpty()) {
             targetDensities.addAll(EnumSet.allOf(Density.class));
         }
-        final Density fallbackDensity = parameters.getFallbackDensity();
-        targetDensities.add(fallbackDensity);
         getLog().info("Targeted densities : " + Joiner.on(", ").join(targetDensities));
-        getLog().debug("Fallback density set to : " + parameters.getFallbackDensity().toString());
         
         /********************************
          * Load NinePatch configuration *
@@ -243,7 +237,7 @@ public class SvgDrawablePlugin {
                 //   - no other output with a qualifiers set that is a subset of this output
                 // - if no match, create required directories
                 for (Density d : targetDensities) {
-                    File destination = svg.getOutputFor(d, parameters.getTo(), fallbackDensity);
+                    File destination = svg.getOutputFor(d, parameters.getTo());
                     if (!destination.exists() && parameters.isCreateMissingDirectories()) {
                         destination.mkdir();
                     }

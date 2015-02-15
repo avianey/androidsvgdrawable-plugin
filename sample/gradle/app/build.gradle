@@ -35,10 +35,8 @@ task svgToPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     createMissingDirectories = true
     // override files only if necessary
     overrideMode = 'ifModified'
-    // the /res/drawable directory will contains mdpi resources
-    fallbackDensity = 'mdpi'
     // let generate PNG for the following densities only
-    targetedDensities = ['ldpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    targetedDensities = ['ldpi', 'hdpi', 'mdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
     // relative path of the file specifying nine patch specs
     ninePatchConfig = file('src/main/svg-png/9patch.json')
     // output format of the generated resources
@@ -62,8 +60,7 @@ task svgToJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     to = file('src/main/res')
     createMissingDirectories = true
     overrideMode = 'ifModified'
-    fallbackDensity = 'mdpi'
-    targetedDensities = ['ldpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    targetedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
     outputFormat = 'JPG'
 }
 

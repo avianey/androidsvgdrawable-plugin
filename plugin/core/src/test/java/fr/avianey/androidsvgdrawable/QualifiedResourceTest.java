@@ -39,10 +39,9 @@ public class QualifiedResourceTest {
     private final Map<Type, String> typedQualifiers;
     private final boolean successExpected;
     private final Density density;
-    private final Density fallbackDensity;
     private final File outputDirectory;
     
-    public QualifiedResourceTest(String name, Object[][] qualifiers, Density density, Density fallbackDensity, String outputDirectoryName, boolean successExpected) {
+    public QualifiedResourceTest(String name, Object[][] qualifiers, Density density, String outputDirectoryName, boolean successExpected) {
         this.name = name;
         this.successExpected = successExpected;
         this.typedQualifiers = new EnumMap<>(Type.class);
@@ -52,7 +51,6 @@ public class QualifiedResourceTest {
             }
         }
         this.density = density;
-        this.fallbackDensity = fallbackDensity;
         this.outputDirectory = new File(".", "drawable" + (outputDirectoryName == null ? "" : (outputDirectoryName.length() == 0 ? "" : "-") + outputDirectoryName));
     }
     
@@ -61,27 +59,27 @@ public class QualifiedResourceTest {
         return Arrays.asList(
                 new Object[][] { 
                         // passing cases
-                        {"name-ldpi.svg", new Object[][] {{Type.density, "ldpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-mdpi.svg", new Object[][] {{Type.density, "mdpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-hdpi.svg", new Object[][] {{Type.density, "hdpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-xhdpi.svg", new Object[][] {{Type.density, "xhdpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-xxhdpi.svg", new Object[][] {{Type.density, "xxhdpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-xxxhdpi.svg", new Object[][] {{Type.density, "xxxhdpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-tvdpi.svg", new Object[][] {{Type.density, "tvdpi"}}, Density.hdpi, null, "hdpi", true},
-                        {"name-ldpi.svg", new Object[][] {{Type.density, "ldpi"}}, Density.hdpi, Density.hdpi, "", true},
-                        {"name-mdpi.svg", new Object[][] {{Type.density, "mdpi"}}, Density.hdpi, Density.ldpi, "hdpi", true},
+                        {"name-ldpi.svg", new Object[][] {{Type.density, "ldpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-mdpi.svg", new Object[][] {{Type.density, "mdpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-hdpi.svg", new Object[][] {{Type.density, "hdpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-xhdpi.svg", new Object[][] {{Type.density, "xhdpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-xxhdpi.svg", new Object[][] {{Type.density, "xxhdpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-xxxhdpi.svg", new Object[][] {{Type.density, "xxxhdpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-tvdpi.svg", new Object[][] {{Type.density, "tvdpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-ldpi.svg", new Object[][] {{Type.density, "ldpi"}}, Density.hdpi, "hdpi", true},
+                        {"name-mdpi.svg", new Object[][] {{Type.density, "mdpi"}}, Density.hdpi, "hdpi", true},
                         {"name-mcc310-mnc004-en-rUS-xxxhdpi-land.svg", new Object[][] {
                                 {Type.density, "xxxhdpi"}, 
                                 {Type.locale, "en-rUS"}, 
                                 {Type.orientation, "land"}, 
                                 {Type.mcc_mnc, "mcc310-mnc004"}
-                        }, Density.ldpi, null, "mcc310-mnc004-en-rUS-land-ldpi", true},
+                        }, Density.ldpi, "mcc310-mnc004-en-rUS-land-ldpi", true},
                         {"name-en-rUS-mcc310-mnc004-xxhdpi-land.svg", new Object[][] {
                                 {Type.density, "xxhdpi"}, 
                                 {Type.locale, "en-rUS"}, 
                                 {Type.orientation, "land"}, 
                                 {Type.mcc_mnc, "mcc310-mnc004"}
-                        }, Density.ldpi, null, "mcc310-mnc004-en-rUS-land-ldpi", true},
+                        }, Density.ldpi, "mcc310-mnc004-en-rUS-land-ldpi", true},
                         {"name-ldpi-sw100dp-h400dp-w731dp-v19-port-xlarge.svg", new Object[][] {
                                 {Type.density, "ldpi"}, 
                                 {Type.smallestWidth, "sw100dp"}, 
@@ -90,23 +88,23 @@ public class QualifiedResourceTest {
                                 {Type.plateformVersion, "v19"}, 
                                 {Type.orientation, "port"}, 
                                 {Type.screenSize, "xlarge"}
-                        }, Density.tvdpi, null, "sw100dp-w731dp-h400dp-xlarge-port-tvdpi-v19", true},
+                        }, Density.tvdpi, "sw100dp-w731dp-h400dp-xlarge-port-tvdpi-v19", true},
                         {"name-mdpi-fr-land.svg", new Object[][] {
                                 {Type.density, "mdpi"}, 
                                 {Type.locale, "fr"}, 
                                 {Type.orientation, "land"}
-                        }, Density.xxhdpi, null, "fr-land-xxhdpi", true},
+                        }, Density.xxhdpi, "fr-land-xxhdpi", true},
                         {"name-mdpi-fr-land.svg", new Object[][] {
                                 {Type.density, "mdpi"}, 
                                 {Type.locale, "fr"}, 
                                 {Type.orientation, "land"}
-                        }, Density.xxhdpi, Density.xxhdpi, "fr-land", true},
+                        }, Density.xxhdpi, "fr-land-xxhdpi", true},
                         // error cases
-                        {"mdpi-fr-land.svg", null, null, null, null, false},
-                        {"name-nodpi.svg", null, null, null, null, false},
-                        {"", null, null, null, null, false},
-                        {null, null, null, null, null, false},
-                        {"name.svg", null, null, null, null, false}
+                        {"mdpi-fr-land.svg", null, null, null, false},
+                        {"name-nodpi.svg", null, null, null, false},
+                        {"", null, null, null, false},
+                        {null, null, null, null, false},
+                        {"name.svg", null, null, null, false}
                 });
     }
     
@@ -128,7 +126,7 @@ public class QualifiedResourceTest {
                 Assert.assertEquals(typedQualifiers.get(t), qr.getTypedQualifiers().get(t));
             }
             // verify name
-            Assert.assertEquals(outputDirectory.getAbsolutePath(), qr.getOutputFor(density, new File("."), fallbackDensity).getAbsolutePath());
+            Assert.assertEquals(outputDirectory.getAbsolutePath(), qr.getOutputFor(density, new File(".")).getAbsolutePath());
         }
     }
     

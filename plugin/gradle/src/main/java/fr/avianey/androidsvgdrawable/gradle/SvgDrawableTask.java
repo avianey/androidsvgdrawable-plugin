@@ -35,7 +35,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public OverrideMode overrideMode = OverrideMode.always;
     public Density[] targetedDensities;
     public Map<String, String> rename;
-    public Density fallbackDensity = DEFAULT_FALLBACK_DENSITY;
     public String highResIcon;
 
     // nine patch
@@ -95,11 +94,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
-    public Density getFallbackDensity() {
-        return fallbackDensity;
-    }
-
-    @Override
     public String getHighResIcon() {
         return highResIcon;
     }
@@ -149,7 +143,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         return svgBoundsType;
     }
 
-    
     public void setFrom(File from) {
         this.from = from;
     }
@@ -172,10 +165,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
 
     public void setRename(Map<String, String> rename) {
         this.rename = rename;
-    }
-
-    public void setFallbackDensity(Density fallbackDensity) {
-        this.fallbackDensity = fallbackDensity;
     }
 
     public void setHighResIcon(String highResIcon) {

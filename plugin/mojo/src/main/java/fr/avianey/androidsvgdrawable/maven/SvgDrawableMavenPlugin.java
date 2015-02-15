@@ -102,15 +102,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     private Map<String, String> rename;
 
     /**
-     * Density for drawable directories without density qualifier
-     * 
-     * @since 1.0.0
-     * @see Density
-     */
-    @Parameter(defaultValue = "mdpi")
-    private Density fallbackDensity;
-
-    /**
      * Name of the input file to use to generate a 512x512 high resolution
      * Google Play icon
      * 
@@ -267,11 +258,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     @Override
     public Map<String, String> getRename() {
         return rename;
-    }
-
-    @Override
-    public Density getFallbackDensity() {
-        return fallbackDensity;
     }
 
     @Override
