@@ -40,6 +40,9 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     // nine patch
     public File ninePatchConfig;
 
+    // colorizer
+    public File colorizerConfig;
+
     // masking
     public File svgMaskDirectory;
     public File svgMaskResourcesDirectory;
@@ -101,6 +104,11 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     @Override
     public File getNinePatchConfig() {
         return ninePatchConfig;
+    }
+
+    @Override
+    public File getColorizerConfig() {
+        return colorizerConfig;
     }
 
     @Override
@@ -173,6 +181,10 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
 
     public void setNinePatchConfig(File ninePatchConfig) {
         this.ninePatchConfig = ninePatchConfig;
+    }
+
+    public void setColorizerConfig(File colorizerConfig) {
+        this.colorizerConfig = colorizerConfig;
     }
 
     public void setSvgMaskDirectory(File svgMaskDirectory) {

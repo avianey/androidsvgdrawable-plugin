@@ -15,9 +15,39 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import fr.avianey.androidsvgdrawable.NinePatch.Zone;
+import fr.avianey.androidsvgdrawable.batik.DensityAwareUserAgent;
+import fr.avianey.androidsvgdrawable.util.Constants;
+import fr.avianey.androidsvgdrawable.util.Log;
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.DocumentLoader;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgent;
+import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.gvt.GraphicsNode;
+import org.apache.batik.parser.UnitProcessor;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.commons.io.FilenameUtils;
+import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGLength;
+import org.w3c.dom.svg.SVGSVGElement;
+import org.xml.sax.SAXException;
+
+import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,41 +68,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
-
-import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.DocumentLoader;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgent;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
-import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.parser.UnitProcessor;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.ImageTranscoder;
-import org.apache.batik.transcoder.image.JPEGTranscoder;
-import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGLength;
-import org.w3c.dom.svg.SVGSVGElement;
-import org.xml.sax.SAXException;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import fr.avianey.androidsvgdrawable.NinePatch.Zone;
-import fr.avianey.androidsvgdrawable.batik.DensityAwareUserAgent;
-import fr.avianey.androidsvgdrawable.util.Constants;
-import fr.avianey.androidsvgdrawable.util.Log;
 
 /**
  * Generates drawable from Scalable Vector Graphics (SVG) files.
@@ -105,6 +100,8 @@ public class SvgDrawablePlugin {
         String getHighResIcon();
 
         File getNinePatchConfig();
+
+        File getColorizerConfig();
 
         File getSvgMaskDirectory();
 
@@ -163,7 +160,18 @@ public class SvgDrawablePlugin {
         } else {
             getLog().info("No NinePatch configuration file specified");
         }
-        
+
+        /*******************************
+         * Load Colorize configuration *
+         *******************************/
+
+        final ColorizerMap colorizerMap;
+        if (parameters.getColorizerConfig() != null && parameters.getColorizerConfig().isFile()) {
+            colorizerMap = ColorizerMap.from(parameters.getColorizerConfig(), getLog());
+        } else {
+            colorizerMap = new ColorizerMap(); // dummy
+        }
+
         /*****************************
          * List input svg to convert *
          *****************************/
@@ -243,7 +251,7 @@ public class SvgDrawablePlugin {
                     }
                     if (destination.exists()) {
                         getLog().debug("Transcoding " + svg.getName() + " to " + destination.getName());
-                        transcode(svg, d, bounds, destination, ninePatchMap.getBestMatch(svg));
+                        transcode(svg, d, bounds, destination, ninePatchMap.getBestMatch(svg), colorizerMap.getBestMatch(svg));
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
                         		"Set 'createMissingDirectories' to true if you want it to be created if missing...");
@@ -264,7 +272,7 @@ public class SvgDrawablePlugin {
             	// TODO : make highResIcon size configurable
             	// TODO : generates other play store assets
                 getLog().info("Generating high resolution icon");
-                transcode(highResIcon, Density.mdpi, highResIconBounds, new File("."), 512, 512, null);
+                transcode(highResIcon, Density.mdpi, highResIconBounds, new File("."), 512, 512, null, null);
             } catch (IOException | TranscoderException | InstantiationException | IllegalAccessException e) {
                 getLog().error(e);
 			}
@@ -350,24 +358,44 @@ public class SvgDrawablePlugin {
         SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
         return (SVGDocument) f.createDocument(svg.toURI().toURL().toString());
     }
-    
+
     /**
      * Given it's bounds, transcodes a svg file to a raster image for the desired density
      * @param svg
-     * @param targetDensity 
+     * @param targetDensity
      * @param bounds
      * @param destination
+     * @throws IOException
+     * @throws TranscoderException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @VisibleForTesting
+    void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds,
+            File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
+        transcode(svg, targetDensity, bounds, destination, ninePatch, null);
+    }
+
+
+    /**
+     * Given it's bounds, transcodes a svg file to a raster image for the desired density
+     * @param svg
+     * @param targetDensity
+     * @param bounds
+     * @param destination
+     * @param colorizer
      * @throws IOException
      * @throws TranscoderException
      * @throws IllegalAccessException 
      * @throws InstantiationException 
      */
     @VisibleForTesting
-    void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
+    void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds,
+            File destination, NinePatch ninePatch, final Colorizer colorizer) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
         transcode(svg, targetDensity, bounds, destination, 
                 new Float(bounds.getWidth() * svg.getDensity().ratio(targetDensity)), 
                 new Float(bounds.getHeight() * svg.getDensity().ratio(targetDensity)),
-                ninePatch);
+                ninePatch, colorizer);
     }
     
     /**
@@ -383,7 +411,7 @@ public class SvgDrawablePlugin {
      * @throws IllegalAccessException 
      * @throws InstantiationException 
      */
-    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
+    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch, Colorizer colorizer) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
         final Float width = Math.max(new Float(Math.floor(targetWidth)), 1);
         final Float height = Math.max(new Float(Math.floor(targetHeight)), 1);
         if (getLog().isDebugEnabled()) {
@@ -397,7 +425,14 @@ public class SvgDrawablePlugin {
         }
         t.addTranscodingHint(ImageTranscoder.KEY_WIDTH, width);
         t.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, height);
-        TranscoderInput input = new TranscoderInput(svg.toURI().toURL().toString());
+
+        final TranscoderInput input;
+        if (colorizer == null) {
+            input = new TranscoderInput(svg.toURI().toURL().toString());
+        } else {
+            input = new TranscoderInput(colorizer.colorize(svg));
+        }
+
         String outputName = svg.getName();
         if (parameters.getRename() != null && parameters.getRename().containsKey(outputName)) {
             if (parameters.getRename().get(outputName) != null && parameters.getRename().get(outputName).matches("\\w+")) {

@@ -15,17 +15,10 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.Collection;
-
-import javax.imageio.ImageIO;
-
+import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
+import fr.avianey.androidsvgdrawable.util.Constants;
+import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
 import org.joor.Reflect;
 import org.junit.Assert;
@@ -35,10 +28,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
-import fr.avianey.androidsvgdrawable.util.Constants;
-import fr.avianey.androidsvgdrawable.util.TestLogger;
-import fr.avianey.androidsvgdrawable.util.TestParameters;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.Collection;
 
 @RunWith(Parameterized.class)
 public class BoundsExtractionTest {
@@ -99,7 +97,7 @@ public class BoundsExtractionTest {
         final String name = svg.getName();
         for (Density d : Density.values()) {
         	Reflect.on(svg).set("name", name + "_" + d.name());
-	        plugin.transcode(svg, d, rect, new File(GenDrawableTestSuite.PATH_OUT), null);
+	        plugin.transcode(svg, d, rect, new File(GenDrawableTestSuite.PATH_OUT), null, null);
 	        BufferedImage image = ImageIO.read(new FileInputStream(new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase())));
 	        Assert.assertEquals(Math.floor(svg.getDensity().ratio(d) * Math.ceil(expectedWidth)), image.getWidth(), 0);
 	        Assert.assertEquals(Math.floor(svg.getDensity().ratio(d) * Math.ceil(expectedHeight)), image.getHeight(), 0);

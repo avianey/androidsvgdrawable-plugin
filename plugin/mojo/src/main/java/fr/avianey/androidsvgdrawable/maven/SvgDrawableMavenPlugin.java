@@ -15,18 +15,17 @@
  */
 package fr.avianey.androidsvgdrawable.maven;
 
-import java.io.File;
-import java.util.Map;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.OutputFormat;
 import fr.avianey.androidsvgdrawable.OverrideMode;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
+import java.io.File;
+import java.util.Map;
 
 /**
  * Goal which generates drawable from Scalable Vector Graphics (SVG) files.
@@ -117,6 +116,14 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      */
     @Parameter
     private File ninePatchConfig;
+
+    /**
+     * Path to the Colorizer configuration file.
+     *
+     * @since 1.1.0
+     */
+    @Parameter
+    private File colorizerConfig;
 
     /**
      * Path to the <strong>.svgmask</strong> directory.<br/>
@@ -268,6 +275,11 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     @Override
     public File getNinePatchConfig() {
         return ninePatchConfig;
+    }
+
+    @Override
+    public File getColorizerConfig() {
+        return colorizerConfig;
     }
 
     @Override

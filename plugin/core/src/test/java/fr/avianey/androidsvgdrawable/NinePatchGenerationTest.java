@@ -15,7 +15,25 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.awt.Rectangle;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
+import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.FilenameUtils;
+import org.joor.Reflect;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,27 +45,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
-
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.commons.io.FilenameUtils;
-import org.joor.Reflect;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
-import fr.avianey.androidsvgdrawable.util.TestLogger;
-import fr.avianey.androidsvgdrawable.util.TestParameters;
 
 @RunWith(Parameterized.class)
 public class NinePatchGenerationTest {
@@ -227,7 +224,7 @@ public class NinePatchGenerationTest {
             final String name = svg.getName();
         	Reflect.on(svg).set("name", name + "_" + targetDensity.name());
         	Rectangle bounds = plugin.extractSVGBounds(svg);
-	        plugin.transcode(svg, targetDensity, bounds, new File(GenDrawableTestSuite.PATH_OUT), ninePatch);
+	        plugin.transcode(svg, targetDensity, bounds, new File(GenDrawableTestSuite.PATH_OUT), ninePatch, null);
 	        final File ninePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + ".9." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase());
             final File nonNinePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase());
             
