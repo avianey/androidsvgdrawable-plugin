@@ -69,7 +69,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.0') {
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.1') {
             // should be excluded to avoid conflict
             exclude group: 'xerces'
         }
@@ -102,7 +102,7 @@ Add the plugin to your pom.xml :
 <plugin>
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <executions>
         <execution>
             <id>gendrawable-png</id>
@@ -283,7 +283,7 @@ The plugin can be configured using the following options :
 |override|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
 |rename|Map|Use this map to change the name of the generated drawable. Note that names provided in the 9-patch configuration file applies to the `\w+` part of the SVG file name **BEFORE** any renaming.|  
 |targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|  
-|fallbackDensity|Enum|The density for unqualified drawable directories.  If set to `mdpi`, mdpi bitmaps will be generated into `/drawable` and not `/drawable-mdpi`. Default value is `mdpi`.|  
+|~~fallbackDensity~~|~~Enum~~|Deprecated as of 1.0.1|  
 |highResIcon|String|The *unqualified* name of the SVG resource to use to generate an **High-Res** icon for the Play Store. The SVG **SHOULD** have a square Bounding Box (height = width) and will be generated in the current directory.|  
 |outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
 |jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|  
@@ -303,7 +303,7 @@ Check the [Maven sample project](https://github.com/avianey/androidsvgdrawable-p
 ## License
 
 ```
-Copyright 2013, 2014 Antoine Vianey  
+Copyright 2013, 2014, 2015 Antoine Vianey  
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
