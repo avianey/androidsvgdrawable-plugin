@@ -1,13 +1,13 @@
 package fr.avianey.androidsvgdrawable.util;
 
-import java.io.File;
-import java.util.Map;
-
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.OutputFormat;
 import fr.avianey.androidsvgdrawable.OverrideMode;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
+
+import java.io.File;
+import java.util.Map;
 
 public class TestParameters implements SvgDrawablePlugin.Parameters {
 
@@ -21,6 +21,9 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
 
     // nine patch
     public File ninePatchConfig;
+
+    // colorize
+    public File colorizerConfig;
 
     // masking
     public File svgMaskDirectory;
@@ -69,6 +72,11 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     @Override
     public String getHighResIcon() {
         return highResIcon;
+    }
+
+    @Override
+    public File getColorizerConfig() {
+        return colorizerConfig;
     }
 
     @Override

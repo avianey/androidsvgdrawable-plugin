@@ -15,18 +15,8 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
-
+import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -36,8 +26,16 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
-import fr.avianey.androidsvgdrawable.util.TestLogger;
-import fr.avianey.androidsvgdrawable.util.TestParameters;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @RunWith(Parameterized.class)
 public class SvgMaskTest {
@@ -207,7 +205,7 @@ public class SvgMaskTest {
     	for (String maskedResource : maskedResourcesNames) {
             qr = QualifiedResource.fromFile(new File(dir, maskedResource));
     		Assert.assertTrue(qr.exists());
-            plugin.transcode(qr, Density.mdpi, plugin.extractSVGBounds(qr), output, null);
+            plugin.transcode(qr, Density.mdpi, plugin.extractSVGBounds(qr), output, null, null);
     	}
     	
     }
