@@ -66,7 +66,7 @@ public class ColorizerTest {
     @BeforeClass
     public static void setup() {
         params = new TestParameters();
-        params.colorizeConfig = new File(PATH_IN, "colorize.json");
+        params.colorizerConfig = new File(PATH_IN, "colorize.json");
         plugin = new SvgDrawablePlugin(params, new TestLogger());
         //
         output = new File(PATH_OUT_PNG);
@@ -99,7 +99,7 @@ public class ColorizerTest {
         assertFileContains(this.input, new FileInputStream(inputFile), fromColor);
         assertFileNotContains(this.input, new FileInputStream(inputFile), toColor);
 
-        ColorizerMap map = ColorizerMap.from(params.getColorizeConfig(), new TestLogger());
+        ColorizerMap map = ColorizerMap.from(params.getColorizerConfig(), new TestLogger());
         Colorizer color = map.getBestMatch(input);
         Document doc = color.colorize(input);
 

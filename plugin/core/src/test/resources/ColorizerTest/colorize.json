@@ -1,6 +1,6 @@
 [
     {
-        "matches": ["circle*"],
+        "matches": ["circle.*"],
         "colors": [
             {
                 "from": "#ff0000",
@@ -10,7 +10,7 @@
     },
 
     {
-        "matches": ["fill_property*"],
+        "matches": ["fill_property.*"],
         "colors": [
             {
                 "from": "#000000",
