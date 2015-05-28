@@ -126,7 +126,7 @@ public class QualifiedResourceTest {
                 Assert.assertEquals(typedQualifiers.get(t), qr.getTypedQualifiers().get(t));
             }
             // verify name
-            Assert.assertEquals(outputDirectory.getAbsolutePath(), qr.getOutputFor(density, new File(".")).getAbsolutePath());
+            Assert.assertEquals(outputDirectory.getAbsolutePath(), qr.getOutputFor(density, new File("."), OutputType.drawable).getAbsolutePath());
         }
     }
     

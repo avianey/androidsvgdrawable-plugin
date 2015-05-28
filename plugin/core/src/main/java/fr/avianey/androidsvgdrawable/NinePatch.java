@@ -41,6 +41,7 @@ import fr.avianey.androidsvgdrawable.Qualifier.Type;
  * @version 1
  * @author antoine vianey
  */
+// TODO : rename to NinePatchDef or NinePatchConfig
 public class NinePatch {
 
     private String name;

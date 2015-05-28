@@ -23,9 +23,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import fr.avianey.androidsvgdrawable.Qualifier.Type;
 
 /**
+ * @version 1
  * @author antoine vianey
  */
 public class NinePatchMap {
@@ -41,8 +44,9 @@ public class NinePatchMap {
      * </ol>
      * @param name
      * @param requiredQualifiers
-     * @return
+     * @return 
      */
+    @Nullable
     public NinePatch getBestMatch(QualifiedResource svg) {
         Set<NinePatch> matchingNinePatches = getMatching(svg.getName());
         if (matchingNinePatches == null) {

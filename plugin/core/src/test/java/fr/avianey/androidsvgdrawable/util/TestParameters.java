@@ -6,6 +6,7 @@ import java.util.Map;
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.OutputFormat;
+import fr.avianey.androidsvgdrawable.OutputType;
 import fr.avianey.androidsvgdrawable.OverrideMode;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
 
@@ -27,6 +28,9 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public File svgMaskResourcesDirectory;
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
+    
+    // type
+    public OutputType outputType = DEFAULT_OUTPUT_TYPE;
 
     // format
     public OutputFormat outputFormat = DEFAULT_OUTPUT_FORMAT;
@@ -114,6 +118,11 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     @Override
     public BoundsType getSvgBoundsType() {
         return svgBoundsType;
+    }
+
+    @Override
+    public OutputType getOutputType() {
+        return null;
     }
 
 }
