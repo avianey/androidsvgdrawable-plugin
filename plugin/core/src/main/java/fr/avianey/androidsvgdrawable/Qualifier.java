@@ -111,7 +111,7 @@ public final class Qualifier {
         screenSize("small|normal|large|xlarge"),
         aspect("(?:not)?long"),
         orientation("port|land"),
-        uiMode("car|desk|television|appliance"),
+        uiMode("car|desk|television|appliance|watch"),
         nightMode("(?:not)?night"),
         density("(?:l|m|x{0,3}h|tv|no)dpi"),
         touchScreen("notouch|finger"),
