@@ -7,7 +7,7 @@
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin-sample</artifactId>
     <packaging>apk</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>AndroidSvgDrawable Maven Plugin Sample Project</name>
     <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
 
@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>fr.avianey.androidsvgdrawable</groupId>
                 <artifactId>maven-plugin</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>1.0.2-SNAPSHOT</version>
                 <configuration>
                     <!-- where to generate them -->
                     <to>${project.basedir}/res</to>
