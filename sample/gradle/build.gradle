@@ -7,8 +7,8 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.1-SNAPSHOT') {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.2-SNAPSHOT') {
             exclude group: 'xerces'
         }
     }

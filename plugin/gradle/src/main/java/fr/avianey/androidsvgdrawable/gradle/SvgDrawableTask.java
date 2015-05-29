@@ -24,6 +24,7 @@ import org.gradle.api.tasks.TaskAction;
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.OutputFormat;
+import fr.avianey.androidsvgdrawable.OutputType;
 import fr.avianey.androidsvgdrawable.OverrideMode;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
 
@@ -45,6 +46,9 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public File svgMaskResourcesDirectory;
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
+    
+    // type
+    public OutputType outputType = DEFAULT_OUTPUT_TYPE;
 
     // format
     public OutputFormat outputFormat = DEFAULT_OUTPUT_FORMAT;
@@ -124,6 +128,11 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
+    public OutputType getOutputType() {
+        return outputType;
+    }
+
+    @Override
     public OutputFormat getOutputFormat() {
         return outputFormat;
     }
@@ -189,6 +198,10 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
 
     public void setUseSameSvgOnlyOnceInMask(boolean useSameSvgOnlyOnceInMask) {
         this.useSameSvgOnlyOnceInMask = useSameSvgOnlyOnceInMask;
+    }
+
+    public void setOutputType(OutputType outputType) {
+        this.outputType = outputType;
     }
 
     public void setOutputFormat(OutputFormat outputFormat) {

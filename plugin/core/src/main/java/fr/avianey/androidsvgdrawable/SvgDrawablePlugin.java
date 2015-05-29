@@ -86,6 +86,7 @@ public class SvgDrawablePlugin {
         public static final Integer DEFAULT_JPG_BACKGROUND_COLOR = -1;
         public static final Integer DEFAULT_JPG_QUALITY = 85;
         public static final OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
+        public static final OutputType DEFAULT_OUTPUT_TYPE = OutputType.drawable;
         public static final BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
         public static final OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
         public static final Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
@@ -115,6 +116,8 @@ public class SvgDrawablePlugin {
         boolean isUseSameSvgOnlyOnceInMask();
 
         OutputFormat getOutputFormat();
+
+        OutputType getOutputType();
 
         int getJpgQuality();
 
@@ -237,13 +240,14 @@ public class SvgDrawablePlugin {
                 //   - no other output with a qualifiers set that is a subset of this output
                 // - if no match, create required directories
                 for (Density d : targetDensities) {
-                    File destination = svg.getOutputFor(d, parameters.getTo());
+                    NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
+                    File destination = svg.getOutputFor(d, parameters.getTo(), ninePatch == null ? parameters.getOutputType() : OutputType.drawable);
                     if (!destination.exists() && parameters.isCreateMissingDirectories()) {
                         destination.mkdir();
                     }
                     if (destination.exists()) {
                         getLog().debug("Transcoding " + svg.getName() + " to " + destination.getName());
-                        transcode(svg, d, bounds, destination, ninePatchMap.getBestMatch(svg));
+                        transcode(svg, d, bounds, destination, ninePatch);
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
                         		"Set 'createMissingDirectories' to true if you want it to be created if missing...");
@@ -263,6 +267,7 @@ public class SvgDrawablePlugin {
                 // TODO : add a garbage density (NO_DENSITY) for the highResIcon
             	// TODO : make highResIcon size configurable
             	// TODO : generates other play store assets
+                // TODO : parameterized SIZE
                 getLog().info("Generating high resolution icon");
                 transcode(highResIcon, Density.mdpi, highResIconBounds, new File("."), 512, 512, null);
             } catch (IOException | TranscoderException | InstantiationException | IllegalAccessException e) {

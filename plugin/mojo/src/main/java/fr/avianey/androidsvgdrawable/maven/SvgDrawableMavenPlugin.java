@@ -25,6 +25,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.OutputFormat;
+import fr.avianey.androidsvgdrawable.OutputType;
 import fr.avianey.androidsvgdrawable.OverrideMode;
 import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
 
@@ -195,6 +196,19 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     private BoundsType svgBoundsType;
 
     /**
+     * The output folder for the generated images.
+     * <ul>
+     * <li>drawable</li>
+     * <li>mipmap</li>
+     * </ul>
+     * 
+     * @since 1.1.0
+     * @see OutputType
+     */
+    @Parameter(defaultValue = "drawable")
+    private OutputType outputType;
+    
+    /**
      * The format for the generated images.
      * <ul>
      * <li>PNG</li>
@@ -290,6 +304,11 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
         return useSameSvgOnlyOnceInMask;
     }
 
+    @Override
+    public OutputType getOutputType() {
+        return outputType;
+    }
+    
     @Override
     public OutputFormat getOutputFormat() {
         return outputFormat;

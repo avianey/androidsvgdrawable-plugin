@@ -45,8 +45,8 @@ public class QualifiedResource extends File {
         this.density = Density.valueOf(typedQualifiers.get(Type.density));
     }
     
-    public File getOutputFor(final Density density, final File to) {
-        StringBuilder builder = new StringBuilder("drawable");
+    public File getOutputFor(final Density density, final File to, final OutputType outputType) {
+        StringBuilder builder = new StringBuilder(outputType.name());
         EnumMap<Type, String> qualifiers = new EnumMap<>(typedQualifiers);
         qualifiers.remove(Type.density);
         qualifiers.put(Type.density, density.name());
