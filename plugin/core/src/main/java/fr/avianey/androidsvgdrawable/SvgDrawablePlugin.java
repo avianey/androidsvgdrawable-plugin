@@ -243,7 +243,7 @@ public class SvgDrawablePlugin {
                     NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
                     File destination = svg.getOutputFor(d, parameters.getTo(), ninePatch == null ? parameters.getOutputType() : OutputType.drawable);
                     if (!destination.exists() && parameters.isCreateMissingDirectories()) {
-                        destination.mkdir();
+                        destination.mkdirs();
                     }
                     if (destination.exists()) {
                         getLog().debug("Transcoding " + svg.getName() + " to " + destination.getName());
