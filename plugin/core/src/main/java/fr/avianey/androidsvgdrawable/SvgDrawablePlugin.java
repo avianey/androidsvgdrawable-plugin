@@ -254,7 +254,7 @@ public class SvgDrawablePlugin {
                     }
                 }
             } catch (IOException | TranscoderException | InstantiationException | IllegalAccessException e) {
-                getLog().error(e);
+                getLog().error("Error while converting " + svg, e);
 			}
         }
         
