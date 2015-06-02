@@ -80,24 +80,32 @@ public class VisualConversionTest {
         plugin.transcode(svg, svg.getDensity(), rect, PATH_OUT, null);
         BufferedImage transcoded = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + ".png")));
         BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".pngtest")));
-        Assert.assertTrue(bufferedImagesEqual(transcoded, original));
+        Assert.assertEquals(0, bufferedImagesEqual(transcoded, original), 0.1);
     }
  
-    private static boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
+    private static double bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
             double inequals = 0;
             for (int x = 0; x < img1.getWidth(); x++) {
                 for (int y = 0; y < img1.getHeight(); y++) {
-                    if (img1.getRGB(x, y) != img2.getRGB(x, y)) {
+                    if (pixelDistance(img1.getRGB(x, y),img2.getRGB(x, y)) > 255) {
                         inequals++;;
                     }
                 }
             }
-            // inequals if diff < 1%
-            return inequals / (img1.getWidth() * img1.getHeight()) < .01;
+            return inequals / (img1.getWidth() * img1.getHeight());
         } else {
-            return false;
+            throw new RuntimeException("Image size are not equals");
         }
+    }
+    
+    private static double pixelDistance(int argb1, int argb2) {
+        long dist = 0;
+        dist += Math.abs((long) ((argb1 & 0xFF000000) - (argb2 & 0xFF000000)) >>> 24);
+        dist += Math.abs((long) ((argb1 & 0x00FF0000) - (argb2 & 0x00FF0000)) >>> 16);
+        dist += Math.abs((long) ((argb1 & 0x0000FF00) - (argb2 & 0x0000FF00)) >>> 8);
+        dist += Math.abs((long) ((argb1 & 0x000000FF) - (argb2 & 0x000000FF)));
+        return dist;
     }
     
 }
