@@ -85,17 +85,19 @@ public class VisualConversionTest {
  
     private static boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
+            double inequals = 0;
             for (int x = 0; x < img1.getWidth(); x++) {
                 for (int y = 0; y < img1.getHeight(); y++) {
                     if (img1.getRGB(x, y) != img2.getRGB(x, y)) {
-                        return false;
+                        inequals++;;
                     }
                 }
             }
+            // inequals if diff < 1%
+            return inequals / (img1.getWidth() * img1.getHeight()) < .01;
         } else {
             return false;
         }
-        return true;
     }
     
 }
