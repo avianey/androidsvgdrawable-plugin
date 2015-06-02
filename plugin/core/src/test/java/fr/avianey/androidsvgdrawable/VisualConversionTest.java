@@ -79,7 +79,7 @@ public class VisualConversionTest {
         
         plugin.transcode(svg, svg.getDensity(), rect, PATH_OUT, null);
         BufferedImage transcoded = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + ".png")));
-        BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".png")));
+        BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".pngtest")));
         Assert.assertTrue(bufferedImagesEqual(transcoded, original));
     }
  
