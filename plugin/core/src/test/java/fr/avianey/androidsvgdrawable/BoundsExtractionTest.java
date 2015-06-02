@@ -81,7 +81,7 @@ public class BoundsExtractionTest {
         						//
         						{"square_no_height_width_stroke-mdpi.svg", 6, 6}, 	// no height and width provided by the <SVG> element
         						{"square_translated-mdpi.svg", 10, 10},       		// x and y != 0 (square outside)
-        						{"square_cm-mdpi.svg", 10 * DPCM, 10 * DPCM} 		// height and width in cm (usefull ???)
+        						{"square_cm-mdpi.svg", 10 * DPCM, 10 * DPCM}		// height and width in cm (usefull ???)
         				}
         		);
     }

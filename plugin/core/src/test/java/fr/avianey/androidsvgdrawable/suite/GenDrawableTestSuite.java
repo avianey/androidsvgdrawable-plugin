@@ -23,8 +23,8 @@ import fr.avianey.androidsvgdrawable.OutputFormat;
 
 public abstract class GenDrawableTestSuite {
 	
-	public static String PATH_OUT;
-	public static OutputFormat OUTPUT_FORMAT;
+	public static String PATH_OUT = "./target/generated-png/";
+	public static OutputFormat OUTPUT_FORMAT = OutputFormat.PNG;
 	
 	@BeforeClass
 	public static void setup() {

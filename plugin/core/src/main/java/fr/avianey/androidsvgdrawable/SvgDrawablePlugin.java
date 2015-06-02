@@ -217,7 +217,6 @@ public class SvgDrawablePlugin {
         }
 
         QualifiedResource highResIcon = null;
-        Rectangle highResIconBounds = null;
         
         /*********************************
          * Create svg in res/* folder(s) *
@@ -232,7 +231,6 @@ public class SvgDrawablePlugin {
                 }
                 if (parameters.getHighResIcon() != null && parameters.getHighResIcon().equals(svg.getName())) {
                     highResIcon = svg;
-                    highResIconBounds = bounds;
                 }
                 // for each target density :
                 // - find matching destinations :
@@ -269,9 +267,9 @@ public class SvgDrawablePlugin {
             	// TODO : generates other play store assets
                 // TODO : parameterized SIZE
                 getLog().info("Generating high resolution icon");
-                transcode(highResIcon, Density.mdpi, highResIconBounds, new File("."), 512, 512, null);
+                transcode(highResIcon, Density.mdpi, new File("."), 512, 512, null);
             } catch (IOException | TranscoderException | InstantiationException | IllegalAccessException e) {
-                getLog().error(e);
+                getLog().error("Error while converting " + highResIcon, e);
 			}
         }
     }
@@ -369,7 +367,7 @@ public class SvgDrawablePlugin {
      */
     @VisibleForTesting
     void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
-        transcode(svg, targetDensity, bounds, destination, 
+        transcode(svg, targetDensity, destination, 
                 new Float(bounds.getWidth() * svg.getDensity().ratio(targetDensity)), 
                 new Float(bounds.getHeight() * svg.getDensity().ratio(targetDensity)),
                 ninePatch);
@@ -379,7 +377,6 @@ public class SvgDrawablePlugin {
      * Given a desired width and height, transcodes a svg file to a raster image for the desired density
      * @param svg
      * @param targetDensity 
-     * @param bounds
      * @param dest
      * @param targetWidth
      * @param targetHeight
@@ -388,7 +385,7 @@ public class SvgDrawablePlugin {
      * @throws IllegalAccessException 
      * @throws InstantiationException 
      */
-    private void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
+    private void transcode(QualifiedResource svg, Density targetDensity, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
         final Float width = Math.max(new Float(Math.floor(targetWidth)), 1);
         final Float height = Math.max(new Float(Math.floor(targetHeight)), 1);
         if (getLog().isDebugEnabled()) {
@@ -426,8 +423,6 @@ public class SvgDrawablePlugin {
         if (parameters.getOverrideMode().shouldOverride(svg, finalFile, parameters.getNinePatchConfig())) {
         	// unit conversion for size not in pixel
         	t.addTranscodingHint(ImageTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
-        	// set the ROI
-        	t.addTranscodingHint(ImageTranscoder.KEY_AOI, bounds);
         	
             if (ninePatch == null || !parameters.getOutputFormat().hasNinePatchSupport()) {
             	if (ninePatch != null) {
