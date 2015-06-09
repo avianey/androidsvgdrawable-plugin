@@ -68,8 +68,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.1') {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.2') {
             // should be excluded to avoid conflict
             exclude group: 'xerces'
         }
@@ -102,7 +102,7 @@ Add the plugin to your pom.xml :
 <plugin>
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <executions>
         <execution>
             <id>gendrawable-png</id>
@@ -286,6 +286,7 @@ The plugin can be configured using the following options :
 |~~fallbackDensity~~|~~Enum~~|Deprecated as of 1.0.1|  
 |highResIcon|String|The *unqualified* name of the SVG resource to use to generate an **High-Res** icon for the Play Store. The SVG **SHOULD** have a square Bounding Box (height = width) and will be generated in the current directory.|  
 |outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
+|outputType|`drawable` or `mipmap`|The output directory for the generated bitmaps. Nine-Patch support apply only for the `drawable` output type.|  
 |jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|  
 |jpgBackgroundColor|Integer|The background color used for the generated JPG bitmaps. Default is `0xFFFFFFFF` (opaque white).|  
 |svgMaskDirectory|File|An optionnal directory to pick the SVGMASK files from. Default to the same directory as the `from` parameter.|  
