@@ -2,25 +2,25 @@ apply plugin: 'com.android.application'
 apply plugin: "androidsvgdrawable"
 
 android {
-    compileSdkVersion 'android-L'
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "fr.avianey.androidsvgdrawable.sample"
         minSdkVersion 9
-        targetSdkVersion 'L'
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
     productFlavors {
         flavor1 {
-            applicationId "fr.avianey.androidsvgdrawable.sample.flavour1"
+            applicationId "fr.avianey.androidsvgdrawable.sample.flavor1"
         }
     }
 
     sourceSets{
         main.res.srcDirs = [main.res.srcDirs, "build/generated/res/main"]
-        flavour1.res.srcDirs = [flavour1.res.srcDirs, "build/generated/res/flavour1"]
+        flavor1.res.srcDirs = [flavor1.res.srcDirs, "build/generated/res/flavor1"]
     }
 
     compileOptions {
@@ -84,6 +84,20 @@ task svgToDrawableJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
     overrideMode = 'ifModified'
     targetedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
     outputFormat = 'JPG'
+}
+
+// flavor specific
+task svgToMipmapPngFlavor1(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
+    // specify where to pick SVG from
+    from = file('src/main/svg-mipmap-flavor1')
+    // specify the android res folder
+    to = file('build/generated/res/flavor1')
+    // let generate PNG for the following densities only
+    targetedDensities = ['ldpi', 'hdpi', 'mdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    // output format of the generated resources
+    outputFormat = 'PNG'
+    // output type is mipmap
+    outputType = 'mipmap'
 }
 
 dependencies {
