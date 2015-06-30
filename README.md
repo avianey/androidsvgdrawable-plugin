@@ -53,7 +53,7 @@ buildscript {
 You can configure one or more Task with the desired configuration into your build.gradle and apply the `androidsvgdrawable` plugin. Tasks will be executed for you when necessary to generate drawable resources :
 
 ```gradle
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: "androidsvgdrawable"
 
 // create a task to convert SVG to PNG
