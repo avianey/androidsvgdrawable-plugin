@@ -9,33 +9,6 @@ The only thing you have to do is to provide one or more qualified SVG files that
 
 This plugin handles any configuration `<qualifier>` supported by the Android SDK and can generate [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) drawable as well. To increase your productivity, a (incubating) mask functionnality allow you to define generic layers, filters, clip-path, etc...  and let you reuse them accross multiple SVG files. That's [DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself)  applied to Android drawable resources. 
 
-###### input SVG files from project sources :
-![SVG input files][svg-files]
-###### generated directories (at build time) :
-![qualified Android resource directories][generated]
-###### generated PNG in **drawable-fr-land-xxxhdpi** :
-![generated drawable for fr-land][drawable-fr-land-xxxhdpi]
-###### generated PNG in **drawable-land-xxxhdpi** :
-![generated drawable for land][drawable-land-xxxhdpi]
-
-###### flag generated in res/drawable :
-![mdpi generated flag][flag-mdpi]
-###### flag generated in res/drawable-hdpi :
-![hdpi generated flag][flag-hdpi]
-###### flag generated in res/drawable-xhdpi :
-![xhdpi generated flag][flag-xhdpi]
-###### flag generated in res/drawable-xxhdpi :
-![xxhdpi generated flag][flag-xxhdpi]
-
-[generated]: http://avianey.github.io/androidsvgdrawable-plugin/generated.png "Generated resource directories"
-[drawable-fr-land-xxxhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/drawable-fr-land-xxxhdpi.png "Landscape xxxhdpi french flag"
-[drawable-land-xxxhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/drawable-land-xxxhdpi.png "Landscape xxxhdpi USA flag"
-[flag-hdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-hdpi.png "Generated hdpi flag"
-[flag-mdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-mdpi.png "Generated mdpi flag"
-[flag-xhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-xhdpi.png "Generated xhdpi flag"
-[flag-xxhdpi]: http://avianey.github.io/androidsvgdrawable-plugin/flag-xxhdpi.png "Generated xxhdpi flags"
-[svg-files]: http://avianey.github.io/androidsvgdrawable-plugin/svg-files.png "Input SVG files"
-
 Enjoy :wink: !
 
 -   [Gradle quick start](#gradle)
