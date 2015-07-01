@@ -63,7 +63,7 @@ public class QualifiedResource extends File {
         Preconditions.checkNotNull(file);
         final String fileName = FilenameUtils.getBaseName(file.getAbsolutePath());
         Preconditions.checkArgument(fileName.length() > 0);
-        Preconditions.checkArgument(fileName.indexOf("-") > 0);
+        Preconditions.checkArgument(fileName.indexOf("-") > 0, "No qualifier for input svg file " + fileName);
         
         // unqualified name
         final String unqualifiedName = fileName.substring(0, fileName.indexOf("-"));
