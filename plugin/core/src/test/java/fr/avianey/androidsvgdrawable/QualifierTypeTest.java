@@ -47,7 +47,9 @@ public class QualifierTypeTest {
                 new Object[][] { 
                         {"long", Type.aspect, true},
                         {"notlong", Type.aspect, true},
-                        {"mdpi", Type.aspect, false}
+                        {"mdpi", Type.aspect, false},
+                        {"round", Type.round, true},
+                        {"notround", Type.round, true}
                 });
     }
     

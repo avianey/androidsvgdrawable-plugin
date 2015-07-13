@@ -110,6 +110,7 @@ public final class Qualifier {
         availableHeight("h\\d+dp"),
         screenSize("small|normal|large|xlarge"),
         aspect("(?:not)?long"),
+        round("(?:not)?round"),
         orientation("port|land"),
         uiMode("car|desk|television|appliance|watch"),
         nightMode("(?:not)?night"),
