@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class SvgMaskTest {
 	private static final String PATH_IN  = "./target/test-classes/" + SvgMaskTest.class.getSimpleName() + "/";
     private static final String PATH_OUT_SVG = "./target/generated-svg/";
     private static final String PATH_OUT_PNG = "./target/generated-svg-png/";
-	
+
 	private static int RUN = 0;
 
     private final String mask;
@@ -56,7 +56,7 @@ public class SvgMaskTest {
 
     private static SvgDrawablePlugin plugin;
     private static File output;
-    
+
     @BeforeClass
     public static void setup() {
         plugin = new SvgDrawablePlugin(new TestParameters(), new TestLogger());
@@ -64,68 +64,68 @@ public class SvgMaskTest {
         output = new File(PATH_OUT_PNG);
         output.mkdirs();
     }
-    
+
     public SvgMaskTest(String mask, List<String> resourceNames, List<String> maskedResourcesNames,
     		boolean useSameSvgOnlyOnceInMask) {
 		RUN++;
 		this.dir = new File(PATH_OUT_SVG, String.valueOf(RUN));
 		this.mask = mask;
-		this.resources = new ArrayList<QualifiedResource>(resourceNames.size());
+		this.resources = new ArrayList<>(resourceNames.size());
 		for (String name : resourceNames) {
 			this.resources.add(QualifiedResource.fromFile(new File(PATH_IN, name)));
 		}
 		this.maskedResourcesNames = maskedResourcesNames;
 		this.useSameSvgOnlyOnceInMask = useSameSvgOnlyOnceInMask;
     }
-    
+
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
                         {
-                        	"mask-mdpi.svgmask", 
+                        	"mask-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Arrays.asList("mask_square_red-mdpi.svg"),
                             false
                         },
                         {
-                        	"mask_image_ns-mdpi.svgmask", 
+                        	"mask_image_ns-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Arrays.asList("mask_image_ns_square_red-mdpi.svg"),
                             false
                         },
                         {
-                        	"mask_image_ns_bad-mdpi.svgmask", 
+                        	"mask_image_ns_bad-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Collections.EMPTY_LIST,
                             false
                         },
                         {
-                        	"mask_svg_ns-mdpi.svgmask", 
+                        	"mask_svg_ns-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Arrays.asList("mask_svg_ns_square_red-mdpi.svg"),
                             false
                         },
                         {
-                        	"mask_no_image-mdpi.svgmask", 
+                        	"mask_no_image-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Collections.EMPTY_LIST,
                             false
                         },
                         {
-                        	"mask_no_match-mdpi.svgmask", 
+                        	"mask_no_match-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Collections.EMPTY_LIST,
                             false
                         },
                         {
-                        	"mask_no_regexp-mdpi.svgmask", 
+                        	"mask_no_regexp-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg"),
                             Collections.EMPTY_LIST,
                             false
                         },
                         {
-                        	"mask_multiple_image-mdpi.svgmask", 
+                        	"mask_multiple_image-mdpi.svgmask",
                         	Arrays.asList("square_red-mdpi.svg", "square_yellow-mdpi.svg", "circle_blue-mdpi.svg", "circle_green-mdpi.svg"),
                             Arrays.asList(
                             		"mask_multiple_image_square_red_circle_blue-mdpi.svg",
@@ -136,9 +136,9 @@ public class SvgMaskTest {
                             false
                         },
                         {
-                        	"mask_same_image_twice-mdpi.svgmask", 
+                        	"mask_same_image_twice-mdpi.svgmask",
                         	Arrays.asList(
-                        			"square_red-mdpi.svg", "square_yellow-mdpi.svg", 
+                        			"square_red-mdpi.svg", "square_yellow-mdpi.svg",
                         			"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
                         			"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
                         	),
@@ -171,9 +171,9 @@ public class SvgMaskTest {
                             false
                         },
                         {
-                        	"mask_same_image_twice-mdpi.svgmask", 
+                        	"mask_same_image_twice-mdpi.svgmask",
                         	Arrays.asList(
-                        			"square_red-mdpi.svg", "square_yellow-mdpi.svg", 
+                        			"square_red-mdpi.svg", "square_yellow-mdpi.svg",
                         			"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
                         			"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
                         	),
@@ -195,7 +195,7 @@ public class SvgMaskTest {
                         }
                 });
     }
-    
+
     @Test
     public void fromJson() throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException, InstantiationException, IllegalAccessException, TranscoderException  {
     	QualifiedResource maskResource = QualifiedResource.fromFile(new File(PATH_IN, mask));
@@ -207,9 +207,9 @@ public class SvgMaskTest {
     	for (String maskedResource : maskedResourcesNames) {
             qr = QualifiedResource.fromFile(new File(dir, maskedResource));
     		Assert.assertTrue(qr.exists());
-            plugin.transcode(qr, Density.mdpi, plugin.extractSVGBounds(qr), output, null);
+            plugin.transcode(qr, Density.Value.mdpi, plugin.extractSVGBounds(qr), output, null);
     	}
-    	
+
     }
-    
+
 }

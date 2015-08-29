@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,22 +74,27 @@ import fr.avianey.androidsvgdrawable.batik.DensityAwareUserAgent;
 import fr.avianey.androidsvgdrawable.util.Constants;
 import fr.avianey.androidsvgdrawable.util.Log;
 
+import static java.lang.Math.*;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.*;
+import static org.apache.batik.transcoder.image.ImageTranscoder.KEY_BACKGROUND_COLOR;
+import static org.apache.batik.transcoder.image.JPEGTranscoder.KEY_QUALITY;
+
 /**
  * Generates drawable from Scalable Vector Graphics (SVG) files.
  *
  * @author antoine vianey
  */
 public class SvgDrawablePlugin {
-    
-    public static interface Parameters {
-        
-        public static final Integer DEFAULT_JPG_BACKGROUND_COLOR = -1;
-        public static final Integer DEFAULT_JPG_QUALITY = 85;
-        public static final OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
-        public static final OutputType DEFAULT_OUTPUT_TYPE = OutputType.drawable;
-        public static final BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
-        public static final OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
-        public static final Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
+
+    public interface Parameters {
+
+        Integer DEFAULT_JPG_BACKGROUND_COLOR = -1;
+        Integer DEFAULT_JPG_QUALITY = 85;
+        OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
+        OutputType DEFAULT_OUTPUT_TYPE = OutputType.drawable;
+        BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
+        OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
+        Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
 
         File getFrom();
 
@@ -99,11 +104,7 @@ public class SvgDrawablePlugin {
 
         OverrideMode getOverrideMode();
 
-        Density[] getTargetedDensities();
-
-        Map<String, String> getRename();
-
-        String getHighResIcon();
+        Density.Value[] getTargetedDensities();
 
         File getNinePatchConfig();
 
@@ -124,35 +125,35 @@ public class SvgDrawablePlugin {
         int getJpgBackgroundColor();
 
         BoundsType getSvgBoundsType();
-    
+
     }
-    
+
     // log
     private final Log log;
     private final Parameters parameters;
-    
+
     public SvgDrawablePlugin(final Parameters parameters, final Log log) {
         this.parameters = parameters;
         this.log = log;
     }
-    
+
     private Log getLog() {
         return this.log;
     }
 
     public void execute() {
         // validating target densities specified in pom.xml
-        // untargetted densities will be ignored except for the fallback density if specified
-        final Set<Density> targetDensities = new HashSet<>(Arrays.asList(parameters.getTargetedDensities()));
+        // un-targeted densities will be ignored except for the fallback density if specified
+        final Set<Density.Value> targetDensities = new HashSet<>(Arrays.asList(parameters.getTargetedDensities()));
         if (targetDensities.isEmpty()) {
-            targetDensities.addAll(EnumSet.allOf(Density.class));
+            targetDensities.addAll(EnumSet.allOf(Density.Value.class));
         }
         getLog().info("Targeted densities : " + Joiner.on(", ").join(targetDensities));
-        
+
         /********************************
          * Load NinePatch configuration *
          ********************************/
-        
+
         NinePatchMap ninePatchMap = new NinePatchMap();
         if (parameters.getNinePatchConfig() != null && parameters.getNinePatchConfig().isFile()) {
             getLog().info("Loading NinePatch configuration file " + parameters.getNinePatchConfig().getAbsolutePath());
@@ -166,7 +167,7 @@ public class SvgDrawablePlugin {
         } else {
             getLog().info("No NinePatch configuration file specified");
         }
-        
+
         /*****************************
          * List input svg to convert *
          *****************************/
@@ -174,13 +175,13 @@ public class SvgDrawablePlugin {
         getLog().info("Listing SVG files in " + parameters.getFrom().getAbsolutePath());
         final Collection<QualifiedResource> svgToConvert = listQualifiedResources(parameters.getFrom(), "svg");
         getLog().info("SVG files : " + Joiner.on(", ").join(svgToConvert));
-        
+
         /*****************************
-         * List input svgmask to use *
+         * List input SVGMASK to use *
          *****************************/
 
-        File svgMaskDirectory = parameters.getSvgMaskDirectory(); 
-        File svgMaskResourcesDirectory = parameters.getSvgMaskResourcesDirectory(); 
+        File svgMaskDirectory = parameters.getSvgMaskDirectory();
+        File svgMaskResourcesDirectory = parameters.getSvgMaskResourcesDirectory();
         if (svgMaskDirectory == null) {
             svgMaskDirectory = parameters.getFrom();
         }
@@ -204,7 +205,7 @@ public class SvgDrawablePlugin {
                 getLog().info("Generating masked files for " + maskFile);
                 try {
                 	Collection<QualifiedResource> generatedResources = new SvgMask(maskFile).generatesMaskedResources(
-                	        parameters.getSvgMaskedSvgOutputDirectory(), svgMaskResources, 
+                	        parameters.getSvgMaskedSvgOutputDirectory(), svgMaskResources,
                 	        parameters.isUseSameSvgOnlyOnceInMask(), parameters.getOverrideMode());
                     getLog().debug("+ " + Joiner.on(", ").join(generatedResources));
                     svgToConvert.addAll(generatedResources);
@@ -216,12 +217,10 @@ public class SvgDrawablePlugin {
             getLog().info("No SVGMASK file found.");
         }
 
-        QualifiedResource highResIcon = null;
-        
         /*********************************
          * Create svg in res/* folder(s) *
          *********************************/
-        
+
         for (QualifiedResource svg : svgToConvert) {
             try {
                 getLog().info("Transcoding " + FilenameUtils.getName(svg.getAbsolutePath()) + " to targeted densities");
@@ -229,15 +228,12 @@ public class SvgDrawablePlugin {
                 if (getLog().isDebugEnabled()) {
                     getLog().debug("+ source dimensions [width=" + bounds.getWidth() + " - height=" + bounds.getHeight() + "]");
                 }
-                if (parameters.getHighResIcon() != null && parameters.getHighResIcon().equals(svg.getName())) {
-                    highResIcon = svg;
-                }
                 // for each target density :
                 // - find matching destinations :
                 //   - matches all extra qualifiers
                 //   - no other output with a qualifiers set that is a subset of this output
                 // - if no match, create required directories
-                for (Density d : targetDensities) {
+                for (Density.Value d : targetDensities) {
                     NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
                     File destination = svg.getOutputFor(d, parameters.getTo(), ninePatch == null ? parameters.getOutputType() : OutputType.drawable);
                     if (!destination.exists() && parameters.isCreateMissingDirectories()) {
@@ -255,23 +251,7 @@ public class SvgDrawablePlugin {
                 getLog().error("Error while converting " + svg, e);
 			}
         }
-        
-        /******************************************
-         * Generates the play store high res icon *
-         ******************************************/
-        
-        if (highResIcon != null) {
-            try {
-                // TODO : add a garbage density (NO_DENSITY) for the highResIcon
-            	// TODO : make highResIcon size configurable
-            	// TODO : generates other play store assets
-                // TODO : parameterized SIZE
-                getLog().info("Generating high resolution icon");
-                transcode(highResIcon, Density.mdpi, new File("."), 512, 512, null);
-            } catch (IOException | TranscoderException | InstantiationException | IllegalAccessException e) {
-                getLog().error("Error while converting " + highResIcon, e);
-			}
-        }
+
     }
 
     /**
@@ -281,8 +261,9 @@ public class SvgDrawablePlugin {
      * @throws MalformedURLException
      * @throws IOException
      */
+    // TODO integrate functionality into QualifiedSVGResource extends QualifiedResource
     @VisibleForTesting
-    Rectangle extractSVGBounds(QualifiedResource svg) throws MalformedURLException, IOException {
+    Rectangle extractSVGBounds(QualifiedResource svg) throws IOException {
     	// check <svg> attributes first : x, y, width, height
     	SVGDocument svgDocument = getSVGDocument(svg);
     	SVGSVGElement svgElement = svgDocument.getRootElement();
@@ -291,7 +272,7 @@ public class SvgDrawablePlugin {
             UserAgent userAgent = new DensityAwareUserAgent(svg.getDensity().getDpi());
             UnitProcessor.Context context = org.apache.batik.bridge.UnitProcessor.createContext(
             		new BridgeContext(userAgent), svgElement);
-            
+
     		float width = svgLengthInPixels(svgElement.getWidth().getBaseVal(), context);
     		float height = svgLengthInPixels(svgElement.getHeight().getBaseVal(), context);
     		float x = 0;
@@ -303,26 +284,27 @@ public class SvgDrawablePlugin {
     		if (svgElement.getY() != null && svgElement.getY().getBaseVal() != null) {
     			y = svgLengthInPixels(svgElement.getY().getBaseVal(), context);
     		}
-    		
-    		return new Rectangle((int) Math.floor(x), (int) Math.floor(y), (int) Math.ceil(width), (int) Math.ceil(height));
+
+    		return new Rectangle((int) floor(x), (int) floor(y), (int) Math.ceil(width), (int) Math.ceil(height));
     	}
-    	
+
     	// use computed bounds
     	getLog().warn("Take time to fix desired width and height attributes of the root <svg> node for this file... " +
     			"ROI will be computed by magic using Batik " + parameters.getSvgBoundsType().name() + " bounds");
     	return parameters.getSvgBoundsType().getBounds(getGraphicsNode(svgDocument, svg.getDensity().getDpi()));
     }
-    
+
     /**
      * Convert an {@link SVGLength} to a value in {@link SVGLength#SVG_LENGTHTYPE_PX}
      * @param length
      * @param context
      * @return
      */
+    // TODO integrate functionality into QualifiedSVGResource extends QualifiedResource
     private float svgLengthInPixels(SVGLength length, UnitProcessor.Context context) {
     	return UnitProcessor.svgToUserSpace(length.getValueAsString(), "px", UnitProcessor.OTHER_LENGTH, context);
     }
-    
+
     /**
      * Return the {@link GraphicsNode} of the {@link SVGDocument}
      * @param svgDocument
@@ -330,7 +312,8 @@ public class SvgDrawablePlugin {
      * @throws MalformedURLException
      * @throws IOException
      */
-    private GraphicsNode getGraphicsNode(SVGDocument svgDocument, int dpi) throws MalformedURLException, IOException {
+    // TODO integrate functionality into QualifiedSVGResource extends QualifiedResource
+    private GraphicsNode getGraphicsNode(SVGDocument svgDocument, int dpi) throws IOException {
         UserAgent userAgent = new DensityAwareUserAgent(dpi);
         DocumentLoader loader = new DocumentLoader(userAgent);
         BridgeContext ctx = new BridgeContext(userAgent, loader);
@@ -339,7 +322,7 @@ public class SvgDrawablePlugin {
         GraphicsNode rootGN = builder.build(ctx, svgDocument);
         return rootGN;
     }
-    
+
     /**
      * Return the {@link SVGDocument} of the SVG {@link QualifiedResource}
      * @param svg
@@ -347,104 +330,80 @@ public class SvgDrawablePlugin {
      * @throws MalformedURLException
      * @throws IOException
      */
+    // TODO integrate functionality into QualifiedSVGResource extends QualifiedResource
     @VisibleForTesting
-    SVGDocument getSVGDocument(QualifiedResource svg) throws MalformedURLException, IOException {
+    SVGDocument getSVGDocument(QualifiedResource svg) throws IOException {
     	String parser = XMLResourceDescriptor.getXMLParserClassName();
         SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
         return (SVGDocument) f.createDocument(svg.toURI().toURL().toString());
     }
-    
+
     /**
      * Given it's bounds, transcodes a svg file to a raster image for the desired density
      * @param svg
-     * @param targetDensity 
+     * @param targetDensity
      * @param bounds
      * @param destination
      * @throws IOException
      * @throws TranscoderException
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
+     * @throws IllegalAccessException
+     * @throws InstantiationException
      */
+    // TODO no need for bounds when QualifiedSVGResource
     @VisibleForTesting
-    void transcode(QualifiedResource svg, Density targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
-        transcode(svg, targetDensity, destination, 
-                new Float(bounds.getWidth() * svg.getDensity().ratio(targetDensity)), 
-                new Float(bounds.getHeight() * svg.getDensity().ratio(targetDensity)),
-                ninePatch);
-    }
-    
-    /**
-     * Given a desired width and height, transcodes a svg file to a raster image for the desired density
-     * @param svg
-     * @param targetDensity 
-     * @param dest
-     * @param targetWidth
-     * @param targetHeight
-     * @throws IOException
-     * @throws TranscoderException
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
-     */
-    private void transcode(QualifiedResource svg, Density targetDensity, File dest, float targetWidth, float targetHeight, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
-        final Float width = Math.max(new Float(Math.floor(targetWidth)), 1);
-        final Float height = Math.max(new Float(Math.floor(targetHeight)), 1);
+    void transcode(QualifiedResource svg, Density.Value targetDensity, Rectangle bounds, File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
+        double ratio = svg.getDensity().ratio(bounds, targetDensity);
+
+        final Float width = max(new Float(floor(bounds.getWidth() * ratio)), 1);
+        final Float height = max(new Float(floor(bounds.getHeight() * ratio)), 1);
         if (getLog().isDebugEnabled()) {
             getLog().debug("+ target dimensions [width=" + width + " - length=" + height +"]");
         }
         ImageTranscoder t = parameters.getOutputFormat().getTranscoderClass().newInstance();
         if (t instanceof JPEGTranscoder) {
         	// custom jpg hints
-	        t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, Math.min(1, Math.max(0, parameters.getJpgQuality() / 100f)));
-	        t.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, new Color(parameters.getJpgBackgroundColor()));
+	        t.addTranscodingHint(KEY_QUALITY, min(1, max(0, parameters.getJpgQuality() / 100f)));
+	        t.addTranscodingHint(KEY_BACKGROUND_COLOR, new Color(parameters.getJpgBackgroundColor()));
         }
-        t.addTranscodingHint(ImageTranscoder.KEY_WIDTH, width);
-        t.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, height);
+        t.addTranscodingHint(KEY_WIDTH, width);
+        t.addTranscodingHint(KEY_HEIGHT, height);
         TranscoderInput input = new TranscoderInput(svg.toURI().toURL().toString());
-        String outputName = svg.getName();
-        if (parameters.getRename() != null && parameters.getRename().containsKey(outputName)) {
-            if (parameters.getRename().get(outputName) != null && parameters.getRename().get(outputName).matches("\\w+")) {
-                outputName = parameters.getRename().get(outputName);
-            } else {
-                getLog().warn(parameters.getRename().get(outputName) + " is not a valid replacment name for " + outputName);
-            }
-        }
-        
+
         // final name
-        final String finalName = new StringBuilder(dest.getAbsolutePath())
+        final String finalName = new StringBuilder(destination.getAbsolutePath())
             .append(System.getProperty("file.separator"))
-            .append(outputName)
+            .append(svg.getName())
             .append(ninePatch != null && parameters.getOutputFormat().hasNinePatchSupport() ? ".9" : "")
             .append(".")
             .append(parameters.getOutputFormat().name().toLowerCase())
             .toString();
-        
+
         final File finalFile = new File(finalName);
-        
+
         if (parameters.getOverrideMode().shouldOverride(svg, finalFile, parameters.getNinePatchConfig())) {
         	// unit conversion for size not in pixel
-        	t.addTranscodingHint(ImageTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
-        	
+        	t.addTranscodingHint(KEY_PIXEL_UNIT_TO_MILLIMETER, new Float(Constants.MM_PER_INCH / svg.getDensity().getDpi()));
+
             if (ninePatch == null || !parameters.getOutputFormat().hasNinePatchSupport()) {
             	if (ninePatch != null) {
             		getLog().warn("skipping the nine-patch configuration for the JPG output format !!!");
             	}
                 // write file directly
-                OutputStream ostream = new FileOutputStream(finalName);
-                TranscoderOutput output = new TranscoderOutput(ostream);
+                OutputStream os = new FileOutputStream(finalName);
+                TranscoderOutput output = new TranscoderOutput(os);
                 t.transcode(input, output);
-                ostream.flush();
-                ostream.close();
+                os.flush();
+                os.close();
             } else {
                 // write in memory
-                ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-                TranscoderOutput output = new TranscoderOutput(ostream);
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                TranscoderOutput output = new TranscoderOutput(os);
                 t.transcode(input, output);
                 // fill the patch
-                ostream.flush();
-                InputStream istream = new ByteArrayInputStream(ostream.toByteArray());
-                ostream.close();
-                ostream = null;
-                toNinePatch(istream, finalName, ninePatch, svg.getDensity().ratio(targetDensity));
+                os.flush();
+                InputStream is = new ByteArrayInputStream(os.toByteArray());
+                os.close();
+                toNinePatch(is, finalName, ninePatch, ratio);
             }
         } else {
             getLog().debug(finalName + " already exists and is up to date... skiping generation!");
@@ -455,7 +414,7 @@ public class SvgDrawablePlugin {
             }
         }
     }
-    
+
     /**
      * Draw the stretch and content area defined by the {@link NinePatch} around the given image
      * @param is
@@ -469,18 +428,18 @@ public class SvgDrawablePlugin {
         final int w = image.getWidth();
         final int h = image.getHeight();
         BufferedImage ninePatchImage = new BufferedImage(
-                w + 2, 
-                h + 2, 
+                w + 2,
+                h + 2,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics g = ninePatchImage.getGraphics();
         g.drawImage(image, 1, 1, null);
-        
+
         // draw patch
         g.setColor(Color.BLACK);
-        
+
         Zone stretch = ninePatch.getStretch();
         Zone content = ninePatch.getContent();
-        
+
         if (stretch.getX() == null) {
             if (getLog().isDebugEnabled()) {
                 getLog().debug("+ ninepatch stretch(x) [start=0 - size=" + w + "]");
@@ -512,7 +471,7 @@ public class SvgDrawablePlugin {
 	            g.fillRect(0, start + 1, 1, size);
 	        }
         }
-        
+
         if (content.getX() == null) {
             if (getLog().isDebugEnabled()) {
                 getLog().debug("+ ninepatch content(x) [start=0 - size=" + w + "]");
@@ -544,7 +503,7 @@ public class SvgDrawablePlugin {
 	            g.fillRect(w + 1, start + 1, 1, size);
 	        }
         }
-        
+
         ImageIO.write(ninePatchImage, "png", new File(finalName));
     }
 
@@ -582,5 +541,5 @@ public class SvgDrawablePlugin {
         }
         return resources;
     }
-    
+
 }

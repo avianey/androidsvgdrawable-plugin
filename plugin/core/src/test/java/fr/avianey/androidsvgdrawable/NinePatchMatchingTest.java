@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@ public class NinePatchMatchingTest {
     private final boolean resultExpected;
     private final String nameExpected;
 
-    public NinePatchMatchingTest(String fileName, String resourceName, 
+    public NinePatchMatchingTest(String fileName, String resourceName,
             String qualifiedString, boolean resultExpected, String nameExpected) {
          this.fileName = fileName;
          this.resourceName = resourceName;
@@ -63,7 +63,7 @@ public class NinePatchMatchingTest {
          this.resultExpected = resultExpected;
          this.nameExpected = nameExpected;
     }
-    
+
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(
@@ -102,7 +102,7 @@ public class NinePatchMatchingTest {
                             "w700dp-land-fr-xlarge",
                             true,
                             "ma.*"
-                            
+
                         },
                         {"9patch-multiple-regexp-2.json", "matching_name",
                             "w700dp-land-fr",
@@ -126,18 +126,18 @@ public class NinePatchMatchingTest {
                         }
                 });
     }
-    
+
     @Test
     public void fromJson() throws URISyntaxException, JsonIOException, JsonSyntaxException, IOException {
         try (final Reader reader = new InputStreamReader(new FileInputStream(PATH_IN + fileName))) {
             Type t = new TypeToken<Set<NinePatch>>() {}.getType();
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);
-            
+
             QualifiedResource mockedResource = Mockito.mock(QualifiedResource.class);
             Mockito.when(mockedResource.getName()).thenReturn(resourceName);
             Mockito.when(mockedResource.getTypedQualifiers()).thenReturn(typedQualifiers);
-            
+
             NinePatch ninePatch = ninePatchMap.getBestMatch(mockedResource);
             Assert.assertTrue(resultExpected ^ (ninePatch == null));
             if (resultExpected && ninePatch != null) {
@@ -145,5 +145,5 @@ public class NinePatchMatchingTest {
             }
         }
     }
-    
+
 }

@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,19 +41,19 @@ import fr.avianey.androidsvgdrawable.util.TestParameters;
 
 @RunWith(Parameterized.class)
 public class VisualConversionTest {
-	
+
     private static SvgDrawablePlugin plugin;
 
     private static final String PATH_IN  = "./target/test-classes/" + VisualConversionTest.class.getSimpleName() + "/";
     private static final File PATH_OUT  = new File("./target/generated-png/");
-    
+
     // parameters
 	private final String filename;
-    
+
     public VisualConversionTest(String filename) {
     	this.filename = filename;
     }
-    
+
     @BeforeClass
     public static void setup() {
         PATH_OUT.mkdirs();
@@ -76,13 +76,13 @@ public class VisualConversionTest {
         QualifiedResource svg = QualifiedResource.fromFile(new File(PATH_IN + filename + ".svg"));
         Rectangle rect = plugin.extractSVGBounds(svg);
         Assert.assertNotNull(rect);
-        
-        plugin.transcode(svg, svg.getDensity(), rect, PATH_OUT, null);
+
+        plugin.transcode(svg, svg.getDensity().getValue(), rect, PATH_OUT, null);
         BufferedImage transcoded = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + ".png")));
         BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".pngtest")));
         Assert.assertEquals(0, bufferedImagesEqual(transcoded, original), 0.1);
     }
- 
+
     private static double bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
             double inequals = 0;
@@ -98,7 +98,7 @@ public class VisualConversionTest {
             throw new RuntimeException("Image size are not equals");
         }
     }
-    
+
     private static double pixelDistance(int argb1, int argb2) {
         long dist = 0;
         dist += Math.abs((long) ((argb1 & 0xFF000000) - (argb2 & 0xFF000000)) >>> 24);
@@ -107,5 +107,5 @@ public class VisualConversionTest {
         dist += Math.abs((long) ((argb1 & 0x000000FF) - (argb2 & 0x000000FF)));
         return dist;
     }
-    
+
 }

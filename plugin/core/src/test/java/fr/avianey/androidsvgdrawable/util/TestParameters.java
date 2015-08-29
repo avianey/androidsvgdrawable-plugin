@@ -1,8 +1,7 @@
 package fr.avianey.androidsvgdrawable.util;
 
-import java.io.File;
-import java.util.Map;
-
+import java.io.*;
+import java.util.*;
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
 import fr.avianey.androidsvgdrawable.OutputFormat;
@@ -16,7 +15,7 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverrideMode overrideMode = OverrideMode.always;
-    public Density[] targetedDensities;
+    public Density.Value[] targetedDensities;
     public Map<String, String> rename;
     public String highResIcon;
 
@@ -28,7 +27,7 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public File svgMaskResourcesDirectory;
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
-    
+
     // type
     public OutputType outputType = DEFAULT_OUTPUT_TYPE;
 
@@ -61,18 +60,8 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     }
 
     @Override
-    public Density[] getTargetedDensities() {
+    public Density.Value[] getTargetedDensities() {
         return targetedDensities;
-    }
-
-    @Override
-    public Map<String, String> getRename() {
-        return rename;
-    }
-
-    @Override
-    public String getHighResIcon() {
-        return highResIcon;
     }
 
     @Override

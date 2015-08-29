@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.avianey.androidsvgdrawable.util;
+package fr.avianey.androidsvgdrawable;
 
-/**
- * @author antoine vianey
- */
-public final class Constants {
+import java.awt.*;
 
-	public static final float MM_PER_INCH = 25.4f;
+public class RelativeDensity extends Density {
+
+    public RelativeDensity(Value value) {
+        super(value);
+    }
+
+    @Override
+    public double ratio(Rectangle bounds, Density.Value target) {
+        return (double) target.getDpi() / (double) this.getDpi();
+    }
 
 }

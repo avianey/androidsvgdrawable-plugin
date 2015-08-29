@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,15 +32,15 @@ import org.mockito.Mockito;
 
 @RunWith(Parameterized.class)
 public class OverrideModeTest {
-    
+
     private static final long FILE_DOES_NOT_EXIST = 0;
-    
+
     private final OverrideMode overrideMode;
     private final File dest;
     private final File src;
     private final File intermediate;
     private final boolean shouldOverride;
-    
+
     public OverrideModeTest(OverrideMode overrideMode, long srcLastModified, long destLastModified, long intermediateLastModified, boolean shouldOverride) {
         this.overrideMode = overrideMode;
         this.src = Mockito.mock(File.class);
@@ -99,7 +99,7 @@ public class OverrideModeTest {
                 {never, 3, 1, 3, false}
         });
     }
-    
+
     @Test
     public void shouldOverride() {
         assertEquals(shouldOverride, overrideMode.shouldOverride(src, dest, intermediate));

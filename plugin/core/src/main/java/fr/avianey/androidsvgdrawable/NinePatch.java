@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ import fr.avianey.androidsvgdrawable.Qualifier.Type;
  * </dl>
  * If no segment defined for an area along an axis, the whole axis is used as a segment.
  * Coordinates must be include within the svg bounds (width and height).
- * 
+ *
  * @version 1
  * @author antoine vianey
  */
@@ -47,16 +47,16 @@ public class NinePatch {
     private String name;
     private Zone stretch = new Zone();
     private Zone content = new Zone();
-    
+
     // for applying nine-patch config only for some qualified inputs
     private Collection<String> qualifiers;
     private transient Map<Type, String> typedQualifiers;
-    
+
     public static class Zone {
-        
+
         private int[][] x;
         private int[][] y;
-        
+
         /**
          * @return the x
          */
@@ -69,7 +69,7 @@ public class NinePatch {
         public int[][] getY() {
             return y;
         }
-        
+
     }
 
     /**
@@ -92,7 +92,7 @@ public class NinePatch {
     public Map<Type, String> getTypedQualifiers() {
         return typedQualifiers;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static final NinePatchMap init(Set<NinePatch> ninePatchSet) {
         NinePatchMap map = new NinePatchMap();
@@ -126,12 +126,12 @@ public class NinePatch {
      */
     public static final int start(int start, int stop, int d, double ratio) {
         return Math.max(
-        		0, 
+        		0,
         		Math.min(
-        				d - 1, 
+        				d - 1,
         				(int) Math.floor(start * ratio)));
     }
-    
+
     /**
      * Normalized size of the NinePatch segment<br/>
      * The size cannot be lower than 1 and greater than (d - start)...
@@ -144,8 +144,8 @@ public class NinePatch {
     public static final int size(int start, int stop, int d, double ratio) {
         return Math.max(
         		1, Math.min(
-		        		d - start(start, stop, d, ratio), 
+		        		d - start(start, stop, d, ratio),
 		        		Math.max(1, (int) Math.floor((stop - start + 1) * ratio))));
     }
-    
+
 }

@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,11 +56,11 @@ import fr.avianey.androidsvgdrawable.Qualifier.Type;
  * @author antoine vianey
  */
 public class SvgMask {
-	
+
 	private static final Pattern REF_PATTERN = Pattern.compile("^#\\{(.*)\\}$");
 
 	private final QualifiedResource resource;
-	
+
 	public SvgMask(final QualifiedResource resource) {
 		this.resource = resource;
 	}
@@ -68,17 +68,17 @@ public class SvgMask {
 	public QualifiedResource getResource() {
 		return resource;
 	}
-	
+
 	/**
 	 * Generates masked SVG files for each matching combination of available SVG.
 	 * @param dest
 	 * @param availableResources
 	 * @return
-	 * @throws TransformerException 
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-	 * @throws SAXException 
-	 * @throws XPathExpressionException 
+	 * @throws TransformerException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws XPathExpressionException
 	 */
 	public Collection<QualifiedResource> generatesMaskedResources(
 	        File dest, final Collection<QualifiedResource> availableResources,
@@ -86,14 +86,14 @@ public class SvgMask {
 			final OverrideMode overrideMode) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 		// generates output directory
 		dest.mkdirs();
-		
+
 		// parse mask
 		DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
 		dfactory.setNamespaceAware(true);
 		DocumentBuilder builder = dfactory.newDocumentBuilder();
 		Document svgmaskDom = builder.parse(resource);
 		final String svgNamespace = svgmaskDom.getDocumentElement().getNamespaceURI();
-		
+
 		// extract image node
         XPath xPath = XPathFactory.newInstance().newXPath();
         xPath.setNamespaceContext(new NamespaceContext() {
@@ -113,10 +113,10 @@ public class SvgMask {
                 throw new IllegalAccessError("Not implemented!");
             }
         });
-		
+
         // use dummy '_svgdrawable' prefix which is unlikely to be set for the svg namespace
         NodeList value = (NodeList) xPath.evaluate("//_svgdrawable:image", svgmaskDom, XPathConstants.NODESET);
-		List<MaskNode> maskNodes = new ArrayList<MaskNode>();
+		List<MaskNode> maskNodes = new ArrayList<>();
 		for (int i = 0; i < value.getLength(); i++) {
 			Node imageNode = value.item(i);
 			Node href = imageNode.getAttributes().getNamedItemNS("http://www.w3.org/1999/xlink", "href");
@@ -133,14 +133,14 @@ public class SvgMask {
 				}
 			}
 		}
-		
-		final Collection<QualifiedResource> maskedResources = new ArrayList<QualifiedResource>();
-		
+
+		final Collection<QualifiedResource> maskedResources = new ArrayList<>();
+
 		if (!maskNodes.isEmpty()) {
 			// cartesian product
 			// init
-			List<Iterator<QualifiedResource>> iterators = new ArrayList<Iterator<QualifiedResource>>(maskNodes.size());
-			List<QualifiedResource> currents = new ArrayList<QualifiedResource>(maskNodes.size());
+			List<Iterator<QualifiedResource>> iterators = new ArrayList<>(maskNodes.size());
+			List<QualifiedResource> currents = new ArrayList<>(maskNodes.size());
 			for (MaskNode maskNode : maskNodes) {
 				Iterator<QualifiedResource> i = maskNode.matchingResources.iterator();
 				iterators.add(i);
@@ -148,18 +148,18 @@ public class SvgMask {
 			}
 			// each
 			boolean hasNext = false;
-			final Set<File> usedSvg = new HashSet<File>();
+			final Set<File> usedSvg = new HashSet<>();
 			do {
-				
+
 				usedSvg.clear();
 				usedSvg.addAll(currents);
 				if (!useSameSvgOnlyOnceInMask || usedSvg.size() == currents.size()) {
 					// we don't care about using the same svg twice or more
 					// or the current combination contains distinct svg files only
-					
+
 					long lastModified = resource.lastModified();
 					final StringBuilder tmpFileName = new StringBuilder(resource.getName());
-					final EnumMap<Type, String> qualifiers = new EnumMap<Type, String>(Type.class);
+					final EnumMap<Type, String> qualifiers = new EnumMap<>(Type.class);
 					boolean skip = false;
 					for (int i = 0; i < maskNodes.size(); i++) {
 						// replace href attribute with svg file path
@@ -186,7 +186,7 @@ public class SvgMask {
 							lastModified = current.lastModified();
 						}
 					}
-					
+
 					if (!skip) {
 						// generates masked SVG for the current combination
 						// - names against the mask name and the svg name
@@ -194,12 +194,12 @@ public class SvgMask {
 						// - overrideMode support via override of lastModified() in QualifiedResource
 						// - ninePatch support via regexp in ninePatchConfig
 						qualifiers.remove(Type.density);
-						qualifiers.put(Type.density, resource.getDensity().name());
+						qualifiers.put(Type.density, resource.getDensity().getValue().name());
 						final String name = tmpFileName.toString();
 						final File maskedPath = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + ".svg");
-						
+
 						QualifiedResource maskedQualifiedResource = new MaskedQualifiedResource(maskedPath, name, lastModified, qualifiers);;
-						
+
 						// write masked svg
 						if (overrideMode.shouldOverride(maskedQualifiedResource, maskedPath, null)) {
 						    TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -215,10 +215,10 @@ public class SvgMask {
 						    // delegates override or not to final file generation process
                             maskedResources.add(maskedQualifiedResource);
 						}
-						
+
 					}
 				}
-				
+
 				// fill next combination
 				hasNext = false;
 				for (int i = maskNodes.size() - 1; i >= 0; i--) {
@@ -231,19 +231,19 @@ public class SvgMask {
 						currents.set(i, iterators.get(i).next());
 					}
 				}
-				
+
 			} while (hasNext);
 		}
-		
+
 		return maskedResources;
 	}
-	
+
 	private class MaskNode {
-		
+
 		private final Node imageNode;
 		private final String regexp;
 		private final List<QualifiedResource> matchingResources;
-		
+
 		private MaskNode(Node imageNode, String regexp) {
 			this.imageNode = imageNode;
 			this.regexp = regexp;
@@ -260,14 +260,14 @@ public class SvgMask {
 		 * @return
 		 */
 		public boolean accepts(final Collection<QualifiedResource> availableResources) {
-			final Set<Map.Entry<Type, String>> maskQualifiers = new HashSet<Map.Entry<Type, String>>(SvgMask.this.resource.getTypedQualifiers().entrySet());
-			Set<Map.Entry<Type, String>> svgQualifiers = new HashSet<Map.Entry<Type, String>>();
-			maskQualifiers.remove(new AbstractMap.SimpleEntry<Type, String>(Type.density, SvgMask.this.resource.getDensity().name()));
+			final Set<Map.Entry<Type, String>> maskQualifiers = new HashSet<>(SvgMask.this.resource.getTypedQualifiers().entrySet());
+			Set<Map.Entry<Type, String>> svgQualifiers = new HashSet<>();
+			maskQualifiers.remove(new AbstractMap.SimpleEntry<>(Type.density, SvgMask.this.resource.getDensity().getValue().name()));
 			for (QualifiedResource r : availableResources) {
 				if (r.getName().matches(regexp)) {
 				    svgQualifiers.clear();
 					svgQualifiers.addAll(r.getTypedQualifiers().entrySet());
-					svgQualifiers.remove(new AbstractMap.SimpleEntry<Type, String>(Type.density, r.getDensity().name()));
+					svgQualifiers.remove(new AbstractMap.SimpleEntry<>(Type.density, r.getDensity().getValue().name()));
 					if (maskQualifiers.containsAll(svgQualifiers)) {
 						// the mask is valid for this svg
 						matchingResources.add(r);
@@ -276,29 +276,29 @@ public class SvgMask {
 			}
 			return !matchingResources.isEmpty();
 		}
-		
+
 	}
-	
+
 	/**
 	 * A {@link QualifiedResource} with a that have the {@link File#lastModified()} date of the most recent mask or masked resource.
-	 * 
+	 *
 	 * @author antoine vianey
 	 */
 	private static final class MaskedQualifiedResource extends QualifiedResource {
-        
+
         private static final long serialVersionUID = 1L;
-	    
+
 	    private final long lastModified;
-	    
+
 	    private MaskedQualifiedResource(final File path, final String name, final long lastModified, final EnumMap<Type, String> qualifiers) {
 	        super(path, name, qualifiers);
 	        this.lastModified = lastModified;
 	    }
-	    
+
         @Override
         public long lastModified() {
             return lastModified;
         }
     };
-	
+
 }
