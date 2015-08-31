@@ -15,15 +15,16 @@
  */
 package fr.avianey.androidsvgdrawable;
 
+import com.google.common.base.Joiner;
+import fr.avianey.androidsvgdrawable.Qualifier.Type;
+
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
-
-import fr.avianey.androidsvgdrawable.Qualifier.Type;
+import static java.lang.Math.*;
+import static java.util.Collections.EMPTY_MAP;
 
 /**
  * Describe the configuration for a 9-Patch drawable:
@@ -41,7 +42,6 @@ import fr.avianey.androidsvgdrawable.Qualifier.Type;
  * @version 1
  * @author antoine vianey
  */
-// TODO : rename to NinePatchDef or NinePatchConfig
 public class NinePatch {
 
     private String name;
@@ -94,7 +94,7 @@ public class NinePatch {
     }
 
     @SuppressWarnings("unchecked")
-    public static final NinePatchMap init(Set<NinePatch> ninePatchSet) {
+    public static NinePatchMap init(Set<NinePatch> ninePatchSet) {
         NinePatchMap map = new NinePatchMap();
         for (NinePatch ninePatch : ninePatchSet) {
             // classify by name
@@ -106,10 +106,9 @@ public class NinePatch {
             set.add(ninePatch);
             // extract qualifiers
             if (ninePatch.qualifiers != null) {
-                ninePatch.typedQualifiers = Qualifier.fromQualifiedString(
-                        Joiner.on("-").join(ninePatch.qualifiers));
+                ninePatch.typedQualifiers = Qualifier.fromQualifiedString(Joiner.on("-").join(ninePatch.qualifiers));
             } else {
-                ninePatch.typedQualifiers = Collections.EMPTY_MAP;
+                ninePatch.typedQualifiers = EMPTY_MAP;
             }
         }
         return map;
@@ -119,17 +118,12 @@ public class NinePatch {
      * Normalized start of the NinePatch segment<br/>
      * The start cannot be higher than d...
      * @param start
-     * @param stop
      * @param d
      * @param ratio
      * @return
      */
-    public static final int start(int start, int stop, int d, double ratio) {
-        return Math.max(
-        		0,
-        		Math.min(
-        				d - 1,
-        				(int) Math.floor(start * ratio)));
+    public static int start(int start, int d, double ratio) {
+        return max(0, min(d - 1, (int) floor(start * ratio)));
     }
 
     /**
@@ -141,11 +135,8 @@ public class NinePatch {
      * @param ratio
      * @return
      */
-    public static final int size(int start, int stop, int d, double ratio) {
-        return Math.max(
-        		1, Math.min(
-		        		d - start(start, stop, d, ratio),
-		        		Math.max(1, (int) Math.floor((stop - start + 1) * ratio))));
+    public static int size(int start, int stop, int d, double ratio) {
+        return max(1, min(d - start(start, d, ratio), max(1, (int) floor((stop - start + 1) * ratio))));
     }
 
 }

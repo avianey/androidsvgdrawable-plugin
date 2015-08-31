@@ -15,10 +15,12 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.awt.*;
-import java.util.regex.*;
 import fr.avianey.androidsvgdrawable.ConstrainedDensity.Side;
 import fr.avianey.androidsvgdrawable.Qualifier.Type;
+
+import java.awt.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,8 +29,8 @@ public abstract class Density {
 
     private static final Pattern PATTERN = Pattern.compile(Type.density.getRegexp());
 
+    // TODO forbid nodpi
     public static Density from(String value) {
-        System.out.println(value);
         Matcher m = PATTERN.matcher(value);
         checkArgument(m.matches());
         if (m.group(1) != null && m.group(2) != null) {

@@ -15,21 +15,11 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import fr.avianey.androidsvgdrawable.Qualifier.Type;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -44,13 +34,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import fr.avianey.androidsvgdrawable.Qualifier.Type;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author antoine vianey
@@ -69,18 +60,23 @@ public class SvgMask {
 		return resource;
 	}
 
-	/**
-	 * Generates masked SVG files for each matching combination of available SVG.
-	 * @param dest
-	 * @param availableResources
-	 * @return
-	 * @throws TransformerException
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws XPathExpressionException
-	 */
+    /**
+     *
+     * Generates masked SVG files for each matching combination of available SVG.
+     * @param qualifiedSVGResourceFactory
+     * @param dest
+     * @param availableResources
+     * @param useSameSvgOnlyOnceInMask
+     * @param overrideMode
+     * @return
+     * @throws TransformerException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
 	public Collection<QualifiedResource> generatesMaskedResources(
+			QualifiedSVGResourceFactory qualifiedSVGResourceFactory,
 	        File dest, final Collection<QualifiedResource> availableResources,
 			final boolean useSameSvgOnlyOnceInMask,
 			final OverrideMode overrideMode) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
@@ -157,7 +153,7 @@ public class SvgMask {
 					// we don't care about using the same svg twice or more
 					// or the current combination contains distinct svg files only
 
-					long lastModified = resource.lastModified();
+					final AtomicLong lastModified = new AtomicLong(resource.lastModified());
 					final StringBuilder tmpFileName = new StringBuilder(resource.getName());
 					final EnumMap<Type, String> qualifiers = new EnumMap<>(Type.class);
 					boolean skip = false;
@@ -182,8 +178,8 @@ public class SvgMask {
 						// union the qualifiers
 						qualifiers.putAll(current.getTypedQualifiers());
 						// update lastModified
-						if (current.lastModified() > lastModified) {
-							lastModified = current.lastModified();
+						if (current.lastModified() > lastModified.get()) {
+							lastModified.set(current.lastModified());
 						}
 					}
 
@@ -196,25 +192,29 @@ public class SvgMask {
 						qualifiers.remove(Type.density);
 						qualifiers.put(Type.density, resource.getDensity().getValue().name());
 						final String name = tmpFileName.toString();
-						final File maskedPath = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + ".svg");
-
-						QualifiedResource maskedQualifiedResource = new MaskedQualifiedResource(maskedPath, name, lastModified, qualifiers);;
+						final File maskedFile = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + ".svg") {
+							@Override
+							public long lastModified() {
+								return lastModified.get();
+							}
+						};
 
 						// write masked svg
-						if (overrideMode.shouldOverride(maskedQualifiedResource, maskedPath, null)) {
+						if (overrideMode.shouldOverride(maskedFile, new File(maskedFile.getAbsolutePath()), null)) {
 						    TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(svgmaskDom);
-							if (maskedQualifiedResource.exists() || maskedQualifiedResource.createNewFile()) {
-								StreamResult result = new StreamResult(new FileOutputStream(maskedQualifiedResource));
-								transformer.transform(source, result);
-								maskedResources.add(maskedQualifiedResource);
+							if (!maskedFile.exists() && !maskedFile.createNewFile()) {
+								// problem occurred
+								continue;
 							}
+							StreamResult result = new StreamResult(new FileOutputStream(maskedFile));
+							transformer.transform(source, result);
 						} else {
 						    // no need to re-generate masked file
 						    // delegates override or not to final file generation process
-                            maskedResources.add(maskedQualifiedResource);
 						}
+						maskedResources.add(qualifiedSVGResourceFactory.fromSVGFile(maskedFile));
 
 					}
 				}
@@ -278,27 +278,5 @@ public class SvgMask {
 		}
 
 	}
-
-	/**
-	 * A {@link QualifiedResource} with a that have the {@link File#lastModified()} date of the most recent mask or masked resource.
-	 *
-	 * @author antoine vianey
-	 */
-	private static final class MaskedQualifiedResource extends QualifiedResource {
-
-        private static final long serialVersionUID = 1L;
-
-	    private final long lastModified;
-
-	    private MaskedQualifiedResource(final File path, final String name, final long lastModified, final EnumMap<Type, String> qualifiers) {
-	        super(path, name, qualifiers);
-	        this.lastModified = lastModified;
-	    }
-
-        @Override
-        public long lastModified() {
-            return lastModified;
-        }
-    };
 
 }

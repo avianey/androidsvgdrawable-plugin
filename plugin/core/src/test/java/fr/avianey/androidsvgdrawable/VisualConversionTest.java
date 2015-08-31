@@ -15,19 +15,9 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.Collection;
-
-import javax.imageio.ImageIO;
-
+import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
-import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,17 +25,24 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
-import fr.avianey.androidsvgdrawable.util.TestLogger;
-import fr.avianey.androidsvgdrawable.util.TestParameters;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 @RunWith(Parameterized.class)
+// TODO generate reference PNG with the targeted jdk instead of approximate the result
 public class VisualConversionTest {
-
-    private static SvgDrawablePlugin plugin;
 
     private static final String PATH_IN  = "./target/test-classes/" + VisualConversionTest.class.getSimpleName() + "/";
     private static final File PATH_OUT  = new File("./target/generated-png/");
+
+    private static SvgDrawablePlugin plugin;
+    private static QualifiedSVGResourceFactory qualifiedSVGResourceFactory;
 
     // parameters
 	private final String filename;
@@ -58,6 +55,7 @@ public class VisualConversionTest {
     public static void setup() {
         PATH_OUT.mkdirs();
         plugin = new SvgDrawablePlugin(new TestParameters(), new TestLogger());
+        qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
     }
 
     @Parameters
@@ -71,13 +69,13 @@ public class VisualConversionTest {
     }
 
     @Test
-    public void test() throws MalformedURLException, IOException, TranscoderException, InstantiationException, IllegalAccessException {
+    public void test() throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
     	// verify bounds
-        QualifiedResource svg = QualifiedResource.fromFile(new File(PATH_IN + filename + ".svg"));
-        Rectangle rect = plugin.extractSVGBounds(svg);
+        QualifiedResource svg = qualifiedSVGResourceFactory.fromSVGFile(new File(PATH_IN + filename + ".svg"));
+        Rectangle rect = svg.getBounds();
         Assert.assertNotNull(rect);
 
-        plugin.transcode(svg, svg.getDensity().getValue(), rect, PATH_OUT, null);
+        plugin.transcode(svg, svg.getDensity().getValue(), PATH_OUT, null);
         BufferedImage transcoded = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + ".png")));
         BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".pngtest")));
         Assert.assertEquals(0, bufferedImagesEqual(transcoded, original), 0.1);

@@ -15,21 +15,13 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Type;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
+import fr.avianey.androidsvgdrawable.util.TestLogger;
+import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.FilenameUtils;
 import org.joor.Reflect;
@@ -40,19 +32,23 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 
-import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
-import fr.avianey.androidsvgdrawable.util.TestLogger;
-import fr.avianey.androidsvgdrawable.util.TestParameters;
+import static fr.avianey.androidsvgdrawable.Density.Value.*;
+import static fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite.OUTPUT_FORMAT;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class NinePatchGenerationTest {
 
-	private static class PixelTester {
+    private static class PixelTester {
 
 		final int[][] on;
 		final int[][] off;
@@ -76,20 +72,23 @@ public class NinePatchGenerationTest {
 
 	}
 
-	private static final String PATH_IN  = "./target/test-classes/" + NinePatchGenerationTest.class.getSimpleName() + "/";
+    private static final String PATH_IN  = "./target/test-classes/" + NinePatchGenerationTest.class.getSimpleName() + "/";
+
+    private static SvgDrawablePlugin plugin;
+    private static QualifiedSVGResourceFactory qualifiedSVGResourceFactory;
 
     private final String ninePatchConfig;
     private final String resourceName;
     private final Density.Value targetDensity;
-    private final PixelTester tester;
 
-    private static SvgDrawablePlugin plugin;
+    private final PixelTester tester;
 
     @BeforeClass
     public static void setup() {
         TestParameters parameters = new TestParameters();
-        parameters.outputFormat = GenDrawableTestSuite.OUTPUT_FORMAT;
+        parameters.outputFormat = OUTPUT_FORMAT;
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
+        qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
     }
 
     public NinePatchGenerationTest(
@@ -106,7 +105,7 @@ public class NinePatchGenerationTest {
         return Arrays.asList(
                 new Object[][] {
                         {
-                            "ninepatch-mdpi.svg", "ninepatch.json", Density.Value.mdpi,
+                            "ninepatch-mdpi.svg", "ninepatch.json", mdpi,
                             new int[][] {
                                     {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, // stretch x
                                     {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // content y
@@ -121,7 +120,7 @@ public class NinePatchGenerationTest {
                             }
                         },
                         {
-                            "ninepatch-mdpi.svg", "ninepatch.json", Density.Value.hdpi,
+                            "ninepatch-mdpi.svg", "ninepatch.json", hdpi,
                             new int[][] {
                                     {4, 0}, {12, 0}, // stretch x
                                     {0, 1}, {0, 15}, // content y
@@ -139,7 +138,7 @@ public class NinePatchGenerationTest {
                     	// https://github.com/avianey/androidsvgdrawable-plugin/issues/12
                     	// size can't be < 1 when scaling down svg to a lower density
                         {
-                            "width_1-mdpi.svg", "width_1.json", Density.Value.ldpi,
+                            "width_1-mdpi.svg", "width_1.json", ldpi,
                             new int[][] {},
                             new int[][] {}
                         },
@@ -147,52 +146,52 @@ public class NinePatchGenerationTest {
                     	// https://github.com/avianey/androidsvgdrawable-plugin/issues/14
                     	// corners must be transparents
                         {
-                            "simple_square-mdpi.svg", "simple_square.json", Density.Value.mdpi,
+                            "simple_square-mdpi.svg", "simple_square.json", mdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "simple_square-mdpi.svg", "simple_square.json", Density.Value.ldpi,
+                            "simple_square-mdpi.svg", "simple_square.json", ldpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "simple_square-mdpi.svg", "simple_square.json", Density.Value.hdpi,
+                            "simple_square-mdpi.svg", "simple_square.json", hdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "simple_square-mdpi.svg", "simple_square.json", Density.Value.xhdpi,
+                            "simple_square-mdpi.svg", "simple_square.json", xhdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "width_too_large-mdpi.svg", "width_too_large.json", Density.Value.mdpi,
+                            "width_too_large-mdpi.svg", "width_too_large.json", mdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "width_too_large-mdpi.svg", "width_too_large.json", Density.Value.ldpi,
+                            "width_too_large-mdpi.svg", "width_too_large.json", ldpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "width_too_large-mdpi.svg", "width_too_large.json", Density.Value.hdpi,
+                            "width_too_large-mdpi.svg", "width_too_large.json", hdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "width_too_large-mdpi.svg", "width_too_large.json", Density.Value.xhdpi,
+                            "width_too_large-mdpi.svg", "width_too_large.json", xhdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "width_too_large-mdpi.svg", "width_too_large.json", Density.Value.xxhdpi,
+                            "width_too_large-mdpi.svg", "width_too_large.json", xxhdpi,
                             new int[][] {},
                             new int[][] {}
                         },
                         {
-                            "width_too_large-mdpi.svg", "width_too_large.json", Density.Value.xxxhdpi,
+                            "width_too_large-mdpi.svg", "width_too_large.json", xxxhdpi,
                             new int[][] {},
                             new int[][] {}
                         }
@@ -205,21 +204,20 @@ public class NinePatchGenerationTest {
             Type t = new TypeToken<Set<NinePatch>>() {}.getType();
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);
-            QualifiedResource svg = QualifiedResource.fromFile(new File(PATH_IN + resourceName));
+            QualifiedResource svg = qualifiedSVGResourceFactory.fromSVGFile(new File(PATH_IN + resourceName));
             NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
 
             Assert.assertNotNull(ninePatch);
 
             final String name = svg.getName();
         	Reflect.on(svg).set("name", name + "_" + targetDensity.name());
-        	Rectangle bounds = plugin.extractSVGBounds(svg);
-	        plugin.transcode(svg, targetDensity, bounds, new File(GenDrawableTestSuite.PATH_OUT), ninePatch);
-	        final File ninePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + ".9." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase());
-            final File nonNinePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + GenDrawableTestSuite.OUTPUT_FORMAT.name().toLowerCase());
+	        plugin.transcode(svg, targetDensity, new File(GenDrawableTestSuite.PATH_OUT), ninePatch);
+	        final File ninePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + ".9." + OUTPUT_FORMAT.name().toLowerCase());
+            final File nonNinePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + OUTPUT_FORMAT.name().toLowerCase());
 
-            if (GenDrawableTestSuite.OUTPUT_FORMAT.hasNinePatchSupport()) {
-            	Assert.assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " does not exists although the output format supports nine patch", ninePatchFile.exists());
-            	Assert.assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " file does not exists although the output format supports nine patch", !nonNinePatchFile.exists());
+            if (OUTPUT_FORMAT.hasNinePatchSupport()) {
+            	assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " does not exists although the output format supports nine patch", ninePatchFile.exists());
+            	assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " file does not exists although the output format supports nine patch", !nonNinePatchFile.exists());
 	            BufferedImage image = ImageIO.read(new FileInputStream(ninePatchFile));
 		        tester.test(image);
 		        // test corner pixels
@@ -232,8 +230,8 @@ public class NinePatchGenerationTest {
 		        		{w - 1, h - 1}
 		        }).test(image);
             } else {
-            	Assert.assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " exists although the output format does not support nine patch", !ninePatchFile.exists());
-            	Assert.assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " does not exists although the output format does not support nine patch", nonNinePatchFile.exists());
+            	assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " exists although the output format does not support nine patch", !ninePatchFile.exists());
+            	assertTrue(FilenameUtils.getName(nonNinePatchFile.getAbsolutePath()) + " does not exists although the output format does not support nine patch", nonNinePatchFile.exists());
             }
         }
     }

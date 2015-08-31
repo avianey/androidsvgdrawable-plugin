@@ -28,32 +28,6 @@ import java.util.regex.Pattern;
  */
 public final class Qualifier {
 
-    /**
-     * Exception thrown when the parsed input is not a valid resource directory name.
-     */
-    public static class InvalidResourceDirectoryName extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        public InvalidResourceDirectoryName() {
-            super();
-        }
-    }
-
-    /**
-     * Exception thrown when the parsed input is not a valid svg name.
-     * <ul>
-     * <li>has no {@link Qualifier}</li>
-     * <li>doesn't start with the density {@link Qualifier}</li>
-     * </ul>
-     */
-    public static class InvalidSVGName extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        public InvalidSVGName(String msg) {
-            super(msg);
-        }
-    }
-
     private static class Acceptor {
 
         private final String regexp;
@@ -146,7 +120,7 @@ public final class Qualifier {
      * @param qualifiers
      * @return
      */
-    static String toQualifiedString(final EnumMap<Type, String> qualifiers) {
+    static String toQualifiedString(final Map<Type, String> qualifiers) {
     	StringBuilder builder = new StringBuilder("");
         for (Type type : qualifiers.keySet()) {
             builder.append("-");
@@ -160,8 +134,8 @@ public final class Qualifier {
      * @param qualifiedString
      * @return
      */
-    static EnumMap<Type, String> fromQualifiedString(final String qualifiedString) {
-        final EnumMap<Type, String> typedQualifiers = new EnumMap<>(Type.class);
+    static Map<Type, String> fromQualifiedString(final String qualifiedString) {
+        final Map<Type, String> typedQualifiers = new EnumMap<>(Type.class);
         if (qualifiedString == null) {
             return typedQualifiers;
         }

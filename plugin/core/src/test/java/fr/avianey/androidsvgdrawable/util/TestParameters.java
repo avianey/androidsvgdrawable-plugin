@@ -1,13 +1,8 @@
 package fr.avianey.androidsvgdrawable.util;
 
-import java.io.*;
-import java.util.*;
-import fr.avianey.androidsvgdrawable.BoundsType;
-import fr.avianey.androidsvgdrawable.Density;
-import fr.avianey.androidsvgdrawable.OutputFormat;
-import fr.avianey.androidsvgdrawable.OutputType;
-import fr.avianey.androidsvgdrawable.OverrideMode;
-import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
+import fr.avianey.androidsvgdrawable.*;
+
+import java.io.File;
 
 public class TestParameters implements SvgDrawablePlugin.Parameters {
 
@@ -16,8 +11,6 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverrideMode overrideMode = OverrideMode.always;
     public Density.Value[] targetedDensities;
-    public Map<String, String> rename;
-    public String highResIcon;
 
     // nine patch
     public File ninePatchConfig;

@@ -15,14 +15,14 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static java.lang.Math.floor;
 import static java.lang.Math.max;
@@ -126,7 +126,7 @@ public class NinePatchStartStopTest {
 
     @Test
     public void start() {
-    	final int computedStart = NinePatch.start(start, stop, d, ratio(in, out));
+    	final int computedStart = NinePatch.start(start, d, ratio(in, out));
         Assert.assertEquals(expectedStart, computedStart);
         // start is in the box
         Assert.assertTrue("Start point is < 0", computedStart >= 0);
@@ -139,7 +139,7 @@ public class NinePatchStartStopTest {
         Assert.assertEquals(expectedSize, computedSize);
         Assert.assertTrue("Computed size is < 1", computedSize >= 1);
         // end is in the box
-    	int computedStart = NinePatch.start(start, stop, d, ratio(in, out));
+    	int computedStart = NinePatch.start(start, d, ratio(in, out));
         Assert.assertTrue("End point is outside boundaries " + (computedStart + computedSize - 1) + " >= " + d, computedStart + computedSize - 1 < d);
     }
 
