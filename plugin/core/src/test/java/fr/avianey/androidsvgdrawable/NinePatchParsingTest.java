@@ -15,6 +15,18 @@
  */
 package fr.avianey.androidsvgdrawable;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import fr.avianey.androidsvgdrawable.NinePatch.Zone;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,28 +38,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mockito;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import fr.avianey.androidsvgdrawable.NinePatch;
-import fr.avianey.androidsvgdrawable.NinePatchMap;
-import fr.avianey.androidsvgdrawable.QualifiedResource;
-import fr.avianey.androidsvgdrawable.Qualifier;
-import fr.avianey.androidsvgdrawable.NinePatch.Zone;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class NinePatchParsingTest {

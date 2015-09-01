@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static java.lang.Math.abs;
+import static org.junit.Assert.assertEquals;
+
 @RunWith(Parameterized.class)
 // TODO generate reference PNG with the targeted jdk instead of approximate the result
 public class VisualConversionTest {
@@ -62,7 +65,7 @@ public class VisualConversionTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(
         				new Object[][] {
-                                {"ic_screen_rotation-mdpi"},   // https://github.com/google/material-design-icons
+                                {"ic_screen_rotation-mdpi"}, // https://github.com/google/material-design-icons
                                 {"issue_29-mdpi"} // https://github.com/avianey/androidsvgdrawable-plugin/issues/29
         				}
         		);
@@ -78,7 +81,7 @@ public class VisualConversionTest {
         plugin.transcode(svg, svg.getDensity().getValue(), PATH_OUT, null);
         BufferedImage transcoded = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + ".png")));
         BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".pngtest")));
-        Assert.assertEquals(0, bufferedImagesEqual(transcoded, original), 0.1);
+        assertEquals(0, bufferedImagesEqual(transcoded, original), 0.1);
     }
 
     private static double bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
@@ -98,11 +101,10 @@ public class VisualConversionTest {
     }
 
     private static double pixelDistance(int argb1, int argb2) {
-        long dist = 0;
-        dist += Math.abs((long) ((argb1 & 0xFF000000) - (argb2 & 0xFF000000)) >>> 24);
-        dist += Math.abs((long) ((argb1 & 0x00FF0000) - (argb2 & 0x00FF0000)) >>> 16);
-        dist += Math.abs((long) ((argb1 & 0x0000FF00) - (argb2 & 0x0000FF00)) >>> 8);
-        dist += Math.abs((long) ((argb1 & 0x000000FF) - (argb2 & 0x000000FF)));
+        long dist = abs((long) ((argb1 & 0xFF000000) - (argb2 & 0xFF000000)) >>> 24);
+        dist += abs((long) ((argb1 & 0x00FF0000) - (argb2 & 0x00FF0000)) >>> 16);
+        dist += abs((long) ((argb1 & 0x0000FF00) - (argb2 & 0x0000FF00)) >>> 8);
+        dist += abs((long) ((argb1 & 0x000000FF) - (argb2 & 0x000000FF)));
         return dist;
     }
 

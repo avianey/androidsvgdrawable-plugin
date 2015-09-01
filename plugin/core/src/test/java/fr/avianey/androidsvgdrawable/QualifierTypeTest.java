@@ -15,18 +15,18 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.junit.Assert;
+import fr.avianey.androidsvgdrawable.Qualifier.Type;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import fr.avianey.androidsvgdrawable.Qualifier.Type;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class QualifierTypeTest {
@@ -49,17 +49,25 @@ public class QualifierTypeTest {
                         {"notlong", Type.aspect, true},
                         {"mdpi", Type.aspect, false},
                         {"round", Type.round, true},
-                        {"notround", Type.round, true}
+                        {"notround", Type.round, true},
+                        {"ldpi", Type.density, true},
+                        {"hldpi", Type.density, false},
+                        {"wldpi", Type.density, false},
+                        {"w32ldpi", Type.density, true},
+                        {"w32ldpi", Type.density, true},
+                        {"w32mdpi", Type.density, true},
+                        {"w32hdpi", Type.density, true},
+                        {"w32xhdpi", Type.density, true},
+                        {"w32xxhdpi", Type.density, true},
+                        {"w32xxxhdpi", Type.density, true},
+                        {"h32mdpi", Type.density, true}
                 });
     }
 
     @Test
     public void parse() {
         Matcher m = Pattern.compile(type.getRegexp()).matcher(input);
-        Assert.assertEquals(successExpected, m.matches());
-        if (successExpected) {
-            Assert.assertEquals(0, m.groupCount());
-        }
+        assertEquals(successExpected, m.matches());
     }
 
 }

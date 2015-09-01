@@ -15,6 +15,17 @@
  */
 package fr.avianey.androidsvgdrawable;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import org.joor.Reflect;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,23 +37,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.joor.Reflect;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mockito;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import fr.avianey.androidsvgdrawable.NinePatch;
-import fr.avianey.androidsvgdrawable.NinePatchMap;
-import fr.avianey.androidsvgdrawable.QualifiedResource;
-import fr.avianey.androidsvgdrawable.Qualifier;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class NinePatchMatchingTest {
@@ -55,8 +51,7 @@ public class NinePatchMatchingTest {
     private final boolean resultExpected;
     private final String nameExpected;
 
-    public NinePatchMatchingTest(String fileName, String resourceName,
-            String qualifiedString, boolean resultExpected, String nameExpected) {
+    public NinePatchMatchingTest(String fileName, String resourceName, String qualifiedString, boolean resultExpected, String nameExpected) {
          this.fileName = fileName;
          this.resourceName = resourceName;
          this.typedQualifiers = Qualifier.fromQualifiedString(qualifiedString);
@@ -139,9 +134,9 @@ public class NinePatchMatchingTest {
             Mockito.when(mockedResource.getTypedQualifiers()).thenReturn(typedQualifiers);
 
             NinePatch ninePatch = ninePatchMap.getBestMatch(mockedResource);
-            Assert.assertTrue(resultExpected ^ (ninePatch == null));
+            assertTrue(resultExpected ^ (ninePatch == null));
             if (resultExpected && ninePatch != null) {
-            	Assert.assertEquals(nameExpected, Reflect.on(ninePatch).get("name"));
+            	assertEquals(nameExpected, Reflect.on(ninePatch).get("name"));
             }
         }
     }

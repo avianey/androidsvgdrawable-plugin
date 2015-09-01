@@ -101,6 +101,7 @@ public class QualifiedStringTest {
                         }, "fr-land-mdpi"},
                         // error cases
                         {"mdpilandfr", null, null},
+                        {"hmdpi", null, null},
                         {"32mdpi", null, null},
                         {"a32mdpi", null, null},
                         {"", null, null},

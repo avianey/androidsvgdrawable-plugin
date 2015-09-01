@@ -43,6 +43,7 @@ import java.util.Set;
 
 import static fr.avianey.androidsvgdrawable.Density.Value.*;
 import static fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite.OUTPUT_FORMAT;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -66,7 +67,7 @@ public class NinePatchGenerationTest {
 		private void test(BufferedImage image, int[][] pixels, int argb, int mask) {
 			for (int[] pixel : pixels) {
 				int color = image.getRGB(pixel[0], pixel[1]);
-				Assert.assertEquals("Bad pixel at (" + pixel[0] + "," + pixel[1] + ") pixel color is " + Integer.toHexString(color), argb & mask, color & mask);
+				assertEquals("Bad pixel at (" + pixel[0] + "," + pixel[1] + ") pixel color is " + Integer.toHexString(color), argb & mask, color & mask);
 			}
 		}
 

@@ -18,7 +18,6 @@ package fr.avianey.androidsvgdrawable;
 import fr.avianey.androidsvgdrawable.util.TestLogger;
 import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +33,8 @@ import java.io.IOException;
 import java.util.*;
 
 import static fr.avianey.androidsvgdrawable.Density.Value.mdpi;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class SvgMaskTest {
@@ -58,7 +59,6 @@ public class SvgMaskTest {
     public static void setup() {
         plugin = new SvgDrawablePlugin(new TestParameters(), new TestLogger());
 		qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
-		//
         output = new File(PATH_OUT_PNG);
         output.mkdirs();
     }
@@ -199,12 +199,12 @@ public class SvgMaskTest {
     	QualifiedResource maskResource = qualifiedSVGResourceFactory.fromSVGFile(new File(PATH_IN, mask));
     	SvgMask svgMask = new SvgMask(maskResource);
     	Collection<QualifiedResource> maskedResources = svgMask.generatesMaskedResources(qualifiedSVGResourceFactory, dir, resources, useSameSvgOnlyOnceInMask, OverrideMode.always);
-    	Assert.assertEquals(maskedResourcesNames.size(), maskedResources.size());
-    	Assert.assertEquals(maskedResourcesNames.size(), dir.list().length);
+    	assertEquals(maskedResourcesNames.size(), maskedResources.size());
+    	assertEquals(maskedResourcesNames.size(), dir.list().length);
     	QualifiedResource qr;
     	for (String maskedResource : maskedResourcesNames) {
             qr = qualifiedSVGResourceFactory.fromSVGFile(new File(dir, maskedResource));
-    		Assert.assertTrue(qr.exists());
+    		assertTrue(qr.exists());
             plugin.transcode(qr, mdpi, output, null);
     	}
 

@@ -29,7 +29,6 @@ public abstract class Density {
 
     private static final Pattern PATTERN = Pattern.compile(Type.density.getRegexp());
 
-    // TODO forbid nodpi
     public static Density from(String value) {
         Matcher m = PATTERN.matcher(value);
         checkArgument(m.matches());

@@ -233,7 +233,6 @@ public class SvgDrawablePlugin {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    // TODO no need for bounds when QualifiedSVGResource
     @VisibleForTesting
     void transcode(QualifiedResource svg, Density.Value targetDensity, File destination, NinePatch ninePatch) throws IOException, TranscoderException, InstantiationException, IllegalAccessException {
         final Rectangle outputBounds = svg.getScaledBounds(targetDensity);
