@@ -172,7 +172,7 @@ Given the following SVG file you don't want to edit :
    height="500"
 ```
 
-You can adjust it to be 32 pixels width or height for the `mdpi` density by changing its name to :
+You can adjust it to be 32 pixels width or height at the `mdpi` density by changing its name to :
 
 -   `name-w32mdpi.svg`
 -   `name-h32mdpi.svg`
