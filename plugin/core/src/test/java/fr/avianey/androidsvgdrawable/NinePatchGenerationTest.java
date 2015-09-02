@@ -25,7 +25,6 @@ import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.FilenameUtils;
 import org.joor.Reflect;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +42,7 @@ import java.util.Set;
 
 import static fr.avianey.androidsvgdrawable.Density.Value.*;
 import static fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite.OUTPUT_FORMAT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class NinePatchGenerationTest {
@@ -109,28 +107,88 @@ public class NinePatchGenerationTest {
                             "ninepatch-mdpi.svg", "ninepatch.json", mdpi,
                             new int[][] {
                                     {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, // stretch x
-                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // content y
+                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // stretch y
                                     {5, 13}, {6, 13}, // content x
                                     {11, 5}, {11, 6}  // content y
                             },
                             new int[][] {
                                     {0, 0}, {1, 0}, {2, 0}, {9, 0}, {10, 0}, {11, 0}, // stretch x
-                                    {0, 0}, {0, 11}, {0, 12}, {0, 13}, // content y
+                                    {0, 0}, {0, 11}, {0, 12}, {0, 13}, // stretch y
                                     {1, 13}, {2, 13}, {3, 13}, {4, 13}, {7, 13}, {8, 13}, {9, 13}, {10, 13}, // content x
                                     {11, 1}, {11, 2}, {11, 3}, {11, 4}, {11, 7}, {11, 8}, {11, 9}, {11, 10}, {11, 11}, {11, 12} // content y
+                            }
+                        },
+                        {
+                            "ninepatch-w10mdpi.svg", "ninepatch.json", mdpi,
+                            new int[][] {
+                                    {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, // stretch x
+                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // stretch y
+                                    {5, 13}, {6, 13}, // content x
+                                    {11, 5}, {11, 6}  // content y
+                            },
+                            new int[][] {
+                                    {0, 0}, {1, 0}, {2, 0}, {9, 0}, {10, 0}, {11, 0}, // stretch x
+                                    {0, 0}, {0, 11}, {0, 12}, {0, 13}, // stretch y
+                                    {1, 13}, {2, 13}, {3, 13}, {4, 13}, {7, 13}, {8, 13}, {9, 13}, {10, 13}, // content x
+                                    {11, 1}, {11, 2}, {11, 3}, {11, 4}, {11, 7}, {11, 8}, {11, 9}, {11, 10}, {11, 11}, {11, 12} // content y
+                            }
+                        },
+                        {
+                            "ninepatch-h12mdpi.svg", "ninepatch.json", mdpi,
+                            new int[][] {
+                                    {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0}, // stretch x
+                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, // stretch y
+                                    {5, 13}, {6, 13}, // content x
+                                    {11, 5}, {11, 6}  // content y
+                            },
+                            new int[][] {
+                                    {0, 0}, {1, 0}, {2, 0}, {9, 0}, {10, 0}, {11, 0}, // stretch x
+                                    {0, 0}, {0, 11}, {0, 12}, {0, 13}, // stretch y
+                                    {1, 13}, {2, 13}, {3, 13}, {4, 13}, {7, 13}, {8, 13}, {9, 13}, {10, 13}, // content x
+                                    {11, 1}, {11, 2}, {11, 3}, {11, 4}, {11, 7}, {11, 8}, {11, 9}, {11, 10}, {11, 11}, {11, 12} // content y
+                            }
+                        },
+                        {
+                            "ninepatch-h24mdpi.svg", "ninepatch.json", mdpi,
+                            new int[][] {
+                                    {5, 0}, {6, 0}, {7, 0}, {8, 0}, {9, 0}, {10, 0}, {11, 0}, {12, 0}, {13, 0}, {14, 0}, {15, 0}, {16, 0}, // stretch x
+                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, {0, 11}, {0, 12}, {0, 13}, {0, 14}, {0, 15}, {0, 16}, {0, 17}, {0, 18}, {0, 19}, {0, 20}, // stretch y
+                                    {9, 25}, {10, 25}, {11, 25}, {12, 25}, // content x
+                                    {21, 9}, {21, 10}, {21, 11}, {21, 12}  // content y
+                            },
+                            new int[][] {
+                                    {0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}, {17, 0}, {18, 0}, {19, 0}, {20, 0}, {21, 0}, // stretch x
+                                    {0, 0}, {0, 22}, {0, 23}, {0, 24}, // stretch y
+                                    {0, 25}, {1, 25}, {2, 25}, {3, 25}, {4, 25}, {5, 25}, {6, 25}, {7, 25}, {8, 25}, {13, 25}, {14, 25}, {15, 25}, {16, 25}, {17, 25}, {18, 25}, {19, 25}, {20, 25}, {21, 25}, // content x
+                                    {21, 0}, {21, 1}, {21, 2}, {21, 3}, {21, 4}, {21, 5}, {21, 6}, {21, 7}, {21, 8}, {21, 13}, {21, 14}, {21, 15}, {21, 16}, {21, 17}, {21, 18}, {21, 19}, {21, 20}, {21, 21}, {21, 22}, {21, 23}, {21, 24} // content y
+                            }
+                        },
+                        {
+                            "ninepatch-w20mdpi.svg", "ninepatch.json", mdpi,
+                            new int[][] {
+                                    {5, 0}, {6, 0}, {7, 0}, {8, 0}, {9, 0}, {10, 0}, {11, 0}, {12, 0}, {13, 0}, {14, 0}, {15, 0}, {16, 0}, // stretch x
+                                    {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10}, {0, 11}, {0, 12}, {0, 13}, {0, 14}, {0, 15}, {0, 16}, {0, 17}, {0, 18}, {0, 19}, {0, 20}, // stretch y
+                                    {9, 25}, {10, 25}, {11, 25}, {12, 25}, // content x
+                                    {21, 9}, {21, 10}, {21, 11}, {21, 12}  // content y
+                            },
+                            new int[][] {
+                                    {0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}, {17, 0}, {18, 0}, {19, 0}, {20, 0}, {21, 0}, // stretch x
+                                    {0, 0}, {0, 22}, {0, 23}, {0, 24}, // stretch y
+                                    {0, 25}, {1, 25}, {2, 25}, {3, 25}, {4, 25}, {5, 25}, {6, 25}, {7, 25}, {8, 25}, {13, 25}, {14, 25}, {15, 25}, {16, 25}, {17, 25}, {18, 25}, {19, 25}, {20, 25}, {21, 25}, // content x
+                                    {21, 0}, {21, 1}, {21, 2}, {21, 3}, {21, 4}, {21, 5}, {21, 6}, {21, 7}, {21, 8}, {21, 13}, {21, 14}, {21, 15}, {21, 16}, {21, 17}, {21, 18}, {21, 19}, {21, 20}, {21, 21}, {21, 22}, {21, 23}, {21, 24} // content y
                             }
                         },
                         {
                             "ninepatch-mdpi.svg", "ninepatch.json", hdpi,
                             new int[][] {
                                     {4, 0}, {12, 0}, // stretch x
-                                    {0, 1}, {0, 15}, // content y
+                                    {0, 1}, {0, 15}, // stretch y
                                     {7, 19}, {9, 19}, // content x
                                     {16, 7}, {16, 9}  // content y
                             },
                             new int[][] {
                                     {3, 0}, {13, 0}, // stretch x
-                                    {0, 0}, {0, 16}, // content y
+                                    {0, 0}, {0, 16}, // stretch y
                                     {6, 19}, {10, 19}, // content x
                                     {16, 6}, {16, 10}, // content y
                             }
@@ -208,7 +266,7 @@ public class NinePatchGenerationTest {
             QualifiedResource svg = qualifiedSVGResourceFactory.fromSVGFile(new File(PATH_IN + resourceName));
             NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
 
-            Assert.assertNotNull(ninePatch);
+            assertNotNull(ninePatch);
 
             final String name = svg.getName();
         	Reflect.on(svg).set("name", name + "_" + targetDensity.name());

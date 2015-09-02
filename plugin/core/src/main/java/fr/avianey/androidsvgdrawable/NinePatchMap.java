@@ -15,17 +15,12 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Pattern;
+import fr.avianey.androidsvgdrawable.Qualifier.Type;
 
 import javax.annotation.Nullable;
-
-import fr.avianey.androidsvgdrawable.Qualifier.Type;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 /**
  * @version 1
@@ -48,7 +43,7 @@ public class NinePatchMap {
     @Nullable
     public NinePatch getBestMatch(QualifiedResource svg) {
         Set<NinePatch> matchingNinePatches = getMatching(svg.getName());
-        if (matchingNinePatches == null) {
+        if (matchingNinePatches.isEmpty()) {
             // the resource is not a NinePatch
             return null;
         } else {
@@ -92,8 +87,8 @@ public class NinePatchMap {
                         continue;
                     }
                 } else {
-                	// ninepatch has no qualifier requirement
-                	// resource is qualified so the ninepatch cannot apply
+                	// resource has no qualifier requirement
+                	// ninepatch is qualified so the ninepatch cannot apply
                 	// => skip it
                 	continue;
                 }
@@ -105,7 +100,7 @@ public class NinePatchMap {
 	private Set<NinePatch> getMatching(final String svgName) {
 		final Set<NinePatch> ninePatchSet = new HashSet<>();
 		for (Entry<Pattern, Set<NinePatch>> e : entries.values()) {
-			if (e.getKey().matcher(svgName).matches()) {
+            if (e.getKey().matcher(svgName).matches()) {
 				ninePatchSet.addAll(e.getValue());
 			}
 		}
