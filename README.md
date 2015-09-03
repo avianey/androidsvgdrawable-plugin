@@ -27,8 +27,8 @@ Enjoy :wink: !
 	    -   [Options list](#options-list)
 	    -   [Typical Gradle configuration](#typical-gradle-configuration)
 	    -   [Typical Maven configuration](#typical-maven-configuration)
--   [Sample](#sample)
--   [Who's using it](#license)
+-   [Best practices](#best-practices)
+-   [Who's using it](#who-s-using-it)
 -   [License](#license)
 
 ## Gradle
@@ -296,6 +296,20 @@ Check the [Gradle sample project](https://github.com/avianey/androidsvgdrawable-
 #### Typical Maven configuration
 
 Check the [Maven sample project](https://github.com/avianey/androidsvgdrawable-plugin/tree/master/sample/maven) . 
+
+## Best practices
+
+1.  Use a custom temporary output directory for every configuration
+    * see https://github.com/avianey/androidsvgdrawable-plugin/wiki/How-to-use-with-flavor  
+2.  `overrideMode` **SHOULD** be forced to `always` for release build
+3.  Perform a `clean` when you upgrade `androidsvgdrawable-plugin`
+
+## Who's using it
+
+*  [Bubble Level](https://play.google.com/store/apps/details?id=net.androgames.level)
+*  [Yatzy (Dice Game)](https://play.google.com/store/apps/details?id=fr.pixelprose.dice)
+  
+Pull Request to add yours !
 
 ## License
 
