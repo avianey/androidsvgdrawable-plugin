@@ -28,7 +28,7 @@ Enjoy :wink: !
 	    -   [Typical Gradle configuration](#typical-gradle-configuration)
 	    -   [Typical Maven configuration](#typical-maven-configuration)
 -   [Best practices](#best-practices)
--   [Who's using it](#who-s-using-it)
+-   [Who's using it](#whos-using-it)
 -   [License](#license)
 
 ## Gradle
@@ -225,7 +225,7 @@ If no segment is provided along an edge, the whole edge will be filled.
 
 If you have different SVG with the same name but with different qualifiers, you can provide a specific Nine-Patch configuration by using an array of qualifiers. A Nine-Patch configuration apply only to input SVG files which qualified name part match **ALL** of the Nine-Patch qualifiers.  
   
-:exclamation: For input SVG files that use a **constrained** density qualifier (adjusted Bounding Box), the **stretchable area** and the **padding box** segments **MUST NOT** be specified using the adjusted Bounding Box. They **MUST** use the regular Bounding Box of the input SVG file.
+For input SVG files that use a **constrained** density qualifier (adjusted Bounding Box), the **stretchable area** and the **padding box** segments **MUST NOT** be specified using the adjusted Bounding Box. They **MUST** use the regular Bounding Box of the input SVG file.
 
 ### SVG Masking
 
