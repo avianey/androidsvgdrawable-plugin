@@ -7,7 +7,7 @@
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin-sample</artifactId>
     <packaging>apk</packaging>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <name>AndroidSvgDrawable Maven Plugin Sample Project</name>
     <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
 
@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>fr.avianey.androidsvgdrawable</groupId>
                 <artifactId>maven-plugin</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.3-SNAPSHOT</version>
                 <configuration>
                     <!-- where to generate them -->
                     <to>${project.basedir}/res</to>
@@ -55,12 +55,6 @@
                             <!-- svg mask and resources to mask -->
                             <svgMaskDirectory>${project.basedir}/svg-png/mask</svgMaskDirectory>
                             <svgMaskResourcesDirectory>${project.basedir}/svg-png/mask/svg</svgMaskResourcesDirectory>
-                            <!-- use key/value pairs to replace original resource names (key) by other names (value) -->
-                            <rename>
-                                <phone_to_rename>phone</phone_to_rename>
-                            </rename>
-                            <!-- use the app icon to generate the High Res Icon for Google Play -->
-                            <highResIcon>icon</highResIcon>
                             <!-- NinePatch config file -->
                             <ninePatchConfig>${project.basedir}/svg-png/9patch.json</ninePatchConfig>
                             <!-- output format -->
@@ -100,7 +94,7 @@
                     <resourceDirectory>${project.basedir}/res</resourceDirectory>
                     <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                     <sdk>
-                        <platform>19</platform>
+                        <platform>22</platform>
                     </sdk>
                     <undeployBeforeDeploy>false</undeployBeforeDeploy>
                 </configuration>

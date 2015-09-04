@@ -8,12 +8,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="128"
-   height="85"
+   width="512"
+   height="340"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="flag-mdpi-land.svg">
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="flag-hdpi-land.svg">
   <metadata
      id="metadata73">
     <rdf:RDF>
@@ -35,15 +35,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="716"
+     inkscape:window-width="1855"
+     inkscape:window-height="1056"
      id="namedview71"
      showgrid="false"
      inkscape:zoom="2.6749821"
-     inkscape:cx="212.05944"
-     inkscape:cy="15.318183"
-     inkscape:window-x="-8"
-     inkscape:window-y="304"
+     inkscape:cx="241.96618"
+     inkscape:cy="164.85189"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
      fit-margin-top="0"
@@ -54,7 +54,7 @@
      id="defs4">
     <polygon
        id="pt"
-       points="0,-0.5 0.16245985,0 -0.16245985,0 "
+       points="-0.16245985,0 0,-0.5 0.16245985,0 "
        transform="scale(0.0616,0.0616)"
        style="fill:#ffffff" />
     <g
@@ -218,16 +218,16 @@
        style="fill:#b22234" />
   </defs>
   <rect
-     width="128"
-     height="84.999977"
+     width="512"
+     height="339.99991"
      id="rect51"
      x="0"
-     y="0"
+     y="-2.8421709e-14"
      style="fill:#ffffff" />
   <use
      xlink:href="#stripe"
      id="use53"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      y="0"
      width="1235"
@@ -236,7 +236,7 @@
      xlink:href="#stripe"
      y="100"
      id="use55"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      width="1235"
      height="650" />
@@ -244,7 +244,7 @@
      xlink:href="#stripe"
      y="200"
      id="use57"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      width="1235"
      height="650" />
@@ -252,7 +252,7 @@
      xlink:href="#stripe"
      y="300"
      id="use59"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      width="1235"
      height="650" />
@@ -260,7 +260,7 @@
      xlink:href="#stripe"
      y="400"
      id="use61"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      width="1235"
      height="650" />
@@ -268,7 +268,7 @@
      xlink:href="#stripe"
      y="500"
      id="use63"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      width="1235"
      height="650" />
@@ -276,13 +276,13 @@
      xlink:href="#stripe"
      y="600"
      id="use65"
-     transform="matrix(0.10364372,0,0,0.13076919,0,2.5185303e-5)"
+     transform="matrix(0.41457488,0,0,0.52307676,0,10e-5)"
      x="0"
      width="1235"
      height="650" />
   <g
      id="g3052"
-     transform="translate(0,16.999996)">
+     transform="matrix(4,0,0,4,0,67.99999)">
     <rect
        style="fill:#3c3b6e"
        y="-16.999996"
