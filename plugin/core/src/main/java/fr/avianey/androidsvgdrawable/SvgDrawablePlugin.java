@@ -20,8 +20,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import fr.avianey.androidsvgdrawable.NinePatch.Zone;
-import fr.avianey.androidsvgdrawable.util.Log;
+
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -30,22 +29,45 @@ import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.lang.reflect.Type;
-import java.util.*;
+
+import fr.avianey.androidsvgdrawable.NinePatch.Zone;
+import fr.avianey.androidsvgdrawable.util.Log;
 
 import static fr.avianey.androidsvgdrawable.util.Constants.MM_PER_INCH;
 import static java.awt.Color.BLACK;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.apache.batik.transcoder.SVGAbstractTranscoder.*;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
 import static org.apache.batik.transcoder.image.ImageTranscoder.KEY_BACKGROUND_COLOR;
 import static org.apache.batik.transcoder.image.JPEGTranscoder.KEY_QUALITY;
 
@@ -59,13 +81,13 @@ public class SvgDrawablePlugin {
     public interface Parameters {
 
         Integer DEFAULT_JPG_BACKGROUND_COLOR = -1;
-
         Integer DEFAULT_JPG_QUALITY = 85;
         OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
         OutputType DEFAULT_OUTPUT_TYPE = OutputType.drawable;
         BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
         OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
         Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
+
         File getFrom();
 
         File getTo();
