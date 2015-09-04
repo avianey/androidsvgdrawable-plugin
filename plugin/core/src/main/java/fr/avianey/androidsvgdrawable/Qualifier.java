@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,41 +23,15 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class that parse or generates qualified resource names
- * 
+ *
  * @author antoine vianey
  */
 public final class Qualifier {
-    
-    /**
-     * Exception thrown when the parsed input is not a valid resource directory name.
-     */
-    public static class InvalidResourceDirectoryName extends Exception {
-        private static final long serialVersionUID = 1L;
 
-        public InvalidResourceDirectoryName() {
-            super();
-        }
-    }
-    
-    /**
-     * Exception thrown when the parsed input is not a valid svg name.
-     * <ul>
-     * <li>has no {@link Qualifier}</li>
-     * <li>doesn't start with the density {@link Qualifier}</li>
-     * </ul>
-     */
-    public static class InvalidSVGName extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        public InvalidSVGName(String msg) {
-            super(msg);
-        }
-    }
-    
     private static class Acceptor {
 
         private final String regexp;
-        
+
         public Acceptor(Type type) {
             // (capturingregexp)(-.*)*
             this.regexp = new StringBuilder("(")
@@ -66,15 +40,15 @@ public final class Qualifier {
                     .append("(-.*)?")
                     .toString();
         }
-        
+
         /**
          * Return the {@link Qualifier} if found at the <u>beginning</u> of the input {@link String}.
-         * If the {@link Qualifier} exists but is not at the beginning of the input {@link String}, 
-         * then the input is not a valid resource directory name... 
+         * If the {@link Qualifier} exists but is not at the beginning of the input {@link String},
+         * then the input is not a valid resource directory name...
          * @param input
          * @return
          *      The qualifier value or null if no qualifier of the desired {@link Type} is found
-         *      at the <u>beginning</u> of the input {@link String}. 
+         *      at the <u>beginning</u> of the input {@link String}.
          */
         public String accept(String input) {
             Pattern p = Pattern.compile(regexp());
@@ -94,16 +68,16 @@ public final class Qualifier {
         public String regexp() {
             return regexp;
         }
-        
+
     }
-    
+
     /**
      * Qualifier types in order of precedence.<br/>
      * <a href="http://developer.android.com/guide/topics/resources/providing-resources.html">Providing Resources</a>
      */
     public enum Type {
         mcc_mnc("mcc\\d+(?:-mnc\\d+)?"),
-        locale("[a-zA-Z]{2}(?:-r[a-zA-Z]{2})?"), // TODO : verify from Locale class
+        locale("[a-zA-Z]{2}(?:-r[a-zA-Z]{2})?"), // TODO : verify from Locale.class
         layoutDirection("ldrtl|ldltr"),
         smallestWidth("sw\\d+dp"),
         availableWidth("w\\d+dp"),
@@ -114,14 +88,21 @@ public final class Qualifier {
         orientation("port|land"),
         uiMode("car|desk|television|appliance|watch"),
         nightMode("(?:not)?night"),
-        density("(?:l|m|x{0,3}h|tv|no)dpi"),
+        /**
+         * Regular qualifier part is (?:l|m|x{0,3}h|tv|no)dpi
+         * 3 groups :
+         * - w|h
+         * - pixel size
+         * - density
+         */
+        density("(?:(w|h)(\\d+))?((?:l|m|x{0,3}h|tv|no)dpi)"),
         touchScreen("notouch|finger"),
         keyboard("keysexposed|keyshidden|keyssoft"),
         textInputMethod("nokeys|qwerty|12key"),
         navigationKey("nav(?:exposed|hidden)"),
         nonTouchNavigationMethod("nonav|dpad|trackball|wheel"),
-        plateformVersion("v\\d+"); // TODO : verify validity version code numbers
-        
+        platformVersion("v\\d+"); // TODO : verify validity version code numbers
+
         private final String regexp;
 
         private Type(String regexp) {
@@ -133,13 +114,13 @@ public final class Qualifier {
         }
 
     }
-    
+
     /**
      * Returns the String representing the qualifiers in the Android plateform expected order
      * @param qualifiers
      * @return
      */
-    static String toQualifiedString(final EnumMap<Type, String> qualifiers) {
+    static String toQualifiedString(final Map<Type, String> qualifiers) {
     	StringBuilder builder = new StringBuilder("");
         for (Type type : qualifiers.keySet()) {
             builder.append("-");
@@ -147,14 +128,14 @@ public final class Qualifier {
         }
         return builder.toString();
     }
-    
+
     /**
      * Parse a qualified String into a {@link Map} of qualified values
      * @param qualifiedString
      * @return
      */
-    static EnumMap<Type, String> fromQualifiedString(final String qualifiedString) {
-        final EnumMap<Type, String> typedQualifiers = new EnumMap<Type, String>(Type.class);
+    static Map<Type, String> fromQualifiedString(final String qualifiedString) {
+        final Map<Type, String> typedQualifiers = new EnumMap<>(Type.class);
         if (qualifiedString == null) {
             return typedQualifiers;
         }
@@ -168,7 +149,7 @@ public final class Qualifier {
             if (i >= 0) {
                 qualifiers = qualifiers.substring(i + 1);
             }
-            
+
             String qualifier = null;
             for (Type type : EnumSet.allOf(Type.class)) {
                 Acceptor a = new Acceptor(type);
@@ -179,7 +160,7 @@ public final class Qualifier {
                     break;
                 }
             }
-            
+
             if (qualifier == null) {
                 if (qualifiers.indexOf("-") < 0) {
                     break;
@@ -187,9 +168,9 @@ public final class Qualifier {
                     qualifiers = qualifiers.substring(qualifiers.indexOf("-") + 1);
                 }
             }
-            
+
         }
         return typedQualifiers;
     }
-    
+
 }

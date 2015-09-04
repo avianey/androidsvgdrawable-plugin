@@ -1,6 +1,6 @@
 [
     {
-        "name" : "ninepatch", 
+        "name" : "ninepatch.*",
         "stretch" : {
             "x" : [
                 [2, 7]

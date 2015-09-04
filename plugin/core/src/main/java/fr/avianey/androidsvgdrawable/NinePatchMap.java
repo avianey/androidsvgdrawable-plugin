@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,26 +15,21 @@
  */
 package fr.avianey.androidsvgdrawable;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Pattern;
+import fr.avianey.androidsvgdrawable.Qualifier.Type;
 
 import javax.annotation.Nullable;
-
-import fr.avianey.androidsvgdrawable.Qualifier.Type;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 /**
  * @version 1
  * @author antoine vianey
  */
 public class NinePatchMap {
-    
-    private final Map<String, Entry<Pattern, Set<NinePatch>>> entries = new HashMap<>(); 
-    
+
+    private final Map<String, Entry<Pattern, Set<NinePatch>>> entries = new HashMap<>();
+
     /**
      * Get the {@link NinePatch} that <strong>best match</strong> the desired {@link QualifiedResource} :
      * <ol>
@@ -42,14 +37,13 @@ public class NinePatchMap {
      * <li>The {@link QualifiedResource} qualifiers contains all the {@link NinePatch} ones</li>
      * <li>No other {@link NinePatch} verifying 1) and 2) and containing more qualifiers</li>
      * </ol>
-     * @param name
-     * @param requiredQualifiers
-     * @return 
+     * @param svg
+     * @return the best matching nine-patch config
      */
     @Nullable
     public NinePatch getBestMatch(QualifiedResource svg) {
         Set<NinePatch> matchingNinePatches = getMatching(svg.getName());
-        if (matchingNinePatches == null) {
+        if (matchingNinePatches.isEmpty()) {
             // the resource is not a NinePatch
             return null;
         } else {
@@ -75,7 +69,7 @@ public class NinePatchMap {
                                 break;
                             }
                         }
-                        // if values are OK, check if the current ninepatch covers more qualifiers than the previously matching ninePatch 
+                        // if values are OK, check if the current ninepatch covers more qualifiers than the previously matching ninePatch
                         if (matches && (bestMatchingNinePatch == null || ninePatch.getTypedQualifiers().keySet().containsAll(bestMatchingNinePatch.getTypedQualifiers().keySet()))) {
                             // nine patch covers all of the requirements 1) and 2)
                             // and no best (containing more resource qualifier types) nine patch was already discovered
@@ -93,8 +87,8 @@ public class NinePatchMap {
                         continue;
                     }
                 } else {
-                	// ninepatch has no qualifier requirement
-                	// resource is qualified so the ninepatch cannot apply
+                	// resource has no qualifier requirement
+                	// ninepatch is qualified so the ninepatch cannot apply
                 	// => skip it
                 	continue;
                 }
@@ -106,7 +100,7 @@ public class NinePatchMap {
 	private Set<NinePatch> getMatching(final String svgName) {
 		final Set<NinePatch> ninePatchSet = new HashSet<>();
 		for (Entry<Pattern, Set<NinePatch>> e : entries.values()) {
-			if (e.getKey().matcher(svgName).matches()) {
+            if (e.getKey().matcher(svgName).matches()) {
 				ninePatchSet.addAll(e.getValue());
 			}
 		}
@@ -129,9 +123,4 @@ public class NinePatchMap {
 		return value;
 	}
 
-	public Set<NinePatch> remove(final String regexp) {
-		Entry<Pattern, Set<NinePatch>> e = entries.remove(regexp);
-		return e == null ? null : e.getValue();
-	}
-    
 }

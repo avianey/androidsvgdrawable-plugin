@@ -50,9 +50,6 @@ task svgToDrawablePng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
     // it allow composition of SVG two generate resources for multiple combinations
     svgMaskDirectory = file('src/main/svg-png/mask')
     svgMaskResourcesDirectory = file('src/main/svg-png/mask/svg')
-
-    // svg resources can be renamed on the fly
-    rename = [phone_to_rename: 'phone']
 }
 
 // create a task to convert SVG to PNG MIPMAP
@@ -71,9 +68,6 @@ task svgToMipmapPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) 
     outputFormat = 'PNG'
     // output type is mipmap
     outputType = 'mipmap'
-
-    // the icon svg file will be used to generate a google play high res (512x512) icon
-    highResIcon = 'icon'
 }
 
 // multiple task can be used

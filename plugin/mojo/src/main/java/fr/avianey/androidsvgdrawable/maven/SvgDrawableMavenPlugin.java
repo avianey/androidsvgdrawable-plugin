@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
+import fr.avianey.androidsvgdrawable.RelativeDensity;
 import fr.avianey.androidsvgdrawable.OutputFormat;
 import fr.avianey.androidsvgdrawable.OutputType;
 import fr.avianey.androidsvgdrawable.OverrideMode;
@@ -39,7 +40,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
 
     /**
      * Directory of the svg resources to generate drawable from.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(required = true)
@@ -56,7 +57,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>drawable-xxhdpi</li>
      * <li>drawable-xxxhdpi</li>
      * </ul>
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(defaultValue = "${project.basedir}/src/main/res")
@@ -71,7 +72,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>match all of the qualifiers</li>
      * <li>no other matching directory with less qualifiers</li>
      * </ul>
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(defaultValue = "true")
@@ -82,38 +83,15 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * If no density specified, PNG are only generated to existing directories.<br/>
      * If at least one density is specified, PNG are only generated in matching
      * directories.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter
-    private Density[] targetedDensities;
-
-    /**
-     * Use alternatives names for PNG resources<br/>
-     * <dl>
-     * <dt>Key</dt>
-     * <dd>original svg name (without density prefix)</dd>
-     * <dt>Value</dt>
-     * <dd>target name</dd>
-     * </dl>
-     * 
-     * @since 1.0.0
-     */
-    @Parameter
-    private Map<String, String> rename;
-
-    /**
-     * Name of the input file to use to generate a 512x512 high resolution
-     * Google Play icon
-     * 
-     * @since 1.0.0
-     */
-    @Parameter
-    private String highResIcon;
+    private Density.Value[] targetedDensities;
 
     /**
      * Path to the 9-patch drawable configuration file.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter
@@ -122,7 +100,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     /**
      * Path to the <strong>.svgmask</strong> directory.<br/>
      * The {@link SvgDrawableMavenPlugin#from} directory will be use if not specified.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter
@@ -132,7 +110,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * Path to a directory referencing additional svg resources to be taken in
      * account for masking.<br/>
      * The {@link SvgDrawableMavenPlugin#from} directory will be use if not specified.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter
@@ -141,7 +119,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     /**
      * Path to the directory where masked svg files are generated.<br/>
      * "target/generated-svg"
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(readonly = true, defaultValue = "${project.build.directory}/generated-svg")
@@ -151,7 +129,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * If set to true a mask combination will be ignored when a
      * <strong>.svgmask</strong> use the same <strong>.svg<strong> resources in
      * at least two different &lt;image&gt; tags.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(defaultValue = "true")
@@ -161,7 +139,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * Override existing generated resources.<br/>
      * It's recommended to use {@link OverrideMode#always} for tests and
      * production releases.
-     * 
+     *
      * @since 1.0.0
      * @see OverrideMode
      */
@@ -173,7 +151,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <strong>USE WITH CAUTION</strong><br/>
      * You'll more likely take time to set desired width and height properly
      * </p>
-     * 
+     *
      * When &lt;SVG&gt; attributes "x", "y", "width" and "height" are not
      * present defines which element are taken in account to compute the Area Of
      * Interest of the image. The plugin will output a WARNING log if no width
@@ -188,7 +166,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <dt>primitive</dt>
      * <dd>This is the painted region of fill <u>and</u> stroke but does not account for clipping, masking or filtering.</dd>
      * </dl>
-     * 
+     *
      * @since 1.0.0
      * @see BoundsType
      */
@@ -201,20 +179,20 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>drawable</li>
      * <li>mipmap</li>
      * </ul>
-     * 
-     * @since 1.1.0
+     *
+     * @since 1.0.0
      * @see OutputType
      */
     @Parameter(defaultValue = "drawable")
     private OutputType outputType;
-    
+
     /**
      * The format for the generated images.
      * <ul>
      * <li>PNG</li>
      * <li>JPG</li>
      * </ul>
-     * 
+     *
      * @since 1.0.0
      * @see OutputFormat
      */
@@ -223,7 +201,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
 
     /**
      * The quality for the JPG output format.
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(defaultValue = "85")
@@ -232,7 +210,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     /**
      * The background color to use when {@link OutputFormat#JPG} is specified.<br/>
      * Default value is 0xFFFFFFFF (white)
-     * 
+     *
      * @since 1.0.0
      */
     @Parameter(defaultValue = "-1")
@@ -265,18 +243,8 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     }
 
     @Override
-    public Density[] getTargetedDensities() {
+    public Density.Value[] getTargetedDensities() {
         return targetedDensities;
-    }
-
-    @Override
-    public Map<String, String> getRename() {
-        return rename;
-    }
-
-    @Override
-    public String getHighResIcon() {
-        return highResIcon;
     }
 
     @Override
@@ -308,7 +276,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     public OutputType getOutputType() {
         return outputType;
     }
-    
+
     @Override
     public OutputFormat getOutputFormat() {
         return outputFormat;

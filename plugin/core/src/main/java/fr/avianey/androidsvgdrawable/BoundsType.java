@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,26 +33,26 @@ import org.apache.batik.gvt.GraphicsNode;
 public enum BoundsType {
 
 	/**
-	 * Returns the bounds of this node in user space. 
+	 * Returns the bounds of this node in user space.
 	 * This includes primitive paint, filtering, clipping and masking.
 	 */
 	all,
 	/**
-	 * Returns the bounds of the sensitive area covered by this node, 
+	 * Returns the bounds of the sensitive area covered by this node,
 	 * This includes the stroked area but does not include the effects of clipping, masking or filtering.
 	 */
 	sensitive,
 	/**
-	 * Returns the bounds of the sensitive area covered by this node, 
+	 * Returns the bounds of the sensitive area covered by this node,
 	 * This includes the stroked area but does not include the effects of clipping, masking or filtering.
 	 */
 	geometry,
 	/**
-	 * Returns the bounds of the area covered by this node's primitive paint. 
+	 * Returns the bounds of the area covered by this node's primitive paint.
 	 * This is the painted region of fill and stroke but does not account for clipping, masking or filtering.
 	 */
 	primitive;
-	
+
 	public Rectangle getBounds(GraphicsNode rootGN) {
 		Rectangle2D r2d;
 		switch (this) {
@@ -72,5 +72,5 @@ public enum BoundsType {
 		}
 		return r2d.getBounds();
 	}
-	
+
 }

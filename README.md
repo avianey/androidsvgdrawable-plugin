@@ -17,6 +17,7 @@ Enjoy :wink: !
     -   [Input SVG files](#input-svg-files)
         -   [Expected SVG file names](#expected-file-names)
         -   [SVG Bounding Box](#bounding-box)
+        -   [Adjusting the Bounding Box](#adjusting-the-bounding-box)
         -   [Generated bitmaps](#generated-bitmaps)
     -   [Nine-Patch support](#nine-patch-support)
     -   [SVG Masking](#svg-masking)
@@ -26,8 +27,8 @@ Enjoy :wink: !
 	    -   [Options list](#options-list)
 	    -   [Typical Gradle configuration](#typical-gradle-configuration)
 	    -   [Typical Maven configuration](#typical-maven-configuration)
--   [Sample](#sample)
--   [Who's using it](#license)
+-   [Best practices](#best-practices)
+-   [Who's using it](#whos-using-it)
 -   [License](#license)
 
 ## Gradle
@@ -42,7 +43,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:1.0.2') {
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:2.0.0') {
             // should be excluded to avoid conflict
             exclude group: 'xerces'
         }
@@ -66,6 +67,8 @@ If you don't want the plugin to execute the task automatically, you can call you
  ```
 gradlew svgToPng
  ```
+ 
+You can define as many task as you need.
 
 ## Maven
 
@@ -75,7 +78,7 @@ Add the plugin to your pom.xml :
 <plugin>
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin</artifactId>
-    <version>1.0.2</version>
+    <version>2.0.0</version>
     <executions>
         <execution>
             <id>gendrawable-png</id>
@@ -155,6 +158,27 @@ You **SHOULD** adjust your input SVG file `width` and `height` to be a multiple 
 
 It's also possible to use valid SVG unit of length such as `mm`, `cm`, `pt`, `in`. Use it with caution :-).  
 
+#### Adjusting the Bounding Box
+
+If you don't want to adjust your input SVG file `width` and `height` you can use a **constrained** density qualifier that will adjust the input SVG border to the given size in pixels.  
+  
+Given the following SVG file you don't want to edit :
+
+```xml
+<svg
+   x="0"
+   y="0"
+   width="500"
+   height="500"
+```
+
+You can adjust it to be 32 pixels width or height at the `mdpi` density by changing its name to :
+
+-   `name-w32mdpi.svg`
+-   `name-h32mdpi.svg`
+
+This will force the given size in pixel for the output drawable width or height at the specified density (preserving the aspect ratio of the SVG Bounding Box). Output drawable for other densities will be scaled regarding the **constrained** size specified in the SVG file name instead of the size specified in the `width` and `height` attribute of the `<svg>` element.
+
 #### Generated bitmaps
 
 The generated bitmaps are named against `\w+.png`, `\w+.jpg` or `\w+.9.png` if it's a nine-patch drawable and are generated into a `/res/drawable(-{qualifier})*` directory where :  
@@ -164,7 +188,7 @@ The generated bitmaps are named against `\w+.png`, `\w+.jpg` or `\w+.9.png` if i
 
 #### Nine-Patch support
 
-If you want to generate bitmaps as NinePatch Drawable, you **MUST** provide the **stretchable area** and the **padding box** as defined in the Android documentation related to [nine-patch](http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch). The Nine-Patch configuration file consists in a JSON Array containing at least one entry :
+If you want to generate bitmaps as NinePatch Drawable, you **MUST** provide Nine-Patch configuration file that specifies the **stretchable area** and the **padding box** as defined in the Android documentation related to [nine-patch](http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch). The Nine-Patch configuration file consists in a JSON Array containing at least one entry :
 
 ```javascript
 [
@@ -199,7 +223,9 @@ If you want to generate bitmaps as NinePatch Drawable, you **MUST** provide the 
 ```
 If no segment is provided along an edge, the whole edge will be filled.  
 
-If you have different SVG with the same name but with different qualifiers, you can provide a specific Nine-Patch configuration by using an array of qualifiers. A Nine-Patch configuration apply only to input SVG files which qualified name part match **ALL** of the Nine-Patch qualifiers.
+If you have different SVG with the same name but with different qualifiers, you can provide a specific Nine-Patch configuration by using an array of qualifiers. A Nine-Patch configuration apply only to input SVG files which qualified name part match **ALL** of the Nine-Patch qualifiers.  
+  
+For input SVG files that use a **constrained** density qualifier (adjusted Bounding Box), the **stretchable area** and the **padding box** segments **MUST NOT** be specified using the adjusted Bounding Box. They **MUST** use the regular Bounding Box of the input SVG file.
 
 ### SVG Masking
 
@@ -254,10 +280,7 @@ The plugin can be configured using the following options :
 |createMissingDirectories|boolean|Set it to `false` if you don't want the plugin to create missing drawable(-{qualifier})*/ directories. The default value is set to `true`.|  
 |ninePatchConfig|File|Path to the 9-Patch JSON configuration file.|  
 |override|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
-|rename|Map|Use this map to change the name of the generated drawable. Note that names provided in the 9-patch configuration file applies to the `\w+` part of the SVG file name **BEFORE** any renaming.|  
 |targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|  
-|~~fallbackDensity~~|~~Enum~~|Deprecated as of 1.0.1|  
-|highResIcon|String|The *unqualified* name of the SVG resource to use to generate an **High-Res** icon for the Play Store. The SVG **SHOULD** have a square Bounding Box (height = width) and will be generated in the current directory.|  
 |outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
 |outputType|`drawable` or `mipmap`|The output directory for the generated bitmaps. Nine-Patch support apply only for the `drawable` output type.|  
 |jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|  
@@ -273,6 +296,20 @@ Check the [Gradle sample project](https://github.com/avianey/androidsvgdrawable-
 #### Typical Maven configuration
 
 Check the [Maven sample project](https://github.com/avianey/androidsvgdrawable-plugin/tree/master/sample/maven) . 
+
+## Best practices
+
+1.  Use a custom temporary output directory for every configuration
+    * see https://github.com/avianey/androidsvgdrawable-plugin/wiki/How-to-use-with-flavor  
+2.  `overrideMode` **SHOULD** be forced to `always` for release build
+3.  Perform a `clean` when you upgrade `androidsvgdrawable-plugin`
+
+## Who's using it
+
+*  [Bubble Level](https://play.google.com/store/apps/details?id=net.androgames.level)
+*  [Yatzy (Dice Game)](https://play.google.com/store/apps/details?id=fr.pixelprose.dice)
+  
+Pull Request to add yours !
 
 ## License
 

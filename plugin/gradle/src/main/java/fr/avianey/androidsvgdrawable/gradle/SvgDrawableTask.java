@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import fr.avianey.androidsvgdrawable.BoundsType;
 import fr.avianey.androidsvgdrawable.Density;
+import fr.avianey.androidsvgdrawable.RelativeDensity;
 import fr.avianey.androidsvgdrawable.OutputFormat;
 import fr.avianey.androidsvgdrawable.OutputType;
 import fr.avianey.androidsvgdrawable.OverrideMode;
@@ -34,9 +35,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverrideMode overrideMode = OverrideMode.always;
-    public Density[] targetedDensities;
-    public Map<String, String> rename;
-    public String highResIcon;
+    public Density.Value[] targetedDensities;
 
     // nine patch
     public File ninePatchConfig;
@@ -46,7 +45,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public File svgMaskResourcesDirectory;
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
-    
+
     // type
     public OutputType outputType = DEFAULT_OUTPUT_TYPE;
 
@@ -88,18 +87,8 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
-    public Density[] getTargetedDensities() {
+    public Density.Value[] getTargetedDensities() {
         return targetedDensities;
-    }
-
-    @Override
-    public Map<String, String> getRename() {
-        return rename;
-    }
-
-    @Override
-    public String getHighResIcon() {
-        return highResIcon;
     }
 
     @Override
@@ -168,16 +157,8 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         this.overrideMode = overrideMode;
     }
 
-    public void setTargetedDensities(Density[] targetedDensities) {
+    public void setTargetedDensities(Density.Value[] targetedDensities) {
         this.targetedDensities = targetedDensities;
-    }
-
-    public void setRename(Map<String, String> rename) {
-        this.rename = rename;
-    }
-
-    public void setHighResIcon(String highResIcon) {
-        this.highResIcon = highResIcon;
     }
 
     public void setNinePatchConfig(File ninePatchConfig) {

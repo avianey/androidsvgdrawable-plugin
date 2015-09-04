@@ -1,12 +1,12 @@
 /*
- * Copyright 2013, 2014 Antoine Vianey
- * 
+ * Copyright 2013, 2014, 2015 Antoine Vianey
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 package fr.avianey.androidsvgdrawable;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import org.joor.Reflect;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,23 +37,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.joor.Reflect;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mockito;
-
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import fr.avianey.androidsvgdrawable.NinePatch;
-import fr.avianey.androidsvgdrawable.NinePatchMap;
-import fr.avianey.androidsvgdrawable.QualifiedResource;
-import fr.avianey.androidsvgdrawable.Qualifier;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class NinePatchMatchingTest {
@@ -55,15 +51,14 @@ public class NinePatchMatchingTest {
     private final boolean resultExpected;
     private final String nameExpected;
 
-    public NinePatchMatchingTest(String fileName, String resourceName, 
-            String qualifiedString, boolean resultExpected, String nameExpected) {
+    public NinePatchMatchingTest(String fileName, String resourceName, String qualifiedString, boolean resultExpected, String nameExpected) {
          this.fileName = fileName;
          this.resourceName = resourceName;
          this.typedQualifiers = Qualifier.fromQualifiedString(qualifiedString);
          this.resultExpected = resultExpected;
          this.nameExpected = nameExpected;
     }
-    
+
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(
@@ -102,7 +97,7 @@ public class NinePatchMatchingTest {
                             "w700dp-land-fr-xlarge",
                             true,
                             "ma.*"
-                            
+
                         },
                         {"9patch-multiple-regexp-2.json", "matching_name",
                             "w700dp-land-fr",
@@ -126,24 +121,24 @@ public class NinePatchMatchingTest {
                         }
                 });
     }
-    
+
     @Test
     public void fromJson() throws URISyntaxException, JsonIOException, JsonSyntaxException, IOException {
         try (final Reader reader = new InputStreamReader(new FileInputStream(PATH_IN + fileName))) {
             Type t = new TypeToken<Set<NinePatch>>() {}.getType();
             Set<NinePatch> ninePatchSet = new GsonBuilder().create().fromJson(reader, t);
             NinePatchMap ninePatchMap = NinePatch.init(ninePatchSet);
-            
+
             QualifiedResource mockedResource = Mockito.mock(QualifiedResource.class);
             Mockito.when(mockedResource.getName()).thenReturn(resourceName);
             Mockito.when(mockedResource.getTypedQualifiers()).thenReturn(typedQualifiers);
-            
+
             NinePatch ninePatch = ninePatchMap.getBestMatch(mockedResource);
-            Assert.assertTrue(resultExpected ^ (ninePatch == null));
+            assertTrue(resultExpected ^ (ninePatch == null));
             if (resultExpected && ninePatch != null) {
-            	Assert.assertEquals(nameExpected, Reflect.on(ninePatch).get("name"));
+            	assertEquals(nameExpected, Reflect.on(ninePatch).get("name"));
             }
         }
     }
-    
+
 }
