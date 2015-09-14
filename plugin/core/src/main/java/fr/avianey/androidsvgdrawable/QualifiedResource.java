@@ -23,7 +23,7 @@ import java.util.Map;
 
 public abstract class QualifiedResource extends File {
 
-    public QualifiedResource(String path) {
+    protected QualifiedResource(String path) {
         super(path);
     }
 

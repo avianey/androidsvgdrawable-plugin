@@ -61,7 +61,7 @@ public class QualifiedSVGResourceFactory {
 
         // unqualified name
         final String unqualifiedName = fileName.substring(0, fileName.indexOf("-"));
-        checkArgument(unqualifiedName != null && unqualifiedName.matches("\\w+"));
+        checkArgument(unqualifiedName.matches("\\w+"));
 
         // qualifiers
         final Map<Type, String> typedQualifiers = Qualifier.fromQualifiedString(fileName.substring(fileName.indexOf("-") + 1));

@@ -15,6 +15,7 @@
  */
 package fr.avianey.androidsvgdrawable;
 
+import fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite;
 import fr.avianey.androidsvgdrawable.util.TestLogger;
 import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.apache.batik.transcoder.TranscoderException;
@@ -36,7 +37,6 @@ import java.util.Collection;
 
 import static fr.avianey.androidsvgdrawable.Density.Value.mdpi;
 import static fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite.OUTPUT_FORMAT;
-import static fr.avianey.androidsvgdrawable.suite.GenDrawableTestSuite.PATH_OUT;
 import static fr.avianey.androidsvgdrawable.util.Constants.MM_PER_INCH;
 import static java.lang.Math.ceil;
 import static org.junit.Assert.assertEquals;
@@ -53,6 +53,7 @@ public class BoundsExtractionTest {
 	private static final float DPCM = DPMM * 10;
 	private static final String PATH_IN  = "./target/test-classes/" + BoundsExtractionTest.class.getSimpleName() + "/";
 
+	private static String PATH_OUT;
 	private static SvgDrawablePlugin plugin;
 	private static QualifiedSVGResourceFactory qualifiedSVGResourceFactory;
 
@@ -77,6 +78,8 @@ public class BoundsExtractionTest {
         parameters.outputFormat = OUTPUT_FORMAT;
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
 		qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
+        PATH_OUT = GenDrawableTestSuite.PATH_OUT + BoundsExtractionTest.class.getSimpleName() + "/";
+        new File(PATH_OUT).mkdirs();
 	}
 
     @Parameters
@@ -120,8 +123,8 @@ public class BoundsExtractionTest {
         final String name = svg.getName();
         for (Density.Value d : Density.Value.values()) {
         	Reflect.on(svg).set("name", name + "_" + d.name());
-	        plugin.transcode(svg, d, new File(PATH_OUT), null);
-	        BufferedImage image = ImageIO.read(new FileInputStream(new File(PATH_OUT + svg.getName() + "." + OUTPUT_FORMAT.name().toLowerCase())));
+			plugin.transcode(svg, d, new File(PATH_OUT), null);
+	        BufferedImage image = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + "." + OUTPUT_FORMAT.name().toLowerCase())));
 			Rectangle expectedBounds = svg.getScaledBounds(d);
 			assertEquals(expectedBounds.getWidth(), image.getWidth(), 0);
 	        assertEquals(expectedBounds.getHeight(), image.getHeight(), 0);

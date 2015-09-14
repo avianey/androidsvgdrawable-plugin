@@ -73,6 +73,7 @@ public class NinePatchGenerationTest {
 
     private static final String PATH_IN  = "./target/test-classes/" + NinePatchGenerationTest.class.getSimpleName() + "/";
 
+    private static String PATH_OUT;
     private static SvgDrawablePlugin plugin;
     private static QualifiedSVGResourceFactory qualifiedSVGResourceFactory;
 
@@ -88,6 +89,8 @@ public class NinePatchGenerationTest {
         parameters.outputFormat = OUTPUT_FORMAT;
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
         qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
+        PATH_OUT = GenDrawableTestSuite.PATH_OUT + NinePatchGenerationTest.class.getSimpleName() + "/";
+        new File(PATH_OUT).mkdirs();
     }
 
     public NinePatchGenerationTest(
@@ -270,9 +273,9 @@ public class NinePatchGenerationTest {
 
             final String name = svg.getName();
         	Reflect.on(svg).set("name", name + "_" + targetDensity.name());
-	        plugin.transcode(svg, targetDensity, new File(GenDrawableTestSuite.PATH_OUT), ninePatch);
-	        final File ninePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + ".9." + OUTPUT_FORMAT.name().toLowerCase());
-            final File nonNinePatchFile = new File(GenDrawableTestSuite.PATH_OUT + svg.getName() + "." + OUTPUT_FORMAT.name().toLowerCase());
+            plugin.transcode(svg, targetDensity, new File(PATH_OUT), ninePatch);
+	        final File ninePatchFile = new File(PATH_OUT, svg.getName() + ".9." + OUTPUT_FORMAT.name().toLowerCase());
+            final File nonNinePatchFile = new File(PATH_OUT, svg.getName() + "." + OUTPUT_FORMAT.name().toLowerCase());
 
             if (OUTPUT_FORMAT.hasNinePatchSupport()) {
             	assertTrue(FilenameUtils.getName(ninePatchFile.getAbsolutePath()) + " does not exists although the output format supports nine patch", ninePatchFile.exists());

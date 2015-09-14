@@ -30,9 +30,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static fr.avianey.androidsvgdrawable.Density.Value.mdpi;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,8 +44,8 @@ import static org.junit.Assert.assertTrue;
 public class SvgMaskTest {
 
 	private static final String PATH_IN  = "./target/test-classes/" + SvgMaskTest.class.getSimpleName() + "/";
-    private static final String PATH_OUT_SVG = "./target/generated-svg/";
-    private static final String PATH_OUT_PNG = "./target/generated-svg-png/";
+	private static final String PATH_OUT_PNG = "./target/generated-png/" + SvgMaskTest.class.getSimpleName() + "/";
+	private static final String PATH_OUT_SVG = "./target/generated-svg/";
 
 	private static int RUN = 0;
 	private static QualifiedSVGResourceFactory qualifiedSVGResourceFactory;
@@ -60,7 +64,7 @@ public class SvgMaskTest {
         plugin = new SvgDrawablePlugin(new TestParameters(), new TestLogger());
 		qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
         output = new File(PATH_OUT_PNG);
-        output.mkdirs();
+		output.mkdirs();
     }
 
     public SvgMaskTest(String mask, List<String> resourceNames, List<String> maskedResourcesNames,
@@ -78,119 +82,119 @@ public class SvgMaskTest {
 
 	@Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(
-                new Object[][] {
-                        {
-                        	"mask-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Arrays.asList("mask_square_red-mdpi.svg"),
-                            false
-                        },
-                        {
-                        	"mask_image_ns-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Arrays.asList("mask_image_ns_square_red-mdpi.svg"),
-                            false
-                        },
-                        {
-                        	"mask_image_ns_bad-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Collections.EMPTY_LIST,
-                            false
-                        },
-                        {
-                        	"mask_svg_ns-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Arrays.asList("mask_svg_ns_square_red-mdpi.svg"),
-                            false
-                        },
-                        {
-                        	"mask_no_image-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Collections.EMPTY_LIST,
-                            false
-                        },
-                        {
-                        	"mask_no_match-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Collections.EMPTY_LIST,
-                            false
-                        },
-                        {
-                        	"mask_no_regexp-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg"),
-                            Collections.EMPTY_LIST,
-                            false
-                        },
-                        {
-                        	"mask_multiple_image-mdpi.svgmask",
-                        	Arrays.asList("square_red-mdpi.svg", "square_yellow-mdpi.svg", "circle_blue-mdpi.svg", "circle_green-mdpi.svg"),
-                            Arrays.asList(
-                            		"mask_multiple_image_square_red_circle_blue-mdpi.svg",
-                            		"mask_multiple_image_square_red_circle_green-mdpi.svg",
-                            		"mask_multiple_image_square_yellow_circle_blue-mdpi.svg",
-                            		"mask_multiple_image_square_yellow_circle_green-mdpi.svg"
-                            ),
-                            false
-                        },
-                        {
-                        	"mask_same_image_twice-mdpi.svgmask",
-                        	Arrays.asList(
-                        			"square_red-mdpi.svg", "square_yellow-mdpi.svg",
-                        			"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
-                        			"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
-                        	),
-                            Arrays.asList(
-                            		"mask_same_image_twice_square_red_circle_blue_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_blue_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_green_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_green_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_pink_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_pink_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_blue_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_blue_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_green_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_green_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_pink_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_pink_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_blue_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_blue_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_green_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_green_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_pink_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_pink_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_blue_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_blue_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_green_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_green_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_pink_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_pink_triangle_white_square_yellow-mdpi.svg"
-                            ),
-                            false
-                        },
-                        {
-                        	"mask_same_image_twice-mdpi.svgmask",
-                        	Arrays.asList(
-                        			"square_red-mdpi.svg", "square_yellow-mdpi.svg",
-                        			"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
-                        			"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
-                        	),
-                            Arrays.asList(
-                            		"mask_same_image_twice_square_red_circle_blue_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_green_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_pink_triangle_black_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_blue_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_green_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_pink_triangle_black_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_blue_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_green_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_red_circle_pink_triangle_white_square_yellow-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_blue_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_green_triangle_white_square_red-mdpi.svg",
-                            		"mask_same_image_twice_square_yellow_circle_pink_triangle_white_square_red-mdpi.svg"
-                            ),
-                            true
-                        }
+		return asList(
+				new Object[][]{
+						{
+								"mask-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								asList("mask_square_red-mdpi.svg"),
+								false
+						},
+						{
+								"mask_image_ns-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								asList("mask_image_ns_square_red-mdpi.svg"),
+								false
+						},
+						{
+								"mask_image_ns_bad-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								Collections.EMPTY_LIST,
+								false
+						},
+						{
+								"mask_svg_ns-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								asList("mask_svg_ns_square_red-mdpi.svg"),
+								false
+						},
+						{
+								"mask_no_image-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								Collections.EMPTY_LIST,
+								false
+						},
+						{
+								"mask_no_match-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								Collections.EMPTY_LIST,
+								false
+						},
+						{
+								"mask_no_regexp-mdpi.svgmask",
+								asList("square_red-mdpi.svg"),
+								Collections.EMPTY_LIST,
+								false
+						},
+						{
+								"mask_multiple_image-mdpi.svgmask",
+								asList("square_red-mdpi.svg", "square_yellow-mdpi.svg", "circle_blue-mdpi.svg", "circle_green-mdpi.svg"),
+								asList(
+										"mask_multiple_image_square_red_circle_blue-mdpi.svg",
+										"mask_multiple_image_square_red_circle_green-mdpi.svg",
+										"mask_multiple_image_square_yellow_circle_blue-mdpi.svg",
+										"mask_multiple_image_square_yellow_circle_green-mdpi.svg"
+								),
+								false
+						},
+						{
+								"mask_same_image_twice-mdpi.svgmask",
+								asList(
+										"square_red-mdpi.svg", "square_yellow-mdpi.svg",
+										"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
+										"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
+								),
+								asList(
+										"mask_same_image_twice_square_red_circle_blue_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_blue_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_green_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_green_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_pink_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_pink_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_blue_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_blue_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_green_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_green_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_pink_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_pink_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_blue_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_blue_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_green_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_green_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_pink_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_pink_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_blue_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_blue_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_green_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_green_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_pink_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_pink_triangle_white_square_yellow-mdpi.svg"
+								),
+								false
+						},
+						{
+								"mask_same_image_twice-mdpi.svgmask",
+								asList(
+										"square_red-mdpi.svg", "square_yellow-mdpi.svg",
+										"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
+										"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
+								),
+								asList(
+										"mask_same_image_twice_square_red_circle_blue_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_green_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_pink_triangle_black_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_blue_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_green_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_pink_triangle_black_square_red-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_blue_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_green_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_red_circle_pink_triangle_white_square_yellow-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_blue_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_green_triangle_white_square_red-mdpi.svg",
+										"mask_same_image_twice_square_yellow_circle_pink_triangle_white_square_red-mdpi.svg"
+								),
+								true
+						}
                 });
     }
 
@@ -207,7 +211,6 @@ public class SvgMaskTest {
     		assertTrue(qr.exists());
             plugin.transcode(qr, mdpi, output, null);
     	}
-
     }
 
 }

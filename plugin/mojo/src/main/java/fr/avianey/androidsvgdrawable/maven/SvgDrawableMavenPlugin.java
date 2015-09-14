@@ -15,20 +15,13 @@
  */
 package fr.avianey.androidsvgdrawable.maven;
 
-import java.io.File;
-import java.util.Map;
-
+import fr.avianey.androidsvgdrawable.*;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import fr.avianey.androidsvgdrawable.BoundsType;
-import fr.avianey.androidsvgdrawable.Density;
-import fr.avianey.androidsvgdrawable.RelativeDensity;
-import fr.avianey.androidsvgdrawable.OutputFormat;
-import fr.avianey.androidsvgdrawable.OutputType;
-import fr.avianey.androidsvgdrawable.OverrideMode;
-import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
+import java.io.File;
+import java.util.Set;
 
 /**
  * Goal which generates drawable from Scalable Vector Graphics (SVG) files.
@@ -40,11 +33,9 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
 
     /**
      * Directory of the svg resources to generate drawable from.
-     *
-     * @since 1.0.0
      */
     @Parameter(required = true)
-    private File from;
+    private Set<File> from;
 
     /**
      * Location of the Android "./src/main/res/drawable(-.*)" directories :
@@ -57,8 +48,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>drawable-xxhdpi</li>
      * <li>drawable-xxxhdpi</li>
      * </ul>
-     *
-     * @since 1.0.0
      */
     @Parameter(defaultValue = "${project.basedir}/src/main/res")
     private File to;
@@ -72,8 +61,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>match all of the qualifiers</li>
      * <li>no other matching directory with less qualifiers</li>
      * </ul>
-     *
-     * @since 1.0.0
      */
     @Parameter(defaultValue = "true")
     private boolean createMissingDirectories;
@@ -83,16 +70,12 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * If no density specified, PNG are only generated to existing directories.<br/>
      * If at least one density is specified, PNG are only generated in matching
      * directories.
-     *
-     * @since 1.0.0
      */
     @Parameter
     private Density.Value[] targetedDensities;
 
     /**
      * Path to the 9-patch drawable configuration file.
-     *
-     * @since 1.0.0
      */
     @Parameter
     private File ninePatchConfig;
@@ -100,27 +83,21 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     /**
      * Path to the <strong>.svgmask</strong> directory.<br/>
      * The {@link SvgDrawableMavenPlugin#from} directory will be use if not specified.
-     *
-     * @since 1.0.0
      */
     @Parameter
-    private File svgMaskDirectory;
+    private Set<File> svgMaskFiles;
 
     /**
      * Path to a directory referencing additional svg resources to be taken in
      * account for masking.<br/>
      * The {@link SvgDrawableMavenPlugin#from} directory will be use if not specified.
-     *
-     * @since 1.0.0
      */
     @Parameter
-    private File svgMaskResourcesDirectory;
+    private Set<File> svgMaskResourceFiles;
 
     /**
      * Path to the directory where masked svg files are generated.<br/>
      * "target/generated-svg"
-     *
-     * @since 1.0.0
      */
     @Parameter(readonly = true, defaultValue = "${project.build.directory}/generated-svg")
     private File svgMaskedSvgOutputDirectory;
@@ -129,8 +106,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * If set to true a mask combination will be ignored when a
      * <strong>.svgmask</strong> use the same <strong>.svg<strong> resources in
      * at least two different &lt;image&gt; tags.
-     *
-     * @since 1.0.0
      */
     @Parameter(defaultValue = "true")
     private boolean useSameSvgOnlyOnceInMask;
@@ -140,7 +115,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * It's recommended to use {@link OverrideMode#always} for tests and
      * production releases.
      *
-     * @since 1.0.0
      * @see OverrideMode
      */
     @Parameter(defaultValue = "always", alias = "override")
@@ -167,7 +141,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <dd>This is the painted region of fill <u>and</u> stroke but does not account for clipping, masking or filtering.</dd>
      * </dl>
      *
-     * @since 1.0.0
      * @see BoundsType
      */
     @Parameter(defaultValue = "sensitive")
@@ -180,7 +153,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>mipmap</li>
      * </ul>
      *
-     * @since 1.0.0
      * @see OutputType
      */
     @Parameter(defaultValue = "drawable")
@@ -193,7 +165,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      * <li>JPG</li>
      * </ul>
      *
-     * @since 1.0.0
      * @see OutputFormat
      */
     @Parameter(defaultValue = "PNG")
@@ -201,8 +172,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
 
     /**
      * The quality for the JPG output format.
-     *
-     * @since 1.0.0
      */
     @Parameter(defaultValue = "85")
     private int jpgQuality;
@@ -210,8 +179,6 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     /**
      * The background color to use when {@link OutputFormat#JPG} is specified.<br/>
      * Default value is 0xFFFFFFFF (white)
-     *
-     * @since 1.0.0
      */
     @Parameter(defaultValue = "-1")
     private int jpgBackgroundColor;
@@ -223,7 +190,7 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
 
 
     @Override
-    public File getFrom() {
+    public Iterable<File> getFiles() {
         return from;
     }
 
@@ -253,13 +220,13 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     }
 
     @Override
-    public File getSvgMaskDirectory() {
-        return svgMaskDirectory;
+    public Iterable<File> getSvgMaskFiles() {
+        return svgMaskFiles;
     }
 
     @Override
-    public File getSvgMaskResourcesDirectory() {
-        return svgMaskResourcesDirectory;
+    public Iterable<File> getSvgMaskResourceFiles() {
+        return svgMaskResourceFiles;
     }
 
     @Override

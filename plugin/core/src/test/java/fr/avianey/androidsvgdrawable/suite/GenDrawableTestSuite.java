@@ -15,11 +15,10 @@
  */
 package fr.avianey.androidsvgdrawable.suite;
 
-import java.io.File;
-
+import fr.avianey.androidsvgdrawable.OutputFormat;
 import org.junit.BeforeClass;
 
-import fr.avianey.androidsvgdrawable.OutputFormat;
+import java.io.File;
 
 public abstract class GenDrawableTestSuite {
 
@@ -34,9 +33,6 @@ public abstract class GenDrawableTestSuite {
 		// clean output
 		PATH_OUT = "./target/generated-" + OUTPUT_FORMAT.name().toLowerCase() + "/";
 		File f = new File(PATH_OUT);
-		if (f.exists()) {
-			f.delete();
-		}
 		f.mkdirs();
 	}
 

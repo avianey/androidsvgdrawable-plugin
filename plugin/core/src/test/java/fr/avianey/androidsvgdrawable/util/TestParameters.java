@@ -6,7 +6,7 @@ import java.io.File;
 
 public class TestParameters implements SvgDrawablePlugin.Parameters {
 
-    public File from;
+    public Iterable<File> from;
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverrideMode overrideMode = OverrideMode.always;
@@ -16,8 +16,8 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public File ninePatchConfig;
 
     // masking
-    public File svgMaskDirectory;
-    public File svgMaskResourcesDirectory;
+    public Iterable<File> svgMaskFiles;
+    public Iterable<File> svgMaskResourceFiles;
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
 
@@ -33,7 +33,7 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public BoundsType svgBoundsType = DEFAULT_BOUNDS_TYPE;
 
     @Override
-    public File getFrom() {
+    public Iterable<File> getFiles() {
         return from;
     }
 
@@ -63,13 +63,13 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     }
 
     @Override
-    public File getSvgMaskDirectory() {
-        return svgMaskDirectory;
+    public Iterable<File> getSvgMaskFiles() {
+        return svgMaskFiles;
     }
 
     @Override
-    public File getSvgMaskResourcesDirectory() {
-        return svgMaskResourcesDirectory;
+    public Iterable<File> getSvgMaskResourceFiles() {
+        return svgMaskResourceFiles;
     }
 
     @Override

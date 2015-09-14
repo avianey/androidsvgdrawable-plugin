@@ -15,13 +15,9 @@
  */
 package fr.avianey.androidsvgdrawable.gradle;
 
-import java.util.Set;
+import org.gradle.api.*;
 
-import org.gradle.api.Action;
-import org.gradle.api.GradleException;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import java.util.Set;
 
 /**
  * Task that generates drawable from Scalable Vector Graphics (SVG) files.
@@ -52,7 +48,7 @@ public class SvgDrawableGradlePlugin implements Plugin<Project> {
             public void execute(Project project) {
                 Set<Task> preBuildTasks = project.getTasksByName("preBuild", false);
                 if (preBuildTasks.isEmpty()) {
-                    project.getLogger().warn("The Android plugin 'preBuild' task could not be found. Skipping SVG generation...");
+                    project.getLogger().error("The Android plugin 'preBuild' task could not be found. Skipping SVG generation...");
                 } else {
                     preBuildTasks.iterator().next().dependsOn(project.getTasks().withType(SvgDrawableTask.class));
                 }

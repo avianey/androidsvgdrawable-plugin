@@ -41,8 +41,8 @@ import static org.junit.Assert.assertEquals;
 // TODO generate reference PNG with the targeted jdk instead of approximate the result
 public class VisualConversionTest {
 
-    private static final String PATH_IN  = "./target/test-classes/" + VisualConversionTest.class.getSimpleName() + "/";
-    private static final File PATH_OUT  = new File("./target/generated-png/");
+    private static final String PATH_IN = "./target/test-classes/" + VisualConversionTest.class.getSimpleName() + "/";
+    private static final String PATH_OUT = "./target/generated-png/" + VisualConversionTest.class.getSimpleName() + "/";
 
     private static SvgDrawablePlugin plugin;
     private static QualifiedSVGResourceFactory qualifiedSVGResourceFactory;
@@ -56,9 +56,9 @@ public class VisualConversionTest {
 
     @BeforeClass
     public static void setup() {
-        PATH_OUT.mkdirs();
         plugin = new SvgDrawablePlugin(new TestParameters(), new TestLogger());
         qualifiedSVGResourceFactory = plugin.getQualifiedSVGResourceFactory();
+        new File(PATH_OUT).mkdirs();
     }
 
     @Parameters
@@ -78,7 +78,7 @@ public class VisualConversionTest {
         Rectangle rect = svg.getBounds();
         Assert.assertNotNull(rect);
 
-        plugin.transcode(svg, svg.getDensity().getValue(), PATH_OUT, null);
+        plugin.transcode(svg, svg.getDensity().getValue(), new File(PATH_OUT), null);
         BufferedImage transcoded = ImageIO.read(new FileInputStream(new File(PATH_OUT, svg.getName() + ".png")));
         BufferedImage original = ImageIO.read(new FileInputStream(new File(PATH_IN + svg.getName() + ".pngtest")));
         assertEquals(0, bufferedImagesEqual(transcoded, original), 0.1);

@@ -15,23 +15,16 @@
  */
 package fr.avianey.androidsvgdrawable.gradle;
 
-import java.io.File;
-import java.util.Map;
-
+import fr.avianey.androidsvgdrawable.*;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.TaskAction;
 
-import fr.avianey.androidsvgdrawable.BoundsType;
-import fr.avianey.androidsvgdrawable.Density;
-import fr.avianey.androidsvgdrawable.RelativeDensity;
-import fr.avianey.androidsvgdrawable.OutputFormat;
-import fr.avianey.androidsvgdrawable.OutputType;
-import fr.avianey.androidsvgdrawable.OverrideMode;
-import fr.avianey.androidsvgdrawable.SvgDrawablePlugin;
+import java.io.File;
 
 public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Parameters {
 
-    public File from;
+    public FileCollection from;
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverrideMode overrideMode = OverrideMode.always;
@@ -41,8 +34,8 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public File ninePatchConfig;
 
     // masking
-    public File svgMaskDirectory;
-    public File svgMaskResourcesDirectory;
+    public FileCollection svgMaskFiles;
+    public FileCollection svgMaskResourceFiles;
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
 
@@ -67,7 +60,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
-    public File getFrom() {
+    public Iterable<File> getFiles() {
         return from;
     }
 
@@ -97,13 +90,13 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
-    public File getSvgMaskDirectory() {
-        return svgMaskDirectory;
+    public Iterable<File> getSvgMaskFiles() {
+        return svgMaskFiles;
     }
 
     @Override
-    public File getSvgMaskResourcesDirectory() {
-        return svgMaskResourcesDirectory;
+    public Iterable<File> getSvgMaskResourceFiles() {
+        return svgMaskResourceFiles;
     }
 
     @Override
@@ -141,7 +134,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         return svgBoundsType;
     }
 
-    public void setFrom(File from) {
+    public void setFrom(FileCollection from) {
         this.from = from;
     }
 
@@ -165,12 +158,12 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         this.ninePatchConfig = ninePatchConfig;
     }
 
-    public void setSvgMaskDirectory(File svgMaskDirectory) {
-        this.svgMaskDirectory = svgMaskDirectory;
+    public void setSvgMaskFiles(FileCollection svgMaskFiles) {
+        this.svgMaskFiles = svgMaskFiles;
     }
 
-    public void setSvgMaskResourcesDirectory(File svgMaskResourcesDirectory) {
-        this.svgMaskResourcesDirectory = svgMaskResourcesDirectory;
+    public void setSvgMaskResourceFiles(FileCollection svgMaskResourceFiles) {
+        this.svgMaskResourceFiles = svgMaskResourceFiles;
     }
 
     public void setSvgMaskedSvgOutputDirectory(File svgMaskedSvgOutputDirectory) {
