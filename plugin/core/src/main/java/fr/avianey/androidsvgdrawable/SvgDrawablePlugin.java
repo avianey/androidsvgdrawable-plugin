@@ -26,7 +26,7 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.xml.sax.SAXException;
 
 import javax.annotation.Nullable;
@@ -38,7 +38,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.google.common.base.Joiner.on;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -53,7 +56,6 @@ import static org.apache.batik.transcoder.image.ImageTranscoder.KEY_BACKGROUND_C
 import static org.apache.batik.transcoder.image.JPEGTranscoder.KEY_QUALITY;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.apache.commons.io.IOCase.INSENSITIVE;
 import static org.apache.commons.io.filefilter.TrueFileFilter.INSTANCE;
 
 /**
@@ -132,7 +134,10 @@ public class SvgDrawablePlugin {
 
         // validating targeted densities
         // un-targeted densities will be ignored except for the fallback density if specified
-        final Set<Density.Value> targetDensities = new HashSet<>(asList(parameters.getTargetedDensities()));
+        final Set<Density.Value> targetDensities = EnumSet.noneOf(Density.Value.class);
+        if (parameters.getTargetedDensities() != null) {
+            targetDensities.addAll(asList(parameters.getTargetedDensities()));
+        }
         if (targetDensities.isEmpty()) {
             targetDensities.addAll(EnumSet.allOf(Density.Value.class));
         }
@@ -204,7 +209,7 @@ public class SvgDrawablePlugin {
                         destination.mkdirs();
                     }
                     if (destination.exists()) {
-                        getLog().debug("Transcoding " + svg.getName() + " to " + destination.getName());
+                        getLog().debug("+ transcoding " + svg.getName() + " to " + destination.getName());
                         transcode(svg, d, destination, ninePatch);
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
@@ -422,7 +427,7 @@ public class SvgDrawablePlugin {
     private Collection<QualifiedResource> listQualifiedResources(final Iterable<File> files, final String extension) {
         checkNotNull(extension);
         final Collection<QualifiedResource> resources = new ArrayList<>();
-        FileFilter svgFilter = new FileFilter() {
+        final FileFilter svgFilter = new FileFilter() {
             public boolean accept(File file) {
                 if (file.isFile() && extension.equalsIgnoreCase(getExtension(file.getAbsolutePath()))) {
                     try {
@@ -438,9 +443,20 @@ public class SvgDrawablePlugin {
                 return true;
             }
         };
+        final IOFileFilter ioSvgFilter = new IOFileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return svgFilter.accept(file);
+            }
+
+            @Override
+            public boolean accept(File dir, String name) {
+                return svgFilter.accept(new File(dir, name));
+            }
+        };
         for (File from : files) {
             if (from.isDirectory()) {
-                for (File input : listFiles(from, new SuffixFileFilter(new String[]{extension}, INSENSITIVE), INSTANCE)) {
+                for (File input : listFiles(from, ioSvgFilter, INSTANCE)) {
                     svgFilter.accept(input);
                 }
             } else {

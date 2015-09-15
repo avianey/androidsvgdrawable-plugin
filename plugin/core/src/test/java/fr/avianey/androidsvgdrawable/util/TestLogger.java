@@ -1,6 +1,18 @@
 package fr.avianey.androidsvgdrawable.util;
 
+import java.io.PrintStream;
+
 public class TestLogger implements Log {
+
+    private final PrintStream out;
+
+    public TestLogger() {
+        this.out = null;
+    }
+
+    public TestLogger(PrintStream out) {
+        this.out = out;
+    }
 
     @Override
     public boolean isDebugEnabled() {
@@ -8,10 +20,19 @@ public class TestLogger implements Log {
     }
 
     @Override
-    public void debug(CharSequence content) {}
+    public void debug(CharSequence content) {
+        if (out != null) {
+            out.println(content);
+        }
+    }
 
     @Override
-    public void debug(CharSequence content, Throwable error) {}
+    public void debug(CharSequence content, Throwable error) {
+        if (out != null) {
+            out.println(content);
+            error.printStackTrace(out);
+        }
+    }
 
     @Override
     public void debug(Throwable error) {}
@@ -22,10 +43,19 @@ public class TestLogger implements Log {
     }
 
     @Override
-    public void info(CharSequence content) {}
+    public void info(CharSequence content) {
+        if (out != null) {
+            out.println(content);
+        }
+    }
 
     @Override
-    public void info(CharSequence content, Throwable error) {}
+    public void info(CharSequence content, Throwable error) {
+        if (out != null) {
+            out.println(content);
+            error.printStackTrace(out);
+        }
+    }
 
     @Override
     public void info(Throwable error) {}
@@ -36,10 +66,19 @@ public class TestLogger implements Log {
     }
 
     @Override
-    public void warn(CharSequence content) {}
+    public void warn(CharSequence content) {
+        if (out != null) {
+            out.println(content);
+        }
+    }
 
     @Override
-    public void warn(CharSequence content, Throwable error) {}
+    public void warn(CharSequence content, Throwable error) {
+        if (out != null) {
+            out.println(content);
+            error.printStackTrace(out);
+        }
+    }
 
     @Override
     public void warn(Throwable error) {}
@@ -50,10 +89,19 @@ public class TestLogger implements Log {
     }
 
     @Override
-    public void error(CharSequence content) {}
+    public void error(CharSequence content) {
+        if (out != null) {
+            out.println(content);
+        }
+    }
 
     @Override
-    public void error(CharSequence content, Throwable error) {}
+    public void error(CharSequence content, Throwable error) {
+        if (out != null) {
+            out.println(content);
+            error.printStackTrace(out);
+        }
+    }
 
     @Override
     public void error(Throwable error) {}

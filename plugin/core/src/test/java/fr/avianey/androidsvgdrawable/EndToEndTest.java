@@ -25,12 +25,14 @@ import java.io.File;
 
 import static fr.avianey.androidsvgdrawable.Density.Value.hdpi;
 import static fr.avianey.androidsvgdrawable.OutputFormat.PNG;
+import static fr.avianey.androidsvgdrawable.OutputType.drawable;
 
 /**
  * Complete scenario with generation of several drawables
  */
 public class EndToEndTest {
 
+    private static final String PATH_IN  = "./target/test-classes/" + EndToEndTest.class.getSimpleName() + "/";
     private static final String PATH_OUT_SVG = "./target/generated/" + EndToEndTest.class.getSimpleName() + "/svg/";
     private static final String PATH_OUT_PNG = "./target/generated-png/" + EndToEndTest.class.getSimpleName() + "/";
 
@@ -40,10 +42,25 @@ public class EndToEndTest {
     public void setup() {
         TestParameters parameters = new TestParameters();
         parameters.targetedDensities = new Density.Value[] {hdpi};
-        parameters.from = ImmutableList.of();
+        parameters.from = ImmutableList.of(
+                // individual files
+                new File(PATH_IN, "valid/square/square_red-mdpi.svg"),
+                new File(PATH_IN, "valid/square/square_yellow-w16mdpi.svg"),
+                new File(PATH_IN, "errors/missconfigured.svg"),
+                // directory tree (recursive)
+                new File(PATH_IN, "valid/square/color")
+        );
         parameters.to = new File(PATH_OUT_PNG);
         parameters.svgMaskedSvgOutputDirectory = new File(PATH_OUT_SVG);
+        parameters.svgMaskFiles = ImmutableList.of(
+                new File(PATH_IN, "mask/square/squaremask-mdpi.svgmask"),
+                new File(PATH_IN, "mask/standard")
+        );
+        parameters.svgMaskResourceFiles = ImmutableList.of(
+                new File(PATH_IN, "masked")
+        );
         parameters.outputFormat = PNG;
+        parameters.outputType = drawable;
         // get a plugin instance
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
     }

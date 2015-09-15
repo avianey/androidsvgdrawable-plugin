@@ -104,7 +104,7 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
 
     @Override
     public OutputType getOutputType() {
-        return null;
+        return outputType;
     }
 
 }
