@@ -49,6 +49,6 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <image x="0" y="0" width="20" height="20" xlink:href="#{square_.*}" />
-  <image x="0" y="0" width="20" height="20" xlink:href="#{circle_.*}" />
+  <image x="0" y="0" width="10" height="10" xlink:href="#{square_.*}" />
+  <image x="10" y="10" width="10" height="10" xlink:href="#{circle_.*}" />
 </svg>

@@ -20,13 +20,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import fr.avianey.androidsvgdrawable.NinePatch.Zone;
 import fr.avianey.androidsvgdrawable.util.Log;
+import fr.avianey.androidsvgdrawable.util.QualifiedResourceFilter;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.xml.sax.SAXException;
 
 import javax.annotation.Nullable;
@@ -55,7 +55,6 @@ import static org.apache.batik.transcoder.SVGAbstractTranscoder.*;
 import static org.apache.batik.transcoder.image.ImageTranscoder.KEY_BACKGROUND_COLOR;
 import static org.apache.batik.transcoder.image.JPEGTranscoder.KEY_QUALITY;
 import static org.apache.commons.io.FileUtils.listFiles;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.filefilter.TrueFileFilter.INSTANCE;
 
 /**
@@ -238,7 +237,11 @@ public class SvgDrawablePlugin {
                         qualifiedSVGResourceFactory,
                         parameters.getSvgMaskedSvgOutputDirectory(), svgMaskResources,
                         parameters.isUseSameSvgOnlyOnceInMask(), parameters.getOverrideMode());
-                getLog().debug("+ " + on(", ").join(generatedResources));
+                if (!generatedResources.isEmpty()) {
+                    getLog().debug("+ " + on(", ").join(generatedResources));
+                } else {
+                    getLog().debug("+ no matching masked resource file was found");
+                }
                 maskedFiles.addAll(generatedResources);
             } catch (XPathExpressionException | TransformerException | ParserConfigurationException | SAXException | IOException e) {
                 getLog().error(e);
@@ -426,44 +429,15 @@ public class SvgDrawablePlugin {
      */
     private Collection<QualifiedResource> listQualifiedResources(final Iterable<File> files, final String extension) {
         checkNotNull(extension);
-        final Collection<QualifiedResource> resources = new ArrayList<>();
-        final FileFilter svgFilter = new FileFilter() {
-            public boolean accept(File file) {
-                if (file.isFile() && extension.equalsIgnoreCase(getExtension(file.getAbsolutePath()))) {
-                    try {
-                        resources.add(qualifiedSVGResourceFactory.fromSVGFile(file));
-                    } catch (Exception e) {
-                        getLog().error("Invalid " + extension + " file : " + file.getAbsolutePath(), e);
-                        return false;
-                    }
-                } else {
-                    getLog().debug("+ skipping " + file.getAbsolutePath());
-                    return false;
-                }
-                return true;
-            }
-        };
-        final IOFileFilter ioSvgFilter = new IOFileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return svgFilter.accept(file);
-            }
-
-            @Override
-            public boolean accept(File dir, String name) {
-                return svgFilter.accept(new File(dir, name));
-            }
-        };
+        QualifiedResourceFilter filter = new QualifiedResourceFilter(getLog(), qualifiedSVGResourceFactory, extension);
         for (File from : files) {
             if (from.isDirectory()) {
-                for (File input : listFiles(from, ioSvgFilter, INSTANCE)) {
-                    svgFilter.accept(input);
-                }
+                listFiles(from, filter, INSTANCE);
             } else {
-                svgFilter.accept(from);
+                filter.accept(from);
             }
         }
-        return resources;
+        return filter.filteredResources();
     }
 
     @VisibleForTesting

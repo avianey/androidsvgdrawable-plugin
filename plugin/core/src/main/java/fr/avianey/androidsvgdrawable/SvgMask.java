@@ -61,8 +61,8 @@ public class SvgMask {
 	}
 
     /**
-     *
      * Generates masked SVG files for each matching combination of available SVG.
+	 *
      * @param qualifiedSVGResourceFactory
      * @param dest
      * @param availableResources
@@ -168,6 +168,9 @@ public class SvgMask {
 						// concat qualifiers & verify compatibility
 						// if a mask applies to two or more QualifiedResource with same Type but different values, the combination is skipped
 						for (Entry<Type, String> e : qualifiers.entrySet()) {
+                            if (e.getKey() == Type.density) {
+                                continue;
+                            }
 							String qualifierValue = current.getTypedQualifiers().get(e.getKey());
 							if (qualifierValue != null && !qualifierValue.equals(e.getValue())) {
 								// skip the current combination
@@ -241,7 +244,7 @@ public class SvgMask {
 	private class MaskNode {
 
 		private final Node imageNode;
-		private final String regexp;
+		private final String regexp; // TODO use compiled pattern
 		private final List<QualifiedResource> matchingResources;
 
 		private MaskNode(Node imageNode, String regexp) {
@@ -256,19 +259,17 @@ public class SvgMask {
 		 * <li>SVG {@link Qualifier} must contains all of the SVGMASK {@link Qualifier}</li>
 		 * <li>SVN name must match the pattern of the &lt;image&gt; node "href" attribute</li>
 		 * </ul>
-		 * @param availableResources
-		 * @return
+		 * @param availableResources available resources to use as mask
+		 * @return true if matching resources have been found
 		 */
 		public boolean accepts(final Collection<QualifiedResource> availableResources) {
-			final Set<Map.Entry<Type, String>> maskQualifiers = new HashSet<>(SvgMask.this.resource.getTypedQualifiers().entrySet());
-			Set<Map.Entry<Type, String>> svgQualifiers = new HashSet<>();
-			maskQualifiers.remove(new AbstractMap.SimpleEntry<>(Type.density, SvgMask.this.resource.getDensity().getValue().name()));
-			for (QualifiedResource r : availableResources) {
-				if (r.getName().matches(regexp)) {
-				    svgQualifiers.clear();
-					svgQualifiers.addAll(r.getTypedQualifiers().entrySet());
-					svgQualifiers.remove(new AbstractMap.SimpleEntry<>(Type.density, r.getDensity().getValue().name()));
-					if (maskQualifiers.containsAll(svgQualifiers)) {
+			final Map<Type, String> maskQualifiers = new HashMap<>(resource.getTypedQualifiers());
+			maskQualifiers.remove(Type.density);
+            for (QualifiedResource r : availableResources) {
+                if (r.getName().matches(regexp)) {
+                    Map<Type, String> svgQualifiers = new HashMap<>(r.getTypedQualifiers());
+					svgQualifiers.remove(Type.density);
+					if (maskQualifiers.entrySet().containsAll(svgQualifiers.entrySet())) {
 						// the mask is valid for this svg
 						matchingResources.add(r);
 					}

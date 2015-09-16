@@ -86,49 +86,49 @@ public class SvgMaskTest {
 				new Object[][]{
 						{
 								"mask-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								asList("mask_square_red-mdpi.svg"),
 								false
 						},
 						{
 								"mask_image_ns-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								asList("mask_image_ns_square_red-mdpi.svg"),
 								false
 						},
 						{
 								"mask_image_ns_bad-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								Collections.EMPTY_LIST,
 								false
 						},
 						{
 								"mask_svg_ns-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								asList("mask_svg_ns_square_red-mdpi.svg"),
 								false
 						},
 						{
 								"mask_no_image-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								Collections.EMPTY_LIST,
 								false
 						},
 						{
 								"mask_no_match-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								Collections.EMPTY_LIST,
 								false
 						},
 						{
 								"mask_no_regexp-mdpi.svgmask",
-								asList("square_red-mdpi.svg"),
+								asList("square_red-hdpi.svg"),
 								Collections.EMPTY_LIST,
 								false
 						},
 						{
 								"mask_multiple_image-mdpi.svgmask",
-								asList("square_red-mdpi.svg", "square_yellow-mdpi.svg", "circle_blue-mdpi.svg", "circle_green-mdpi.svg"),
+								asList("square_red-hdpi.svg", "square_yellow-mdpi.svg", "circle_blue-mdpi.svg", "circle_green-mdpi.svg"),
 								asList(
 										"mask_multiple_image_square_red_circle_blue-mdpi.svg",
 										"mask_multiple_image_square_red_circle_green-mdpi.svg",
@@ -140,7 +140,7 @@ public class SvgMaskTest {
 						{
 								"mask_same_image_twice-mdpi.svgmask",
 								asList(
-										"square_red-mdpi.svg", "square_yellow-mdpi.svg",
+										"square_red-hdpi.svg", "square_yellow-mdpi.svg",
 										"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
 										"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
 								),
@@ -175,7 +175,7 @@ public class SvgMaskTest {
 						{
 								"mask_same_image_twice-mdpi.svgmask",
 								asList(
-										"square_red-mdpi.svg", "square_yellow-mdpi.svg",
+										"square_red-hdpi.svg", "square_yellow-mdpi.svg",
 										"circle_blue-mdpi.svg", "circle_green-mdpi.svg", "circle_pink-mdpi.svg",
 										"triangle_black-mdpi.svg", "triangle_white-mdpi.svg"
 								),

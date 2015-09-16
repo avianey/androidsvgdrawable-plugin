@@ -62,7 +62,7 @@ public class EndToEndTest {
         parameters.outputFormat = PNG;
         parameters.outputType = drawable;
         // get a plugin instance
-        plugin = new SvgDrawablePlugin(parameters, new TestLogger());
+        plugin = new SvgDrawablePlugin(parameters, new TestLogger(System.out));
     }
 
     @Test
