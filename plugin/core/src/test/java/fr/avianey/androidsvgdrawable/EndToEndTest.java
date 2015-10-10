@@ -44,6 +44,7 @@ public class EndToEndTest {
         parameters.targetedDensities = new Density.Value[] {hdpi};
         parameters.from = ImmutableList.of(
                 // individual files
+                new File(PATH_IN, "ecmascript/scripted_1-mdpi.svg"),
                 new File(PATH_IN, "valid/square/square_red-mdpi.svg"),
                 new File(PATH_IN, "valid/square/square_yellow-w16mdpi.svg"),
                 new File(PATH_IN, "errors/missconfigured.svg"),
