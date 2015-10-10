@@ -7,7 +7,7 @@ Every Android application should provide [alternative resources](http://develope
 
 The only thing you have to do is to provide one or more qualified SVG files that will be converted for you at build time into as many as needed bitmaps and organized into configuration-specific drawable directories... at least one for each targeted screen density ! You'll never deal with raster resources anymore...
 
-This plugin handles any configuration `<qualifier>` supported by the Android SDK and can generate [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) drawable as well. To increase your productivity, a (incubating) mask functionnality allow you to define generic layers, filters, clip-path, etc...  and let you reuse them accross multiple SVG files. That's [DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself)  applied to Android drawable resources. 
+This plugin handles any configuration `<qualifier>` supported by the Android SDK and can generate [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) drawable as well. To increase your productivity, a (incubating) mask functionnality allow you to define generic layers, filters, clip-path, etc...  and let you reuse them across multiple SVG files. That's [DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself)  applied to Android drawable resources. 
 
 Enjoy :wink: !
 
