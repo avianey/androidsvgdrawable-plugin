@@ -6,6 +6,7 @@ CHANGELOG
  -  [ADD] Multiple input directory #34
      -  Gradle task **MUST** now use FileCollection instead of File
      -  replace `from = file("dir")` with  `from = files("dir1", "dir2", ...)`
+     -  idem for `svgMaskFiles` and `svgMaskResourceFiles` options which have been renamed /!\
  -  [CHG] Upgrade batik version
  -  [FIX] Fix SVG mask resource filter #42
 
@@ -14,6 +15,8 @@ CHANGELOG
  -  [ADD] Support for new `round` qualifier #35
  -  [ADD] Custom bound scaling for input SVG #38
  -  [FIX] Better error message
+ -  [DEL] Remove high resolution icon generation
+ -  [DEL] Remove `rename` option
 
 
 ###### 1.0.2 [08 JUN 2015]
