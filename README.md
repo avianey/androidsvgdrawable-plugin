@@ -1,7 +1,8 @@
 Android SVG Drawable plugin
 =========================
 
-[![Build Status](https://travis-ci.org/avianey/androidsvgdrawable-plugin.png?branch=master)](https://travis-ci.org/avianey/androidsvgdrawable-plugin)  
+[![Build Status](https://travis-ci.org/avianey/androidsvgdrawable-plugin.png?branch=master)](https://travis-ci.org/avianey/androidsvgdrawable-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.avianey.androidsvgdrawable/gradle-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.avianey.androidsvgdrawable/gradle-plugin)  
 
 Every Android application should provide [alternative resources](http://developer.android.com/guide/topics/resources/providing-resources.html#AlternativeResources) to support specific device configurations such as `portrait`, `landscape`, `small`, `large`, `us`, `fr`, ... Because we don't want to edit ~~thousands of~~ several images every time we need to change a single pixel, a color, a shadow size or a text value, this  plugin generates for you **density specific** bitmap drawable resources from qualified SVG files **at build time**.  
 
