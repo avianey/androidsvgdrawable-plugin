@@ -32,7 +32,7 @@ android {
 // create a task to convert SVG to PNG DRAWABLE
 task svgToDrawablePng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     // specify where to pick SVG from
-    from = file('src/main/svg-png')
+    from = files('src/main/svg-png')
     // specify the android res folder
     to = file('build/generated/res/main')
     // create qualified directories if missing
@@ -48,14 +48,14 @@ task svgToDrawablePng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
 
     // this is an experimental feature
     // it allow composition of SVG two generate resources for multiple combinations
-    svgMaskDirectory = file('src/main/svg-png/mask')
-    svgMaskResourcesDirectory = file('src/main/svg-png/mask/svg')
+    svgMaskFiles = files('src/main/svg-png/mask')
+    svgMaskResourceFiles = files('src/main/svg-png/mask/svg')
 }
 
 // create a task to convert SVG to PNG MIPMAP
 task svgToMipmapPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     // specify where to pick SVG from
-    from = file('src/main/svg-mipmap')
+    from = files('src/main/svg-mipmap')
     // specify the android res folder
     to = file('build/generated/res/main')
     // create qualified directories if missing
@@ -72,7 +72,7 @@ task svgToMipmapPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) 
 
 // multiple task can be used
 task svgToDrawableJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
-    from = file('src/main/svg-jpg')
+    from = files('src/main/svg-jpg')
     to = file('build/generated/res/main')
     createMissingDirectories = true
     overrideMode = 'ifModified'
@@ -83,7 +83,7 @@ task svgToDrawableJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
 // flavor specific
 task svgToMipmapPngFlavor1(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
     // specify where to pick SVG from
-    from = file('src/main/svg-mipmap-flavor1')
+    from = files('src/main/svg-mipmap-flavor1')
     // specify the android res folder
     to = file('build/generated/res/flavor1')
     // let generate PNG for the following densities only
