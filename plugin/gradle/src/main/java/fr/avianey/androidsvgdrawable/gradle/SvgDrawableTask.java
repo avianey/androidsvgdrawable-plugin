@@ -15,15 +15,27 @@
  */
 package fr.avianey.androidsvgdrawable.gradle;
 
+import com.google.common.base.Predicate;
 import fr.avianey.androidsvgdrawable.*;
+import groovy.lang.Closure;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 
+import static com.google.common.collect.FluentIterable.from;
+import static java.util.Arrays.asList;
+
 public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Parameters {
 
+    public static final Predicate<Object> notNull = new Predicate<Object>() {
+        @Override
+        public boolean apply(Object o) {
+            return o != null;
+        }
+    };
     public FileCollection from;
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
@@ -50,11 +62,27 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     // deprecated
     public BoundsType svgBoundsType = DEFAULT_BOUNDS_TYPE;
 
-    @TaskAction
-    public void svgToDrawable() {
+    @Override
+    public Task configure(Closure closure) {
+        Task task = super.configure(closure);
         if (svgMaskedSvgOutputDirectory == null) {
             svgMaskedSvgOutputDirectory = new File(getProject().getBuildDir(), "generated-svg");
         }
+        if (!task.getInputs().getHasInputs()) {
+            task.getInputs().files(
+                    from(asList(from, ninePatchConfig, svgMaskFiles, svgMaskResourceFiles))
+                            .filter(notNull).toArray(Object.class));
+        }
+        if (!task.getOutputs().getHasOutput()) {
+            task.getOutputs().files(
+                    from(asList(to, svgMaskedSvgOutputDirectory))
+                            .filter(notNull).toArray(File.class));
+        }
+        return task;
+    }
+
+    @TaskAction
+    public void transcode() {
         SvgDrawablePlugin plugin = new SvgDrawablePlugin(this, new GradleLogger(getProject().getLogger()));
         plugin.execute();
     }
