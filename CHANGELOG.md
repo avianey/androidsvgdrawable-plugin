@@ -9,6 +9,7 @@ CHANGELOG
      -  replace `from = file("dir")` with  `from = files("dir1", "dir2", ...)`
      -  idem for `svgMaskFiles` and `svgMaskResourceFiles` options which have been renamed /!\
  -  [CHG] Upgrade batik version
+ -  [CHG] Upgrade gradle version
  -  [FIX] Fix SVG mask resource filter #42
 
 
