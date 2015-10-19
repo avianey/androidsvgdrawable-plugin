@@ -3,6 +3,7 @@ CHANGELOG
 
 
 ###### 2.0.1 [IN PROGRESS]
+ -  [ADD] Use `TaskInputs` and `TaskOutputs` to plug with gradle **UP-TO-DATE** mechanism
  -  [ADD] Multiple input directory #34
      -  Gradle task **MUST** now use FileCollection instead of File
      -  replace `from = file("dir")` with  `from = files("dir1", "dir2", ...)`
