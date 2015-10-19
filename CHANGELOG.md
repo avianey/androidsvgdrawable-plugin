@@ -3,11 +3,13 @@ CHANGELOG
 
 
 ###### 2.0.1 [IN PROGRESS]
+ -  [ADD] Use `TaskInputs` and `TaskOutputs` to plug with gradle **UP-TO-DATE** mechanism
  -  [ADD] Multiple input directory #34
      -  Gradle task **MUST** now use FileCollection instead of File
      -  replace `from = file("dir")` with  `from = files("dir1", "dir2", ...)`
      -  idem for `svgMaskFiles` and `svgMaskResourceFiles` options which have been renamed /!\
  -  [CHG] Upgrade batik version
+ -  [CHG] Upgrade gradle version
  -  [FIX] Fix SVG mask resource filter #42
 
 
