@@ -11,6 +11,7 @@ CHANGELOG
  -  [CHG] Upgrade batik version
  -  [CHG] Upgrade gradle version
  -  [FIX] Fix SVG mask resource filter #42
+ -  [FIX] Fix use of constrained density qualifiers in SVG mask resources #45
 
 
 ###### 2.0.0 [05 SEP 2015]
