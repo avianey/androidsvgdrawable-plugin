@@ -78,4 +78,6 @@ public abstract class Density {
      * @return
      */
     public abstract double ratio(Rectangle bounds, Density.Value target);
+
+    public abstract String toString();
 }

@@ -28,4 +28,9 @@ public class RelativeDensity extends Density {
         return (double) target.getDpi() / (double) this.getDpi();
     }
 
+    @Override
+    public String toString() {
+        return getValue().name();
+    }
+
 }

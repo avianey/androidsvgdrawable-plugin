@@ -47,4 +47,9 @@ public class ConstrainedDensity extends Density {
                 return ((double) size / bounds.getHeight()) * (double) target.getDpi() / (double) this.getDpi();
         }
     }
+
+    @Override
+    public String toString() {
+        return side.name() + String.valueOf(size) + getValue().name();
+    }
 }

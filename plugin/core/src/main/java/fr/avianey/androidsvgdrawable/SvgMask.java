@@ -50,14 +50,10 @@ public class SvgMask {
 
 	private static final Pattern REF_PATTERN = Pattern.compile("^#\\{(.*)\\}$");
 
-	private final QualifiedResource resource;
+	private final QualifiedResource svgMask;
 
-	public SvgMask(final QualifiedResource resource) {
-		this.resource = resource;
-	}
-
-	public QualifiedResource getResource() {
-		return resource;
+	public SvgMask(final QualifiedResource svgMask) {
+		this.svgMask = svgMask;
 	}
 
     /**
@@ -87,7 +83,7 @@ public class SvgMask {
 		DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
 		dfactory.setNamespaceAware(true);
 		DocumentBuilder builder = dfactory.newDocumentBuilder();
-		Document svgmaskDom = builder.parse(resource);
+		Document svgmaskDom = builder.parse(svgMask);
 		final String svgNamespace = svgmaskDom.getDocumentElement().getNamespaceURI();
 
 		// extract image node
@@ -153,8 +149,8 @@ public class SvgMask {
 					// we don't care about using the same svg twice or more
 					// or the current combination contains distinct svg files only
 
-					final AtomicLong lastModified = new AtomicLong(resource.lastModified());
-					final StringBuilder tmpFileName = new StringBuilder(resource.getName());
+					final AtomicLong lastModified = new AtomicLong(svgMask.lastModified());
+					final StringBuilder tmpFileName = new StringBuilder(svgMask.getName());
 					final EnumMap<Type, String> qualifiers = new EnumMap<>(Type.class);
 					boolean skip = false;
 					for (int i = 0; i < maskNodes.size(); i++) {
@@ -193,14 +189,14 @@ public class SvgMask {
 						// - overrideMode support via override of lastModified() in QualifiedResource
 						// - ninePatch support via regexp in ninePatchConfig
 						qualifiers.remove(Type.density);
-						qualifiers.put(Type.density, resource.getDensity().getValue().name());
 						final String name = tmpFileName.toString();
-						final File maskedFile = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + ".svg") {
+						final File maskedFile = new File(dest, name + Qualifier.toQualifiedString(qualifiers) + "-" + svgMask.getDensity().toString() + ".svg") {
 							@Override
 							public long lastModified() {
 								return lastModified.get();
 							}
 						};
+						qualifiers.put(Type.density, svgMask.getDensity().getValue().name());
 
 						// write masked svg
 						if (overrideMode.shouldOverride(maskedFile, new File(maskedFile.getAbsolutePath()), null)) {
@@ -263,7 +259,7 @@ public class SvgMask {
 		 * @return true if matching resources have been found
 		 */
 		public boolean accepts(final Collection<QualifiedResource> availableResources) {
-			final Map<Type, String> maskQualifiers = new HashMap<>(resource.getTypedQualifiers());
+			final Map<Type, String> maskQualifiers = new HashMap<>(svgMask.getTypedQualifiers());
 			maskQualifiers.remove(Type.density);
             for (QualifiedResource r : availableResources) {
                 if (r.getName().matches(regexp)) {

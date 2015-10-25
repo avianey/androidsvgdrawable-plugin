@@ -91,6 +91,12 @@ public class SvgMaskTest {
 								false
 						},
 						{
+								"mask-w36mdpi.svgmask",
+								asList("square_red-hdpi.svg"),
+								asList("mask_square_red-w36mdpi.svg"),
+								false
+						},
+						{
 								"mask_image_ns-mdpi.svgmask",
 								asList("square_red-hdpi.svg"),
 								asList("mask_image_ns_square_red-mdpi.svg"),
@@ -207,7 +213,9 @@ public class SvgMaskTest {
     	assertEquals(maskedResourcesNames.size(), dir.list().length);
     	QualifiedResource qr;
     	for (String maskedResource : maskedResourcesNames) {
-            qr = qualifiedSVGResourceFactory.fromSVGFile(new File(dir, maskedResource));
+			File masked = new File(dir, maskedResource);
+			assertTrue(masked.getName() + " does not exists", masked.exists());
+			qr = qualifiedSVGResourceFactory.fromSVGFile(masked);
     		assertTrue(qr.exists());
             plugin.transcode(qr, mdpi, output, null);
     	}
