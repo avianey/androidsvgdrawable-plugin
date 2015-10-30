@@ -88,6 +88,7 @@ public class SvgDrawablePlugin {
 
         Density.Value[] getTargetedDensities();
 
+        @Nullable
         File getNinePatchConfig();
 
         Iterable<File> getSvgMaskFiles();
