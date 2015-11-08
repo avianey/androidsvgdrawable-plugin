@@ -3,6 +3,7 @@ CHANGELOG
 
 
 ###### 2.0.1 [IN PROGRESS]
+ -  [ADD] New `raw` value for `OutputType` to generate drawable from SVG as is
  -  [ADD] Use `TaskInputs` and `TaskOutputs` to plug with gradle **UP-TO-DATE** mechanism
  -  [ADD] Multiple input directory #34
      -  Gradle task **MUST** now use FileCollection instead of File
