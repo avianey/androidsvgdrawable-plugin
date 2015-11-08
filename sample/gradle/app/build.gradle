@@ -20,6 +20,9 @@ android {
 
     sourceSets{
         main.res.srcDirs = [main.res.srcDirs, "build/generated/res/main"]
+        // assets specfic transcoding
+        main.assets.srcDirs = [main.assets.srcDirs, "build/generated/assets/main"]
+        // flavor specific transcoding
         flavor1.res.srcDirs = [flavor1.res.srcDirs, "build/generated/res/flavor1"]
     }
 
@@ -40,11 +43,14 @@ task svgToDrawablePng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
     // override files only if necessary
     overrideMode = 'ifModified'
     // let generate PNG for the following densities only
+    // if none specified, all densities will be used
     targetedDensities = ['ldpi', 'hdpi', 'mdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
     // relative path of the file specifying nine patch specs
     ninePatchConfig = file('src/main/svg-png/9patch.json')
     // output format of the generated resources
     outputFormat = 'PNG'
+    // output type is drawable (default)
+    outputType = 'drawable'
 
     // this is an experimental feature
     // it allow composition of SVG two generate resources for multiple combinations
@@ -92,6 +98,19 @@ task svgToMipmapPngFlavor1(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawabl
     outputFormat = 'PNG'
     // output type is mipmap
     outputType = 'mipmap'
+}
+
+// unscaled raw transcoding
+task svgToAssets(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
+    // specify where to pick SVG from
+    from = files('src/main/svg-raw')
+    // specify the android res folder
+    to = file('build/generated/assets/main')
+    // output format of the generated resources
+    outputFormat = 'PNG'
+    // output type is raw
+    // resource qualifiers wil be ignored
+    outputType = 'raw'
 }
 
 dependencies {
