@@ -35,8 +35,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.collect.FluentIterable.from;
-import static fr.avianey.androidsvgdrawable.Density.Value.hdpi;
-import static fr.avianey.androidsvgdrawable.Density.Value.xxxhdpi;
+import static fr.avianey.androidsvgdrawable.Density.Value.*;
 import static fr.avianey.androidsvgdrawable.OutputFormat.PNG;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
@@ -66,7 +65,7 @@ public class OutputDirectoryTest {
         parameters.from = singleton(new File(PATH_IN));
         parameters.to = new File(PATH_OUT, "run-" + run);
         // get a plugin instance well parametrized
-        plugin = new SvgDrawablePlugin(parameters, new TestLogger(System.out));
+        plugin = new SvgDrawablePlugin(parameters, new TestLogger());
         // expected directories
         this.expectedDirectories = ImmutableSet.copyOf(from(expectedDirectories).transform(
                 new Function<String, File>() {
@@ -115,11 +114,34 @@ public class OutputDirectoryTest {
                                 OutputType.mipmap,
                                 ImmutableSet.of("mipmap-xxxhdpi")
                         },
-//                        {
-//                                new Density.Value[]{},
-//                                OutputType.raw,
-//                                ImmutableSet.of()
-//                        },
+                        {
+                                new Density.Value[]{},
+                                OutputType.mipmap,
+                                ImmutableSet.of(
+                                        "mipmap-ldpi",
+                                        "mipmap-mdpi",
+                                        "mipmap-hdpi",
+                                        "mipmap-xhdpi",
+                                        "mipmap-xxhdpi",
+                                        "mipmap-xxxhdpi",
+                                        "mipmap-tvdpi"
+                                )
+                        },
+                        {
+                                new Density.Value[]{},
+                                OutputType.raw,
+                                ImmutableSet.of()
+                        },
+                        {
+                                null,
+                                OutputType.raw,
+                                ImmutableSet.of()
+                        },
+                        {
+                                new Density.Value[]{ldpi, hdpi, xxxhdpi},
+                                OutputType.raw,
+                                ImmutableSet.of()
+                        },
                 }
         );
     }

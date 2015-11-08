@@ -51,6 +51,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.*;
 import static org.apache.batik.transcoder.image.ImageTranscoder.KEY_BACKGROUND_COLOR;
 import static org.apache.batik.transcoder.image.JPEGTranscoder.KEY_QUALITY;
@@ -86,6 +87,7 @@ public class SvgDrawablePlugin {
 
         OverrideMode getOverrideMode();
 
+        @Nullable
         Density.Value[] getTargetedDensities();
 
         @Nullable
@@ -133,15 +135,20 @@ public class SvgDrawablePlugin {
          **********************/
 
         // validating targeted densities
-        // un-targeted densities will be ignored except for the fallback density if specified
+        // un-targeted densities will be ignored
+        // if the output type is 'raw' then targeted densities are ignored
         final Set<Density.Value> targetDensities = EnumSet.noneOf(Density.Value.class);
-        if (parameters.getTargetedDensities() != null) {
-            targetDensities.addAll(asList(parameters.getTargetedDensities()));
+        if (parameters.getOutputType() != OutputType.raw) {
+            if (parameters.getTargetedDensities() != null) {
+                targetDensities.addAll(asList(parameters.getTargetedDensities()));
+            }
+            if (targetDensities.isEmpty()) {
+                targetDensities.addAll(EnumSet.allOf(Density.Value.class));
+            }
+            getLog().info("Targeted densities : " + on(", ").join(targetDensities));
+        } else {
+            getLog().info("Ignoring targeted densities for 'raw' output type...");
         }
-        if (targetDensities.isEmpty()) {
-            targetDensities.addAll(EnumSet.allOf(Density.Value.class));
-        }
-        getLog().info("Targeted densities : " + on(", ").join(targetDensities));
 
         /********************************
          * Load NinePatch configuration *
@@ -149,13 +156,19 @@ public class SvgDrawablePlugin {
 
         NinePatchMap ninePatchMap = new NinePatchMap();
         if (parameters.getNinePatchConfig() != null && parameters.getNinePatchConfig().isFile()) {
-            getLog().info("Loading NinePatch configuration file " + parameters.getNinePatchConfig().getAbsolutePath());
-            try (final Reader reader = new FileReader(parameters.getNinePatchConfig())) {
-                Type t = new TypeToken<Set<NinePatch>>(){}.getType();
-                Set<NinePatch> ninePathSet = new GsonBuilder().create().fromJson(reader, t);
-                ninePatchMap = NinePatch.init(ninePathSet);
-            } catch (IOException e) {
-                getLog().error(e);
+            if (parameters.getOutputType() == OutputType.mipmap) {
+                getLog().warn("NinePatch is not supported by the Android platform. " +
+                        "Skipping NinePatch configuration file " + parameters.getNinePatchConfig().getAbsolutePath());
+            } else {
+                getLog().info("Loading NinePatch configuration file " + parameters.getNinePatchConfig().getAbsolutePath());
+                try (final Reader reader = new FileReader(parameters.getNinePatchConfig())) {
+                    Type t = new TypeToken<Set<NinePatch>>() {
+                    }.getType();
+                    Set<NinePatch> ninePathSet = new GsonBuilder().create().fromJson(reader, t);
+                    ninePatchMap = NinePatch.init(ninePathSet);
+                } catch (IOException e) {
+                    getLog().error("Error loading NinePatch configuration file", e);
+                }
             }
         } else {
             getLog().info("No NinePatch configuration file specified");
@@ -197,19 +210,15 @@ public class SvgDrawablePlugin {
         for (QualifiedResource svg : svgToConvert) {
             try {
                 getLog().info("Transcoding " + FilenameUtils.getName(svg.getAbsolutePath()) + " to targeted densities");
-                // for each target density :
-                // - find matching destinations :
-                //   - matches all extra qualifiers
-                //   - no other output with a qualifiers set that is a subset of this output
-                // - if no match, create required directories
-                for (Density.Value d : targetDensities) {
+                Collection<Density.Value> _targetedDensities = parameters.getOutputType() == OutputType.raw ? singletonList(svg.getDensity().getValue()) : targetDensities;
+                for (Density.Value d : _targetedDensities) {
                     NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
-                    File destination = svg.getOutputFor(d, parameters.getTo(), ninePatch == null ? parameters.getOutputType() : OutputType.drawable);
+                    File destination = parameters.getOutputType() == OutputType.raw ? parameters.getTo() : svg.getOutputFor(d, parameters.getTo(), parameters.getOutputType());
                     if (!destination.exists() && parameters.isCreateMissingDirectories()) {
                         destination.mkdirs();
                     }
                     if (destination.exists()) {
-                        getLog().debug("+ transcoding " + svg.getName() + " to " + destination.getName());
+                        getLog().debug("+ transcoding " + svg.getName() + " into " + destination.getName());
                         transcode(svg, d, destination, ninePatch);
                     } else {
                         getLog().info("Qualified output " + destination.getName() + " does not exists. " +
@@ -268,7 +277,7 @@ public class SvgDrawablePlugin {
         if (getLog().isDebugEnabled()) {
             getLog().debug("+ target dimensions [width=" + outputBounds.getWidth() + " - height=" + outputBounds.getHeight() +"]");
         }
-        try (FileInputStream svgInputStream = new FileInputStream(svg);) {
+        try (FileInputStream svgInputStream = new FileInputStream(svg)) {
             TranscoderInput input = new TranscoderInput(svgInputStream);
 
             // final name

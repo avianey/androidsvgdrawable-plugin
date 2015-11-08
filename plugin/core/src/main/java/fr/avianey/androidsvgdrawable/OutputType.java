@@ -22,6 +22,6 @@ package fr.avianey.androidsvgdrawable;
  */
 public enum OutputType {
 
-    drawable, mipmap;
+    drawable, mipmap, raw
 
 }
