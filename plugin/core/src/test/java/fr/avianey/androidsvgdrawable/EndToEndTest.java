@@ -22,6 +22,7 @@ import fr.avianey.androidsvgdrawable.util.TestParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
 import java.util.Arrays;
@@ -44,7 +45,8 @@ public class EndToEndTest {
     private static final String PATH_OUT_PNG = "./target/generated-png/" + EndToEndTest.class.getSimpleName() + "/run";
 
     private static AtomicInteger RUN = new AtomicInteger();
-    private static SvgDrawablePlugin plugin;
+
+    private SvgDrawablePlugin plugin;
 
     private static final Function<? super String, File> toInFile = new Function<String, File>() {
         @Override
@@ -68,7 +70,7 @@ public class EndToEndTest {
         plugin = new SvgDrawablePlugin(parameters, new TestLogger(System.out));
     }
 
-    @Parameterized.Parameters
+    @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
