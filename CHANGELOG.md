@@ -13,6 +13,7 @@ CHANGELOG
  -  [CHG] Upgrade gradle version
  -  [FIX] Fix SVG mask resource filter #42
  -  [FIX] Fix use of constrained density qualifiers in SVG mask resources #45
+ -  [FIX] Fix GUAVA version conflict with lint task #48
 
 
 ###### 2.0.0 [05 SEP 2015]
