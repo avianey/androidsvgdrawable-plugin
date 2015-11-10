@@ -43,8 +43,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:2.0.0') {
+        classpath 'com.android.tools.build:gradle:1.3.1'
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:3.0.0') {
             // should be excluded to avoid conflict
             exclude group: 'xerces'
         }
@@ -79,7 +79,7 @@ Add the plugin to your pom.xml :
 <plugin>
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin</artifactId>
-    <version>2.0.0</version>
+    <version>3.0.0</version>
     <executions>
         <execution>
             <id>gendrawable-png</id>
@@ -121,6 +121,7 @@ Example of valid SVG file name :
 
 -   `icon-mdpi.svg`
 -   `flag-fr-land-mdpi.svg`
+-   `flag-fr-land-w64mdpi.svg`
 -   `more_complex_name-land-mdpi-fr-sw700dp.svg`  
 
 Example of invalid SVG file name :
@@ -276,18 +277,18 @@ The plugin can be configured using the following options :
 
 | Name | Format | Description |  
 | :--- | :----- | :---------- |  
-|from|File|Path to the directory that contains the SVG files to generate drawable from. SVG files **MUST** be named against `\w+(-{qualifier})+.svg` and **MUST** contain a valid density qualifier (ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi, tvdpi)|  
+|from|FileCollection|Collection of Path that contains the SVG files to generate drawable from. SVG files **MUST** be named against `\w+(-{qualifier})+.svg` and **MUST** contain a valid density qualifier (ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi, tvdpi). Could point to single files or to directories that will be scanned to find SVG files.|  
 |to|File|Path to the Android `res/` directory that contains the various `drawable/` directories.|  
 |createMissingDirectories|boolean|Set it to `false` if you don't want the plugin to create missing drawable(-{qualifier})*/ directories. The default value is set to `true`.|  
 |ninePatchConfig|File|Path to the 9-Patch JSON configuration file.|  
-|override|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
+|overwriteMode|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
 |targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|  
 |outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
 |outputType|`drawable` or `mipmap`|The output directory for the generated bitmaps. Nine-Patch support apply only for the `drawable` output type.|  
 |jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|  
 |jpgBackgroundColor|Integer|The background color used for the generated JPG bitmaps. Default is `0xFFFFFFFF` (opaque white).|  
-|svgMaskDirectory|File|An optionnal directory to pick the SVGMASK files from. Default to the same directory as the `from` parameter.|  
-|svgMaskResourcesDirectory|File|An optionnal directory to pick the SVG files to mask from. Default to the same directory as the `svgMaskDirectory` parameter.|  
+|svgMaskFiles|FileCollection|An optionnal collection of Path to pick the SVGMASK files from. Default to the same directory as the `from` parameter.|  
+|svgMaskResourceFiles|FileCollection|An optionnal collection of Path to pick the SVG files to mask from. Default to the same directory as the `svgMaskedSvgOutputDirectory` parameter.|  
 |useSameSvgOnlyOnceInMask|boolean|Tell the plugin to skip SVGMASK combinations that use the same SVG resource more than once. Default is `true`.|  
 
 #### Typical Gradle configuration
@@ -302,7 +303,7 @@ Check the [Maven sample project](https://github.com/avianey/androidsvgdrawable-p
 
 1.  Use a custom temporary output directory for every configuration
     * see https://github.com/avianey/androidsvgdrawable-plugin/wiki/How-to-use-with-flavor  
-2.  `overrideMode` **SHOULD** be forced to `always` for release build
+2.  `overwriteMode` **SHOULD** be forced to `always` for release build
 3.  Perform a `clean` when you upgrade `androidsvgdrawable-plugin`
 
 ## Who's using it
