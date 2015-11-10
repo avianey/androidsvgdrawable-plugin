@@ -4,7 +4,7 @@
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0</version>
     <name>AndroidSvgDrawable Plugin</name>
     <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
 
@@ -28,7 +28,7 @@
         <url>https://github.com/avianey/androidsvgdrawable-plugin</url>
         <developerConnection>scm:git:git@github.com:avianey/androidsvgdrawable-plugin.git</developerConnection>
         <connection>scm:git:git@github.com:avianey/androidsvgdrawable-plugin.git</connection>
-        <tag>androidsvgdrawable-1.0.0</tag>
+        <tag>androidsvgdrawable-3.0.0</tag>
     </scm>
 
     <issueManagement>
