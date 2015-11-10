@@ -41,7 +41,7 @@ task svgToDrawablePng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
     // create qualified directories if missing
     createMissingDirectories = true
     // override files only if necessary
-    overrideMode = 'ifModified'
+    overwriteMode = 'ifModified'
     // let generate PNG for the following densities only
     // if none specified, all densities will be used
     targetedDensities = ['ldpi', 'hdpi', 'mdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
@@ -67,7 +67,7 @@ task svgToMipmapPng(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) 
     // create qualified directories if missing
     createMissingDirectories = true
     // override files only if necessary
-    overrideMode = 'ifModified'
+    overwriteMode = 'ifModified'
     // let generate PNG for the following densities only
     targetedDensities = ['ldpi', 'hdpi', 'mdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
     // output format of the generated resources
@@ -81,7 +81,7 @@ task svgToDrawableJpg(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
     from = files('src/main/svg-jpg')
     to = file('build/generated/res/main')
     createMissingDirectories = true
-    overrideMode = 'ifModified'
+    overwriteMode = 'ifModified'
     targetedDensities = ['ldpi', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
     outputFormat = 'JPG'
 }

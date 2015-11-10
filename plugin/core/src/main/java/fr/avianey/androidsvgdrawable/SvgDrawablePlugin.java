@@ -76,7 +76,7 @@ public class SvgDrawablePlugin {
         OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
         OutputType DEFAULT_OUTPUT_TYPE = OutputType.drawable;
         BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
-        OverrideMode DEFAULT_OVERRIDE_MODE = OverrideMode.always;
+        OverwriteMode DEFAULT_OVERRIDE_MODE = OverwriteMode.always;
         Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
 
         Iterable<File> getFiles();
@@ -85,7 +85,7 @@ public class SvgDrawablePlugin {
 
         boolean isCreateMissingDirectories();
 
-        OverrideMode getOverrideMode();
+        OverwriteMode getOverwriteMode();
 
         @Nullable
         Density.Value[] getTargetedDensities();
@@ -246,7 +246,7 @@ public class SvgDrawablePlugin {
                 Collection<QualifiedResource> generatedResources = new SvgMask(maskFile).generatesMaskedResources(
                         qualifiedSVGResourceFactory,
                         parameters.getSvgMaskedSvgOutputDirectory(), svgMaskResources,
-                        parameters.isUseSameSvgOnlyOnceInMask(), parameters.getOverrideMode());
+                        parameters.isUseSameSvgOnlyOnceInMask(), parameters.getOverwriteMode());
                 if (!generatedResources.isEmpty()) {
                     getLog().debug("+ " + on(", ").join(generatedResources));
                 } else {
@@ -290,7 +290,7 @@ public class SvgDrawablePlugin {
 
             final File finalFile = new File(finalName);
 
-            if (parameters.getOverrideMode().shouldOverride(svg, finalFile, parameters.getNinePatchConfig())) {
+            if (parameters.getOverwriteMode().shouldOverride(svg, finalFile, parameters.getNinePatchConfig())) {
                 // unit conversion for size not in pixel (in, mm, ...)
 
                 ImageTranscoder t = parameters.getOutputFormat().getTranscoderClass().newInstance();

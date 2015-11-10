@@ -63,7 +63,7 @@ public class SvgMask {
      * @param dest
      * @param availableResources
      * @param useSameSvgOnlyOnceInMask
-     * @param overrideMode
+     * @param overwriteMode
      * @return
      * @throws TransformerException
      * @throws ParserConfigurationException
@@ -75,7 +75,7 @@ public class SvgMask {
 			QualifiedSVGResourceFactory qualifiedSVGResourceFactory,
 	        File dest, final Collection<QualifiedResource> availableResources,
 			final boolean useSameSvgOnlyOnceInMask,
-			final OverrideMode overrideMode) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+			final OverwriteMode overwriteMode) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 		// generates output directory
 		dest.mkdirs();
 
@@ -186,7 +186,7 @@ public class SvgMask {
 						// generates masked SVG for the current combination
 						// - names against the mask name and the svg name
 						// - combining qualifiers (union all except density)
-						// - overrideMode support via override of lastModified() in QualifiedResource
+						// - overwriteMode support via override of lastModified() in QualifiedResource
 						// - ninePatch support via regexp in ninePatchConfig
 						qualifiers.remove(Type.density);
 						final String name = tmpFileName.toString();
@@ -199,7 +199,7 @@ public class SvgMask {
 						qualifiers.put(Type.density, svgMask.getDensity().getValue().name());
 
 						// write masked svg
-						if (overrideMode.shouldOverride(maskedFile, new File(maskedFile.getAbsolutePath()), null)) {
+						if (overwriteMode.shouldOverride(maskedFile, new File(maskedFile.getAbsolutePath()), null)) {
 						    TransformerFactory transformerFactory = TransformerFactory.newInstance();
 							Transformer transformer = transformerFactory.newTransformer();
 							DOMSource source = new DOMSource(svgmaskDom);

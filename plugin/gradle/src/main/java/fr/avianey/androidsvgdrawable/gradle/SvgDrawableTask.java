@@ -39,7 +39,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public FileCollection from;
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
-    public OverrideMode overrideMode = OverrideMode.always;
+    public OverwriteMode overwriteMode = OverwriteMode.always;
     public Density.Value[] targetedDensities;
 
     // nine patch
@@ -103,8 +103,8 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
-    public OverrideMode getOverrideMode() {
-        return overrideMode;
+    public OverwriteMode getOverwriteMode() {
+        return overwriteMode;
     }
 
     @Override
@@ -174,8 +174,8 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         this.createMissingDirectories = createMissingDirectories;
     }
 
-    public void setOverrideMode(OverrideMode overrideMode) {
-        this.overrideMode = overrideMode;
+    public void setOverwriteMode(OverwriteMode overwriteMode) {
+        this.overwriteMode = overwriteMode;
     }
 
     public void setTargetedDensities(Density.Value[] targetedDensities) {

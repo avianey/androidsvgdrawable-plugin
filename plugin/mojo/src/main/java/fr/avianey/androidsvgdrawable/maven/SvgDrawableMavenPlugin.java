@@ -111,14 +111,14 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     private boolean useSameSvgOnlyOnceInMask;
 
     /**
-     * Override existing generated resources.<br/>
-     * It's recommended to use {@link OverrideMode#always} for tests and
+     * Overwrite existing generated resources.<br/>
+     * It's recommended to use {@link OverwriteMode#always} for tests and
      * production releases.
      *
-     * @see OverrideMode
+     * @see OverwriteMode
      */
-    @Parameter(defaultValue = "always", alias = "override")
-    private OverrideMode overrideMode;
+    @Parameter(defaultValue = "always", alias = "overwrite")
+    private OverwriteMode overwriteMode;
 
     /**
      * <p>
@@ -205,8 +205,8 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     }
 
     @Override
-    public OverrideMode getOverrideMode() {
-        return overrideMode;
+    public OverwriteMode getOverwriteMode() {
+        return overwriteMode;
     }
 
     @Override
