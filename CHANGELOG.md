@@ -2,7 +2,9 @@ CHANGELOG
 =========
 
 
-###### 2.0.1 [IN PROGRESS]
+###### 3.0.1 [IN PROGRESS]
+
+###### 3.0.0 [10 NOV 2015]
  -  [ADD] New `raw` value for `OutputType` to generate drawable from SVG as is
  -  [ADD] Use `TaskInputs` and `TaskOutputs` to plug with gradle **UP-TO-DATE** mechanism
  -  [ADD] Multiple input directory #34
@@ -11,6 +13,7 @@ CHANGELOG
      -  idem for `svgMaskFiles` and `svgMaskResourceFiles` options which have been renamed /!\
  -  [CHG] Upgrade batik version
  -  [CHG] Upgrade gradle version
+ -  [CHG] Rename `overrideMode` to `overwriteMode`
  -  [FIX] Fix SVG mask resource filter #42
  -  [FIX] Fix use of constrained density qualifiers in SVG mask resources #45
  -  [FIX] Fix GUAVA version conflict with lint task #48
