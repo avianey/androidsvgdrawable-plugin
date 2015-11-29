@@ -67,7 +67,7 @@ public class QualifiedSVGResourceFactory {
         final Map<Type, String> typedQualifiers = Qualifier.fromQualifiedString(fileName.substring(fileName.indexOf("-") + 1));
 
         // a density qualifier must be provided
-        checkNotNull(typedQualifiers.get(Type.density));
+        checkNotNull(typedQualifiers.get(Type.density), "No density qualifier for input svg file " + fileName);
 
         return new QualifiedSVGResource(file, unqualifiedName, typedQualifiers);
     }
