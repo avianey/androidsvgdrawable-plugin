@@ -32,6 +32,9 @@ Enjoy :wink: !
 -   [Who's using it](#whos-using-it)
 -   [License](#license)
 
+
+:warning: Read CHANGELOG.md when upgrading the plugin version
+
 ## Gradle
 
 Add maven central repository and the plugin reference to your build script :
