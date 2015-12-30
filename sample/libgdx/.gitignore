@@ -1,0 +1,16 @@
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+**.iml
+gradle/wrapper
+.idea/
+*.png
+*.atlas
+*.fnt
+*.iml
+**/build
+**/lib

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64.000002 64.000001"
+   id="svg4981"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="suit_diamond.svg">
+  <defs
+     id="defs4983" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.16"
+     inkscape:cx="-334.19807"
+     inkscape:cy="27.208212"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     units="px"
+     inkscape:window-width="1855"
+     inkscape:window-height="1056"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4986">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1398.8069,-381.2847)">
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-opacity:1"
+       id="rect5529"
+       width="64"
+       height="64"
+       x="-1398.8069"
+       y="381.2847" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ed342f;fill-opacity:1"
+       d="m -1345.6908,412.63214 -20.2904,-25.9673 c -0.397,-0.50685 -1.2502,-0.50685 -1.6472,0 l -20.2904,25.96308 c -0.2956,0.38014 -0.2956,0.91231 0,1.28821 l 20.2904,25.96732 c 0.1985,0.25342 0.5027,0.40125 0.8236,0.40125 0.321,0 0.625,-0.14783 0.8236,-0.40125 l 20.2862,-25.96732 c 0.2956,-0.3759 0.2956,-0.90807 0,-1.28399 z"
+       id="path3-1" />
+  </g>
+</svg>

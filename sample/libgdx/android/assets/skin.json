@@ -1,0 +1,12 @@
+{
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": {
+    "cantarell": {
+      "file": "cantarell.fnt"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+    "cantarell": {
+      "font": "cantarell"
+    }
+  }
+}

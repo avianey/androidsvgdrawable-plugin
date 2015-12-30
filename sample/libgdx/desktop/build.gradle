@@ -1,0 +1,115 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.6
+sourceSets.main.java.srcDirs = [ "src/" ]
+
+project.ext.mainClassName = "fr.avianey.androidsvgdrawable.sample.DesktopLauncher"
+project.ext.assetsDir = new File("${rootProject.projectDir}/android/assets");
+
+task run(dependsOn: classes, type: JavaExec) {
+    main = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = project.assetsDir
+    ignoreExitValue = true
+}
+
+task dist(type: Jar) {
+    from files(sourceSets.main.output.classesDir)
+    from files(sourceSets.main.output.resourcesDir)
+    from {configurations.compile.collect {zipTree(it)}}
+    from files(project.assetsDir);
+ 
+    manifest {
+        attributes 'Main-Class': project.mainClassName
+    }
+}
+
+dist.dependsOn classes
+
+task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
+  doLast {
+    def classpath = new XmlParser().parse(file(".classpath"))
+    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
+    def writer = new FileWriter(file(".classpath"))
+    def printer = new XmlNodePrinter(new PrintWriter(writer))
+    printer.setPreserveWhitespace(true)
+    printer.print(classpath)
+  }
+}
+
+task initHeadlessLibGDX {
+    LwjglNativesLoader.load();
+    Gdx.graphics = new LwjglGraphics(new LwjglApplicationConfiguration());
+    Gdx.files = new LwjglFiles();
+    Gdx.input = new LwjglInput();
+    Gdx.net = new LwjglNet();
+}
+
+task generatePNG(type: fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask) {
+    from = files("${rootProject.projectDir}/resources/svg/svg")
+    to = file("${rootProject.projectDir}/android/build/generated/assets")
+    createMissingDirectories = true
+    overwriteMode = "ifModified"
+    outputFormat = "PNG"
+    outputType = "raw"
+    svgMaskFiles = files("${rootProject.projectDir}/resources/svg/mask")
+    svgMaskResourceFiles = files("${rootProject.projectDir}/resources/svg/masked")
+    svgMaskedSvgOutputDirectory = file("${rootProject.projectDir}/android/build/generated/svg")
+}
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.backends.lwjgl.LwjglFiles
+import com.badlogic.gdx.backends.lwjgl.LwjglGraphics
+import com.badlogic.gdx.backends.lwjgl.LwjglInput
+import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader
+import com.badlogic.gdx.backends.lwjgl.LwjglNet
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.g2d.PixmapPacker
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.badlogic.gdx.tools.bmfont.BitmapFontWriter
+task generateFONT(dependsOn: [initHeadlessLibGDX]) {
+    ext.inputFont = file("${rootProject.projectDir}/resources/font/Cantarell-Regular.ttf")
+    ext.outputPNGDir = file("${rootProject.projectDir}/android/build/generated/assets/")
+    ext.outputPNGName = "cantarell.png"
+    ext.outputFNT = file("${rootProject.projectDir}/android/assets/cantarell.fnt")
+    ext.padding = 3
+    inputs.file inputFont
+    outputs.files files(new File(outputPNGDir, outputPNGName), outputFNT)
+    doLast {
+        outputPNGDir.mkdirs();
+        // from https://github.com/libgdx/libgdx/wiki/Hiero#bitmapfontwriter
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890." /* Hiero.EXTENDED_CHARS */;
+        param.size = 32;
+        param.color = new Color(1, 1, 1, 1f);
+        param.borderWidth = (padding - 1);
+        param.borderColor = new Color(0, 0, 0, 1f);
+        param.renderCount = 3;
+        param.packer = new PixmapPacker(512, 512, Pixmap.Format.RGBA8888, padding, false, new PixmapPacker.SkylineStrategy());
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(new FileHandle(inputFont.getAbsolutePath()));
+        FreeTypeFontGenerator.FreeTypeBitmapFontData data = generator.generateData(param);
+
+        BitmapFontWriter.FontInfo info = new BitmapFontWriter.FontInfo();
+        info.padding = new BitmapFontWriter.Padding(padding, padding, padding, padding);
+        BitmapFontWriter.writeFont(data, (String[]) [outputPNGName], new FileHandle(outputFNT.getAbsolutePath()), info, 512, 512);
+        BitmapFontWriter.writePixmaps(param.packer.getPages(), new FileHandle(outputPNGDir.getAbsolutePath()), "cantarell");
+    }
+}
+
+import com.badlogic.gdx.tools.texturepacker.TexturePacker
+task generateATLAS(dependsOn: [generatePNG, generateFONT]) {
+    ext.inputDir = file("${rootProject.projectDir}/android/build/generated/assets/")
+    ext.outputDir = file("${rootProject.projectDir}/android/assets/")
+    inputs.dir inputDir
+    outputs.dir outputDir
+    doLast {
+        TexturePacker.process(inputDir.getAbsolutePath(), outputDir.getAbsolutePath(), "skin")
+    }
+}
+
+compileJava.dependsOn generateATLAS

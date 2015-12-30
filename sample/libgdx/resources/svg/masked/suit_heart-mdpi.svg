@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64.000002 64.000001"
+   id="svg4981"
+   version="1.1">
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1234.2732,-364.51871)">
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-opacity:1"
+       id="rect5529"
+       width="64"
+       height="64"
+       x="-1234.2732"
+       y="364.51871" />
+    <g
+       id="g4287"
+       transform="matrix(0.56308426,0,0,0.56308426,-511.32267,348.79348)">
+      <path
+         id="path29"
+         d="m -1200.7269,36.806801 c -11.66,0 -21.81,6.97 -26.35,17.06 -4.54,-10.08 -14.69,-17.06 -26.35,-17.06 -15.92,0 -25.3181,12.96 -25.3181,28.88 0,35.899999 48.2381,65.459999 50.4481,66.699999 0.38,0.21 0.79,0.32 1.21,0.32 0.42,0 0.84,-0.11 1.21,-0.32 2.2,-1.24 50.4581,-30.8 50.4581,-66.699999 0.01,-15.92 -9.3881,-28.88 -25.3081,-28.88 z"
+         style="fill:#ed342f;fill-opacity:1"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="scsscsccs" />
+    </g>
+  </g>
+</svg>
