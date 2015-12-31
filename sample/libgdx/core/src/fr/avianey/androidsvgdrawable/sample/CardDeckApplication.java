@@ -94,7 +94,7 @@ public class CardDeckApplication implements ApplicationListener {
             for (String rank : RANKS) {
                 table.add(
                         new Image(
-                                new SpriteDrawable(atlas.createSprite(String.format("card_suit_%s_rank_%s", suit, rank))),
+                                new SpriteDrawable(atlas.createSprite(String.format("card1_suit_%s_rank_%s", suit, rank))),
                                 Scaling.fit));
             }
         }
