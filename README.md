@@ -234,9 +234,7 @@ For input SVG files that use a **constrained** density qualifier (adjusted Bound
 
 ### SVG Masking
 
-:exclamation: SVG Masking is an incubating feature!
-
-SVG Masking takes advantage of the SVG `<image>` element and allow you to define generic layers, masks and filters as well as Nine-Patch configuration for the generated bitmaps.
+SVG Masking takes advantage of the SVG `<image>` element and allow you to define generic layers, masks and filters as well as Nine-Patch configuration for the generated bitmaps. 
 
 #### MASK file format
 
@@ -301,6 +299,10 @@ Check the [Gradle sample project](https://github.com/avianey/androidsvgdrawable-
 #### Typical Maven configuration
 
 Check the [Maven sample project](https://github.com/avianey/androidsvgdrawable-plugin/tree/master/sample/maven) . 
+
+#### Typical LibGDX configuration
+
+Check the [LibGDX sample project](https://github.com/avianey/androidsvgdrawable-plugin/tree/master/sample/libgdx) . 
 
 ## Best practices
 
