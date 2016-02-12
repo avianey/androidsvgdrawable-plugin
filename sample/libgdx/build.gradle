@@ -59,6 +59,7 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
+    apply plugin: "androidsvgdrawable"
 
     configurations { natives }
 
