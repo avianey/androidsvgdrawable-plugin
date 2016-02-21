@@ -98,6 +98,8 @@ public class BoundsExtractionTest {
 								{"square_effect-h10mdpi.svg", 10, 10, 10, 10},    //
 								{"square_stroke-h512mdpi.svg", 10, 10, 512, 512}, //
 								{"square-w512xxhdpi.svg", 10, 10, 512, 512},      //
+								// file links
+								{"square_link-w64xxhdpi.svg", 10, 10, 64, 64},    //
 								// visual bounds
         						{"square_no_height_width_stroke-mdpi.svg", 6, 6, 6, 6}, 	       // no height and width provided by the <SVG> element
         						{"square_translated-mdpi.svg", 10, 10, 10, 10},       		       // x and y != 0 (square outside)
