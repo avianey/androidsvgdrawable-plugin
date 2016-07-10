@@ -314,6 +314,7 @@ Check the [LibGDX sample project](https://github.com/avianey/androidsvgdrawable-
 ## Who's using it
 
 *  [Bubble Level](https://play.google.com/store/apps/details?id=net.androgames.level&referrer=utm_source%3Dandroidsvgdrawable%26utm_medium%3Dusing%26utm_campaign%3Dusing)
+*  [Compass](https://play.google.com/store/apps/details?id=fr.avianey.compass&referrer=utm_source%3Dandroidsvgdrawable%26utm_medium%3Dusing%26utm_campaign%3Dusing)
 *  [Yatzy (Dice Game)](https://play.google.com/store/apps/details?id=fr.pixelprose.dice&referrer=utm_source%3Dandroidsvgdrawable%26utm_medium%3Dusing%26utm_campaign%3Dusing)
 *  [Yatzy](https://play.google.com/store/apps/details?id=net.androgames.yams&referrer=utm_source%3Dandroidsvgdrawable%26utm_medium%3Dusing%26utm_campaign%3Dusing)
   
