@@ -26,14 +26,14 @@ import java.util.Set;
  */
 public class SvgDrawableGradlePlugin implements Plugin<Project> {
 
-    private static final String ANDROID_PLUGIN_CLASS = "com.android.build.gradle.AppPlugin";
+    private static final String ANDROID_PLUGIN_CLASS_REGEXP = "com\\.android\\.build\\.gradle\\.(?:AppPlugin|LibraryPlugin)";
 
     @Override
     public void apply(Project project) {
         // Verify that Android plugin is applied
         Plugin<?> androidPlugin = null;
         for (Plugin<?> p : project.getPlugins()) {
-            if (ANDROID_PLUGIN_CLASS.equals(p.getClass().getCanonicalName())) {
+            if (p.getClass().getCanonicalName().matches(ANDROID_PLUGIN_CLASS_REGEXP)) {
                 androidPlugin = p;
                 break;
             }
