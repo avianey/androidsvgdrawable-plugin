@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class SvgDrawableGradlePlugin implements Plugin<Project> {
 
-    private static final String ANDROID_PLUGIN_CLASS_REGEXP = "com\\.android\\.build\\.gradle\\.(?:AppPlugin|LibraryPlugin)";
+    private static final String ANDROID_PLUGIN_CLASS_REGEXP = "com\\.android\\.build\\.gradle\\.(?:AtomPlugin|FeaturePlugin|InstantAppPlugin|AppPlugin|LibraryPlugin)";
 
     @Override
     public void apply(Project project) {

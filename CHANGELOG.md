@@ -3,6 +3,7 @@ CHANGELOG
 
 
 ###### 3.0.1 [IN PROGRESS]
+ -  [ADD] Support `FeaturePlugin` and `InstantAppPlugin` from latest android build plugin #60
 
 ###### 3.0.0 [10 NOV 2015]
  -  [ADD] New `raw` value for `OutputType` to generate drawable from SVG as is
