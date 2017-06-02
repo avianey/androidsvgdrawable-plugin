@@ -2,7 +2,9 @@ CHANGELOG
 =========
 
 
-###### 3.0.1 [IN PROGRESS]
+###### 3.0.2 [IN PROGRESS]
+
+###### 3.0.1 [2 JUN 2017]
  -  [ADD] Support `FeaturePlugin` and `InstantAppPlugin` from latest android build plugin #60
 
 ###### 3.0.0 [10 NOV 2015]
