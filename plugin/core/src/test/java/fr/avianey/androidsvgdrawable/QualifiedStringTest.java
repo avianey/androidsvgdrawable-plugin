@@ -99,6 +99,10 @@ public class QualifiedStringTest {
                                 {Type.locale, "fr"},
                                 {Type.orientation, "land"}
                         }, "fr-land-mdpi"},
+                        {"v26-w108mdpi", new Object[][] {
+                                {Type.density, "w108mdpi"},
+                                {Type.platformVersion, "v26"}
+                        }, "w108mdpi-v26"},
                         // error cases
                         {"mdpilandfr", null, null},
                         {"hmdpi", null, null},

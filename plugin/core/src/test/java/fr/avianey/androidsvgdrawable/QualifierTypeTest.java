@@ -45,6 +45,7 @@ public class QualifierTypeTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
+                        {"v26", Type.platformVersion, true},
                         {"long", Type.aspect, true},
                         {"notlong", Type.aspect, true},
                         {"mdpi", Type.aspect, false},

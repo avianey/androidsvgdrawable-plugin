@@ -56,13 +56,13 @@ public class OutputDirectoryTest {
     private final SvgDrawablePlugin plugin;
     private final Set<File> expectedDirectories;
 
-    public OutputDirectoryTest(Density.Value[] targetedDensities, OutputType outputType, Set<String> expectedDirectories) {
+    public OutputDirectoryTest(String sub, Density.Value[] targetedDensities, OutputType outputType, Set<String> expectedDirectories) {
         String run = String.valueOf(RUN.incrementAndGet());
         parameters = new TestParameters();
         parameters.targetedDensities = targetedDensities;
         parameters.outputFormat = PNG;
         parameters.outputType = outputType;
-        parameters.from = singleton(new File(PATH_IN));
+        parameters.from = singleton(new File(PATH_IN, sub));
         parameters.to = new File(PATH_OUT, "run-" + run);
         // get a plugin instance well parametrized
         plugin = new SvgDrawablePlugin(parameters, new TestLogger());
@@ -92,11 +92,13 @@ public class OutputDirectoryTest {
         return asList(
                 new Object[][]{
                         {
+                                "simple",
                                 new Density.Value[]{hdpi},
                                 OutputType.drawable,
                                 ImmutableSet.of("drawable-hdpi")
                         },
                         {
+                                "simple",
                                 new Density.Value[]{},
                                 OutputType.drawable,
                                 ImmutableSet.of(
@@ -110,11 +112,19 @@ public class OutputDirectoryTest {
                                 )
                         },
                         {
+                                "simple",
                                 new Density.Value[]{xxxhdpi},
                                 OutputType.mipmap,
                                 ImmutableSet.of("mipmap-xxxhdpi")
                         },
                         {
+                                "complex",
+                                new Density.Value[]{xhdpi},
+                                OutputType.mipmap,
+                                ImmutableSet.of("mipmap-xhdpi-v26")
+                        },
+                        {
+                                "simple",
                                 new Density.Value[]{},
                                 OutputType.mipmap,
                                 ImmutableSet.of(
@@ -128,16 +138,19 @@ public class OutputDirectoryTest {
                                 )
                         },
                         {
+                                "simple",
                                 new Density.Value[]{},
                                 OutputType.raw,
                                 ImmutableSet.of()
                         },
                         {
+                                "simple",
                                 null,
                                 OutputType.raw,
                                 ImmutableSet.of()
                         },
                         {
+                                "simple",
                                 new Density.Value[]{ldpi, hdpi, xxxhdpi},
                                 OutputType.raw,
                                 ImmutableSet.of()
