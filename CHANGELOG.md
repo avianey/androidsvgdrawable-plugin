@@ -3,6 +3,7 @@ CHANGELOG
 
 
 ###### 3.0.2 [IN PROGRESS]
+ -  [FIX] Support Gradle 5.x builds #62
 
 ###### 3.0.1 [2 JUN 2017]
  -  [ADD] Support `FeaturePlugin` and `InstantAppPlugin` from latest android build plugin #60
