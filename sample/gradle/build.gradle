@@ -3,12 +3,13 @@
 buildscript {
     repositories {
         jcenter()
+        google()
         mavenCentral()
         mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:3.0.0') {
+        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:3.0.2-SNAPSHOT') {
             exclude group: 'xerces'
         }
     }
@@ -17,11 +18,8 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
         mavenCentral()
         mavenLocal()
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
 }
