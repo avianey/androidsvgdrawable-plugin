@@ -21,6 +21,7 @@ import groovy.lang.Closure;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -37,6 +38,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         }
     };
     public FileCollection from;
+    @OutputDirectory
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverwriteMode overwriteMode = OverwriteMode.always;
@@ -48,6 +50,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     // masking
     public FileCollection svgMaskFiles;
     public FileCollection svgMaskResourceFiles;
+    @OutputDirectory
     public File svgMaskedSvgOutputDirectory;
     public boolean useSameSvgOnlyOnceInMask;
 
