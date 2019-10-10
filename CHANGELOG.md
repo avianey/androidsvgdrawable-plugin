@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 
-###### 3.0.2 [IN PROGRESS]
+###### 3.0.2 [17 JAN 2019]
  -  [FIX] Support Gradle 5.x builds #62
 
 ###### 3.0.1 [2 JUN 2017]
