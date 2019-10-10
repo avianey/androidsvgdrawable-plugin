@@ -1,6 +1,5 @@
+dist: xenial
 language: java
-jdk:
-  - openjdk7
-  - oraclejdk8
+jdk: openjdk8
 install: "mvn install -f ./plugin/pom.xml -DskipTests=true"
 script: "mvn test -f ./plugin/pom.xml"
