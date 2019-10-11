@@ -147,11 +147,11 @@ public class QualifiedSVGResourceFactory {
         }
 
         @Override
-        public File getOutputFor(final Density.Value density, final File to, final OutputType outputType) {
+        public File getOutputFor(final Density.Value density, final File to, final OutputType outputType, final Density.Value noDpiDensity) {
             StringBuilder builder = new StringBuilder(outputType.name());
             EnumMap<Type, String> qualifiers = new EnumMap<>(typedQualifiers);
             qualifiers.remove(Type.density);
-            qualifiers.put(Type.density, density.name());
+            qualifiers.put(Type.density, density == noDpiDensity ? "nodpi" : density.name());
             builder.append(Qualifier.toQualifiedString(qualifiers));
             return new File(to, builder.toString());
         }

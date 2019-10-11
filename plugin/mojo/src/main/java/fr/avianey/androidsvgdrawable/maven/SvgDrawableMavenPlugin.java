@@ -20,6 +20,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Set;
 
@@ -73,6 +74,13 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
      */
     @Parameter
     private Density.Value[] targetedDensities;
+
+    /**
+     * The {@link Density} to use for generating the res/*-nodpi directories.<br/>
+     * Null id it SHOULD not be generated at all.
+     */
+    @Parameter
+    private Density.Value noDpiDensity;
 
     /**
      * Path to the 9-patch drawable configuration file.
@@ -212,6 +220,12 @@ public class SvgDrawableMavenPlugin extends AbstractMojo implements SvgDrawableP
     @Override
     public Density.Value[] getTargetedDensities() {
         return targetedDensities;
+    }
+
+    @Nullable
+    @Override
+    public Density.Value getNoDpiDensity() {
+        return noDpiDensity;
     }
 
     @Override

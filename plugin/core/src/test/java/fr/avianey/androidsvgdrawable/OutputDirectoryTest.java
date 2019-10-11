@@ -19,7 +19,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import fr.avianey.androidsvgdrawable.util.TestLogger;
 import fr.avianey.androidsvgdrawable.util.TestParameters;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,6 +30,7 @@ import org.junit.runners.Parameterized.Parameters;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -56,10 +59,15 @@ public class OutputDirectoryTest {
     private final SvgDrawablePlugin plugin;
     private final Set<File> expectedDirectories;
 
-    public OutputDirectoryTest(String sub, Density.Value[] targetedDensities, OutputType outputType, Set<String> expectedDirectories) {
+    public OutputDirectoryTest(String sub,
+                               Density.Value[] targetedDensities,
+                               Density.Value noDpiDensity,
+                               OutputType outputType,
+                               Set<String> expectedDirectories) {
         String run = String.valueOf(RUN.incrementAndGet());
         parameters = new TestParameters();
         parameters.targetedDensities = targetedDensities;
+        parameters.noDpiDensity = noDpiDensity;
         parameters.outputFormat = PNG;
         parameters.outputType = outputType;
         parameters.from = singleton(new File(PATH_IN, sub));
@@ -79,10 +87,10 @@ public class OutputDirectoryTest {
     }
 
     @Before
-    public void cleanup() {
+    public void cleanup() throws IOException {
         for (File directory : expectedDirectories) {
             if (directory.exists()) {
-                directory.delete();
+                FileUtils.deleteDirectory(directory);
             }
         }
     }
@@ -94,12 +102,34 @@ public class OutputDirectoryTest {
                         {
                                 "simple",
                                 new Density.Value[]{hdpi},
+                                null,
                                 OutputType.drawable,
                                 ImmutableSet.of("drawable-hdpi")
                         },
                         {
                                 "simple",
+                                new Density.Value[]{mdpi, hdpi},
+                                null,
+                                OutputType.drawable,
+                                ImmutableSet.of(
+                                        "drawable-mdpi",
+                                        "drawable-hdpi"
+                                )
+                        },
+                        {
+                                "simple",
+                                new Density.Value[]{mdpi, hdpi},
+                                mdpi,
+                                OutputType.drawable,
+                                ImmutableSet.of(
+                                        "drawable-nodpi",
+                                        "drawable-hdpi"
+                                )
+                        },
+                        {
+                                "simple",
                                 new Density.Value[]{},
+                                null,
                                 OutputType.drawable,
                                 ImmutableSet.of(
                                         "drawable-ldpi",
@@ -114,18 +144,21 @@ public class OutputDirectoryTest {
                         {
                                 "simple",
                                 new Density.Value[]{xxxhdpi},
+                                null,
                                 OutputType.mipmap,
                                 ImmutableSet.of("mipmap-xxxhdpi")
                         },
                         {
                                 "complex",
                                 new Density.Value[]{xhdpi},
+                                null,
                                 OutputType.mipmap,
                                 ImmutableSet.of("mipmap-xhdpi-v26")
                         },
                         {
                                 "simple",
                                 new Density.Value[]{},
+                                null,
                                 OutputType.mipmap,
                                 ImmutableSet.of(
                                         "mipmap-ldpi",
@@ -140,11 +173,13 @@ public class OutputDirectoryTest {
                         {
                                 "simple",
                                 new Density.Value[]{},
+                                null,
                                 OutputType.raw,
                                 ImmutableSet.of()
                         },
                         {
                                 "simple",
+                                null,
                                 null,
                                 OutputType.raw,
                                 ImmutableSet.of()
@@ -152,6 +187,7 @@ public class OutputDirectoryTest {
                         {
                                 "simple",
                                 new Density.Value[]{ldpi, hdpi, xxxhdpi},
+                                null,
                                 OutputType.raw,
                                 ImmutableSet.of()
                         },

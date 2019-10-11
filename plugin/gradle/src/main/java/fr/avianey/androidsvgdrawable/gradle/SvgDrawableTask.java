@@ -24,6 +24,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 import static com.google.common.collect.FluentIterable.from;
@@ -43,6 +44,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverwriteMode overwriteMode = OverwriteMode.always;
     public Density.Value[] targetedDensities;
+    public Density.Value noDpiDensity;
 
     // nine patch
     public File ninePatchConfig;
@@ -113,6 +115,12 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     @Override
     public Density.Value[] getTargetedDensities() {
         return targetedDensities;
+    }
+
+    @Nullable
+    @Override
+    public Density.Value getNoDpiDensity() {
+        return noDpiDensity;
     }
 
     @Override

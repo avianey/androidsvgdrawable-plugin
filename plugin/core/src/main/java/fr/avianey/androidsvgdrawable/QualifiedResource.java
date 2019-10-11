@@ -27,7 +27,7 @@ public abstract class QualifiedResource extends File {
         super(path);
     }
 
-    public abstract File getOutputFor(final Density.Value density, final File to, final OutputType outputType);
+    public abstract File getOutputFor(final Density.Value density, final File to, final OutputType outputType, final Density.Value noDpiDensity);
 
     public abstract Map<Type, String> getTypedQualifiers();
 

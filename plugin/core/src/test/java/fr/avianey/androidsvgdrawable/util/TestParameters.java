@@ -2,6 +2,7 @@ package fr.avianey.androidsvgdrawable.util;
 
 import fr.avianey.androidsvgdrawable.*;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 public class TestParameters implements SvgDrawablePlugin.Parameters {
@@ -11,6 +12,7 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
     public OverwriteMode overwriteMode = OverwriteMode.always;
     public Density.Value[] targetedDensities;
+    public Density.Value noDpiDensity;
 
     // nine patch
     public File ninePatchConfig;
@@ -55,6 +57,12 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     @Override
     public Density.Value[] getTargetedDensities() {
         return targetedDensities;
+    }
+
+    @Nullable
+    @Override
+    public Density.Value getNoDpiDensity() {
+        return noDpiDensity;
     }
 
     @Override

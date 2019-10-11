@@ -91,6 +91,9 @@ public class SvgDrawablePlugin {
         Density.Value[] getTargetedDensities();
 
         @Nullable
+        Density.Value getNoDpiDensity();
+
+        @Nullable
         File getNinePatchConfig();
 
         Iterable<File> getSvgMaskFiles();
@@ -210,10 +213,14 @@ public class SvgDrawablePlugin {
         for (QualifiedResource svg : svgToConvert) {
             try {
                 getLog().info("Transcoding " + FilenameUtils.getName(svg.getAbsolutePath()) + " to targeted densities");
-                Collection<Density.Value> _targetedDensities = parameters.getOutputType() == OutputType.raw ? singletonList(svg.getDensity().getValue()) : targetDensities;
+                Collection<Density.Value> _targetedDensities = parameters.getOutputType() == OutputType.raw ?
+                        singletonList(svg.getDensity().getValue()) :
+                        targetDensities;
                 for (Density.Value d : _targetedDensities) {
                     NinePatch ninePatch = ninePatchMap.getBestMatch(svg);
-                    File destination = parameters.getOutputType() == OutputType.raw ? parameters.getTo() : svg.getOutputFor(d, parameters.getTo(), parameters.getOutputType());
+                    File destination = parameters.getOutputType() == OutputType.raw ?
+                            parameters.getTo() :
+                            svg.getOutputFor(d, parameters.getTo(), parameters.getOutputType(), parameters.getNoDpiDensity());
                     if (!destination.exists() && parameters.isCreateMissingDirectories()) {
                         destination.mkdirs();
                     }
@@ -221,8 +228,8 @@ public class SvgDrawablePlugin {
                         getLog().debug("+ transcoding " + svg.getName() + " into " + destination.getName());
                         transcode(svg, d, destination, ninePatch);
                     } else {
-                        getLog().info("Qualified output " + destination.getName() + " does not exists. " +
-                        		"Set 'createMissingDirectories' to true if you want it to be created if missing...");
+                        getLog().info("Qualified output directory " + destination.getName() + " does not exists. " +
+                        		"Set 'createMissingDirectories' to true if you want it to be created when missing...");
                     }
                 }
             } catch (Exception e) {
