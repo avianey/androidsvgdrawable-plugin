@@ -47,7 +47,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.3.1'
-        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:3.0.0') {
+        classpath('fr.avianey.androidsvgdrawable:gradle-plugin:+') {
             // should be excluded to avoid conflict
             exclude group: 'xerces'
         }
@@ -82,7 +82,6 @@ Add the plugin to your pom.xml :
 <plugin>
     <groupId>fr.avianey.androidsvgdrawable</groupId>
     <artifactId>maven-plugin</artifactId>
-    <version>3.0.0</version>
     <executions>
         <execution>
             <id>gendrawable-png</id>
