@@ -284,7 +284,7 @@ The plugin can be configured using the following options :
 |overwriteMode|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
 |targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|  
 |outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
-|outputType|`drawable` or `mipmap`|The output directory for the generated bitmaps. Nine-Patch support apply only for the `drawable` output type.|  
+|outputType|`drawable` or `mipmap` or `raw`|The output directory for the generated bitmaps. Nine-Patch support apply only for the `drawable` output type. The `raw` output type will generate exactly one instance of each file found under `from` directory to the output directory specified by `to` (ignoring `targetDensities` if any and using the density qualifier from the input file name) |  
 |jpgQuality|Integer|The quality use for the JPG compression between 0 and 100 (higher is better). Default value is `85` (like Gimp).|  
 |jpgBackgroundColor|Integer|The background color used for the generated JPG bitmaps. Default is `0xFFFFFFFF` (opaque white).|  
 |svgMaskFiles|FileCollection|An optionnal collection of Path to pick the SVGMASK files from. Default to the same directory as the `from` parameter.|  
