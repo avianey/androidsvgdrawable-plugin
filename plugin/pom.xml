@@ -52,7 +52,6 @@
 
     <modules>
         <module>core</module>
-        <module>mojo</module>
         <module>gradle</module>
     </modules>
 
