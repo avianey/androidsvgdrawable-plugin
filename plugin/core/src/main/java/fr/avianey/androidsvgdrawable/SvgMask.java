@@ -97,7 +97,7 @@ public class SvgMask {
                 return uri;
             }
             @Override
-            public Iterator<?> getPrefixes(String val) {
+            public Iterator<String> getPrefixes(String val) {
                 throw new IllegalAccessError("Not implemented!");
             }
             @Override
