@@ -74,6 +74,7 @@ public final class Qualifier {
     /**
      * Qualifier types in order of precedence.<br/>
      * <a href="http://developer.android.com/guide/topics/resources/providing-resources.html">Providing Resources</a>
+     * https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/content/res/Configuration.java
      */
     public enum Type {
         mcc_mnc("mcc\\d+(?:-mnc\\d+)?"),
@@ -85,8 +86,10 @@ public final class Qualifier {
         screenSize("small|normal|large|xlarge"),
         aspect("(?:not)?long"),
         round("(?:not)?round"),
+        colorGamut("(?:no)?widecg"),
+        hdr("highdr|lowdr"),
         orientation("port|land"),
-        uiMode("car|desk|television|appliance|watch"),
+        uiMode("car|desk|television|appliance|watch|vrheadset"),
         nightMode("(?:not)?night"),
         /**
          * Regular qualifier part is (?:l|m|x{0,3}h|tv|no)dpi
@@ -116,7 +119,7 @@ public final class Qualifier {
     }
 
     /**
-     * Returns the String representing the qualifiers in the Android plateform expected order
+     * Returns the String representing the qualifiers in the Android platform expected order
      * @param qualifiers
      * @return
      */
