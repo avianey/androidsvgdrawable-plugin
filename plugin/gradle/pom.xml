@@ -56,8 +56,8 @@
 
 	<repositories>
 		<repository>
-			<id>spring gradle release</id>
-			<url>http://repo.spring.io/libs-release</url>
+			<id>Gradle Releases Repository</id>
+			<url>https://repo.gradle.org/gradle/libs-releases-local/</url>
 		</repository>
 	</repositories>
 
