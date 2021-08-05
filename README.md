@@ -281,7 +281,6 @@ The plugin can be configured using the following options :
 |to|File|Path to the Android `res/` directory that contains the various `drawable/` directories.|  
 |createMissingDirectories|boolean|Set it to `false` if you don't want the plugin to create missing drawable(-{qualifier})*/ directories. The default value is set to `true`.|  
 |ninePatchConfig|File|Path to the 9-Patch JSON configuration file.|  
-|overwriteMode|`always`, `never` or `ifModified`|Whether or not already existing and up to date PNG should be overridden at build time.|  
 |targetedDensities|List|List of the desired densities for the generated drawable. If not specified, a drawable is generate for each density qualifier that is supported by the android SDK.|  
 |outputFormat|`PNG` or `JPG`|The format of the generated bitmaps. Nine-Patch support apply only for the `PNG` output format.|  
 |outputType|`drawable` or `mipmap` or `raw`|The output directory for the generated bitmaps. Nine-Patch support apply only for the `drawable` output type. The `raw` output type will generate exactly one instance of each file found under `from` directory to the output directory specified by `to` (ignoring `targetDensities` if any and using the density qualifier from the input file name) |  

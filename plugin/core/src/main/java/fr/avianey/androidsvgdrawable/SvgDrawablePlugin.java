@@ -76,7 +76,6 @@ public class SvgDrawablePlugin {
         OutputFormat DEFAULT_OUTPUT_FORMAT = OutputFormat.PNG;
         OutputType DEFAULT_OUTPUT_TYPE = OutputType.drawable;
         BoundsType DEFAULT_BOUNDS_TYPE = BoundsType.sensitive;
-        OverwriteMode DEFAULT_OVERRIDE_MODE = OverwriteMode.always;
         Boolean DEFAULT_CREATE_MISSING_DIRECTORIES = true;
 
         Iterable<File> getFiles();
@@ -84,8 +83,6 @@ public class SvgDrawablePlugin {
         File getTo();
 
         boolean isCreateMissingDirectories();
-
-        OverwriteMode getOverwriteMode();
 
         @Nullable
         Density.Value[] getTargetedDensities();
@@ -253,7 +250,7 @@ public class SvgDrawablePlugin {
                 Collection<QualifiedResource> generatedResources = new SvgMask(maskFile).generatesMaskedResources(
                         qualifiedSVGResourceFactory,
                         parameters.getSvgMaskedSvgOutputDirectory(), svgMaskResources,
-                        parameters.isUseSameSvgOnlyOnceInMask(), parameters.getOverwriteMode());
+                        parameters.isUseSameSvgOnlyOnceInMask());
                 if (!generatedResources.isEmpty()) {
                     getLog().debug("+ " + on(", ").join(generatedResources));
                 } else {
@@ -295,49 +292,37 @@ public class SvgDrawablePlugin {
                     .append(".")                                                                                   //
                     .append(parameters.getOutputFormat().name().toLowerCase()).toString();                         //
 
-            final File finalFile = new File(finalName);
+            // unit conversion for size not in pixel (in, mm, ...)
+            ImageTranscoder t = parameters.getOutputFormat().getTranscoderClass().newInstance();
+            if (t instanceof JPEGTranscoder) {
+                // custom jpg hints
+                t.addTranscodingHint(KEY_QUALITY, min(1, max(0, parameters.getJpgQuality() / 100f)));
+                t.addTranscodingHint(KEY_BACKGROUND_COLOR, new Color(parameters.getJpgBackgroundColor()));
+            }
+            t.addTranscodingHint(KEY_WIDTH, new Float(outputBounds.getWidth()));
+            t.addTranscodingHint(KEY_HEIGHT, new Float(outputBounds.getHeight()));
+            t.addTranscodingHint(KEY_PIXEL_UNIT_TO_MILLIMETER, MM_PER_INCH / svg.getDensity().getDpi());
 
-            if (parameters.getOverwriteMode().shouldOverride(svg, finalFile, parameters.getNinePatchConfig())) {
-                // unit conversion for size not in pixel (in, mm, ...)
-
-                ImageTranscoder t = parameters.getOutputFormat().getTranscoderClass().newInstance();
-                if (t instanceof JPEGTranscoder) {
-                    // custom jpg hints
-                    t.addTranscodingHint(KEY_QUALITY, min(1, max(0, parameters.getJpgQuality() / 100f)));
-                    t.addTranscodingHint(KEY_BACKGROUND_COLOR, new Color(parameters.getJpgBackgroundColor()));
+            if (ninePatch == null || !parameters.getOutputFormat().hasNinePatchSupport()) {
+                if (ninePatch != null) {
+                    getLog().warn("skipping the nine-patch configuration for the JPG output format !!!");
                 }
-                t.addTranscodingHint(KEY_WIDTH, new Float(outputBounds.getWidth()));
-                t.addTranscodingHint(KEY_HEIGHT, new Float(outputBounds.getHeight()));
-                t.addTranscodingHint(KEY_PIXEL_UNIT_TO_MILLIMETER, MM_PER_INCH / svg.getDensity().getDpi());
-
-                if (ninePatch == null || !parameters.getOutputFormat().hasNinePatchSupport()) {
-                    if (ninePatch != null) {
-                        getLog().warn("skipping the nine-patch configuration for the JPG output format !!!");
-                    }
-                    // write file directly
-                    OutputStream os = new FileOutputStream(finalName);
+                // write file directly
+                OutputStream os = new FileOutputStream(finalName);
+                TranscoderOutput output = new TranscoderOutput(os);
+                t.transcode(input, output);
+                os.flush();
+                os.close();
+            } else {
+                // write in memory
+                try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                     TranscoderOutput output = new TranscoderOutput(os);
                     t.transcode(input, output);
                     os.flush();
-                    os.close();
-                } else {
-                    // write in memory
-                    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-                        TranscoderOutput output = new TranscoderOutput(os);
-                        t.transcode(input, output);
-                        os.flush();
-                        try (InputStream is = new ByteArrayInputStream(os.toByteArray())) {
-                            // fill the patch
-                            toNinePatch(is, finalName, ninePatch, svg.getBounds(), outputBounds);
-                        }
+                    try (InputStream is = new ByteArrayInputStream(os.toByteArray())) {
+                        // fill the patch
+                        toNinePatch(is, finalName, ninePatch, svg.getBounds(), outputBounds);
                     }
-                }
-            } else {
-                getLog().debug(finalName + " already exists and is up to date... skipping generation!");
-                getLog().debug("+ " + finalName + " last modified on " + new File(finalName).lastModified());
-                getLog().debug("+ " + svg.getAbsolutePath() + " last modified on " + svg.lastModified());
-                if (ninePatch != null && parameters.getNinePatchConfig() != null /* for tests */) {
-                    getLog().debug("+ " + parameters.getNinePatchConfig().getAbsolutePath() + " last modified on " + parameters.getNinePatchConfig().lastModified());
                 }
             }
         }

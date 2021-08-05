@@ -208,7 +208,7 @@ public class SvgMaskTest {
     public void fromJson() throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException, InstantiationException, IllegalAccessException, TranscoderException  {
     	QualifiedResource maskResource = qualifiedSVGResourceFactory.fromSVGFile(new File(PATH_IN, mask));
     	SvgMask svgMask = new SvgMask(maskResource);
-    	Collection<QualifiedResource> maskedResources = svgMask.generatesMaskedResources(qualifiedSVGResourceFactory, dir, resources, useSameSvgOnlyOnceInMask, OverwriteMode.always);
+    	Collection<QualifiedResource> maskedResources = svgMask.generatesMaskedResources(qualifiedSVGResourceFactory, dir, resources, useSameSvgOnlyOnceInMask);
     	assertEquals(maskedResourcesNames.size(), maskedResources.size());
     	assertEquals(maskedResourcesNames.size(), dir.list().length);
     	QualifiedResource qr;

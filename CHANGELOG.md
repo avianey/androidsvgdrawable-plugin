@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+###### 3.1.0 [05 AUG 2021]
+ -  [CHG] Rely on Gradle task Inputs/Outputs #59 & #56
+ -  [DEL] Remove `overwriteMode` option
 
 ###### 3.0.2 [17 JAN 2019]
  -  [FIX] Support Gradle 5.x builds #62

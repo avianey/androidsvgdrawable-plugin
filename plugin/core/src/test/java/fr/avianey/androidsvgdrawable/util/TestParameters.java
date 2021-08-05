@@ -10,7 +10,6 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     public Iterable<File> from;
     public File to;
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
-    public OverwriteMode overwriteMode = OverwriteMode.always;
     public Density.Value[] targetedDensities;
     public Density.Value noDpiDensity;
 
@@ -47,11 +46,6 @@ public class TestParameters implements SvgDrawablePlugin.Parameters {
     @Override
     public boolean isCreateMissingDirectories() {
         return createMissingDirectories;
-    }
-
-    @Override
-    public OverwriteMode getOverwriteMode() {
-        return overwriteMode;
     }
 
     @Override

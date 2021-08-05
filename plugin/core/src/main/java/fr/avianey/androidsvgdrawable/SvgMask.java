@@ -63,7 +63,6 @@ public class SvgMask {
      * @param dest
      * @param availableResources
      * @param useSameSvgOnlyOnceInMask
-     * @param overwriteMode
      * @return
      * @throws TransformerException
      * @throws ParserConfigurationException
@@ -74,8 +73,7 @@ public class SvgMask {
 	public Collection<QualifiedResource> generatesMaskedResources(
 			QualifiedSVGResourceFactory qualifiedSVGResourceFactory,
 	        File dest, final Collection<QualifiedResource> availableResources,
-			final boolean useSameSvgOnlyOnceInMask,
-			final OverwriteMode overwriteMode) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+			final boolean useSameSvgOnlyOnceInMask) throws TransformerException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 		// generates output directory
 		dest.mkdirs();
 
@@ -199,20 +197,15 @@ public class SvgMask {
 						qualifiers.put(Type.density, svgMask.getDensity().getValue().name());
 
 						// write masked svg
-						if (overwriteMode.shouldOverride(maskedFile, new File(maskedFile.getAbsolutePath()), null)) {
-						    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-							Transformer transformer = transformerFactory.newTransformer();
-							DOMSource source = new DOMSource(svgmaskDom);
-							if (!maskedFile.exists() && !maskedFile.createNewFile()) {
-								// problem occurred
-								continue;
-							}
-							StreamResult result = new StreamResult(new FileOutputStream(maskedFile));
-							transformer.transform(source, result);
-						} else {
-						    // no need to re-generate masked file
-						    // delegates override or not to final file generation process
+						TransformerFactory transformerFactory = TransformerFactory.newInstance();
+						Transformer transformer = transformerFactory.newTransformer();
+						DOMSource source = new DOMSource(svgmaskDom);
+						if (!maskedFile.exists() && !maskedFile.createNewFile()) {
+							// problem occurred
+							continue;
 						}
+						StreamResult result = new StreamResult(new FileOutputStream(maskedFile));
+						transformer.transform(source, result);
 						maskedResources.add(qualifiedSVGResourceFactory.fromSVGFile(maskedFile));
 
 					}

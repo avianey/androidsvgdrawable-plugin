@@ -21,14 +21,10 @@ import groovy.lang.Closure;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import javax.annotation.Nullable;
 import java.io.File;
-
-import static com.google.common.collect.FluentIterable.from;
-import static java.util.Arrays.asList;
 
 public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Parameters {
 
@@ -38,33 +34,50 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
             return o != null;
         }
     };
+    @Internal
     public FileCollection from;
     @OutputDirectory
     public File to;
+    @Input
     public boolean createMissingDirectories = DEFAULT_CREATE_MISSING_DIRECTORIES;
-    public OverwriteMode overwriteMode = OverwriteMode.always;
+    @Input
     public Density.Value[] targetedDensities;
+    @Input
+    @Optional
     public Density.Value noDpiDensity;
 
     // nine patch
+    @InputFile
+    @Optional
     public File ninePatchConfig;
 
     // masking
+    @InputDirectory
+    @Optional
     public FileCollection svgMaskFiles;
+    @InputDirectory
+    @Optional
     public FileCollection svgMaskResourceFiles;
     @OutputDirectory
+    @Optional
     public File svgMaskedSvgOutputDirectory;
+    @Input
     public boolean useSameSvgOnlyOnceInMask;
 
     // type
+    @Input
     public OutputType outputType = DEFAULT_OUTPUT_TYPE;
 
     // format
+    @Input
     public OutputFormat outputFormat = DEFAULT_OUTPUT_FORMAT;
+    @Input
     public int jpgQuality = DEFAULT_JPG_QUALITY;
+    @Input
     public int jpgBackgroundColor = DEFAULT_JPG_BACKGROUND_COLOR;
 
     // deprecated
+    @Input
     public BoundsType svgBoundsType = DEFAULT_BOUNDS_TYPE;
 
     @Override
@@ -72,16 +85,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         Task task = super.configure(closure);
         if (svgMaskedSvgOutputDirectory == null) {
             svgMaskedSvgOutputDirectory = new File(getProject().getBuildDir(), "generated-svg");
-        }
-        if (!task.getInputs().getHasInputs()) {
-            task.getInputs().files(
-                    from(asList(from, ninePatchConfig, svgMaskFiles, svgMaskResourceFiles))
-                            .filter(notNull).toArray(Object.class));
-        }
-        if (!task.getOutputs().getHasOutput()) {
-            task.getOutputs().files(
-                    from(asList(to, svgMaskedSvgOutputDirectory))
-                            .filter(notNull).toArray(File.class));
         }
         return task;
     }
@@ -93,6 +96,7 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     }
 
     @Override
+    @InputFiles
     public Iterable<File> getFiles() {
         return from;
     }
@@ -105,11 +109,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     @Override
     public boolean isCreateMissingDirectories() {
         return createMissingDirectories;
-    }
-
-    @Override
-    public OverwriteMode getOverwriteMode() {
-        return overwriteMode;
     }
 
     @Override
@@ -173,6 +172,10 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
         return svgBoundsType;
     }
 
+    public FileCollection getFrom() {
+        return from;
+    }
+
     public void setFrom(FileCollection from) {
         this.from = from;
     }
@@ -183,10 +186,6 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
 
     public void setCreateMissingDirectories(boolean createMissingDirectories) {
         this.createMissingDirectories = createMissingDirectories;
-    }
-
-    public void setOverwriteMode(OverwriteMode overwriteMode) {
-        this.overwriteMode = overwriteMode;
     }
 
     public void setTargetedDensities(Density.Value[] targetedDensities) {
