@@ -52,10 +52,10 @@ public class SvgDrawableTask extends DefaultTask implements SvgDrawablePlugin.Pa
     public File ninePatchConfig;
 
     // masking
-    @InputDirectory
+    @InputFiles
     @Optional
     public FileCollection svgMaskFiles;
-    @InputDirectory
+    @InputFiles
     @Optional
     public FileCollection svgMaskResourceFiles;
     @OutputDirectory
