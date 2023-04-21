@@ -1,13 +1,19 @@
 plugins {
     id 'java-gradle-plugin'
     id "com.gradle.plugin-publish" version "1.2.0"
+    id 'signing'
 }
 
 gradlePlugin {
+    website = 'https://github.com/avianey/androidsvgdrawable-plugin'
+    vcsUrl = 'https://github.com/avianey/androidsvgdrawable-plugin'
     plugins {
-        simplePlugin {
-            id = 'androidsvgdrawable'
+        plugin {
+            id = 'fr.avianey.androidsvgdrawable'
             implementationClass = 'fr.avianey.androidsvgdrawable.plugin.SvgDrawableGradlePlugin'
+            displayName = 'AndroidSVGDrawable Gradle Plugin'
+            description = 'Generates raster drawable at build time from SVG files'
+            tags.set(['android', 'svg', 'png', 'jpg', 'batik'])
         }
     }
 }
@@ -23,6 +29,7 @@ allprojects {
         mavenLocal()
     }
 }
+
 publishing {
     repositories {
         mavenLocal()
@@ -55,7 +62,3 @@ tasks.withType(Javadoc) {
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
 }
-
-project.tasks.findByName('test').dependsOn('assemble')
-project.tasks.findByName('publish').dependsOn('test')
-project.tasks.findByName('publishToMavenLocal').dependsOn('test')
