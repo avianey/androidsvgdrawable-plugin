@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+###### 8.0.0 [21 APR 2023]
+
+Align version to Android Gradle Plugin  
+Breaking changes were made in the plugin namespace, artifact...
+
+ -  [CHG] Makes it compatible with Gradle 8.0 and migrate to Gradle build
+ -  [FIX] Compatibility with Android Gradle Plugin 8.0+
+ -  [CHG] Publish to gradle Plugin Portal
+ -  [CHG] use `apply plugin: 'fr.avianey.androidsvgdrawable'` 
+ -  [CHG] use `classpath('fr.avianey.androidsvgdrawable:gradle-plugin:8.0.0')` in buildscript import
+
 ###### 3.1.0 [05 AUG 2021]
  -  [CHG] Rely on Gradle task Inputs/Outputs #59 & #56
  -  [DEL] Remove `overwriteMode` option
