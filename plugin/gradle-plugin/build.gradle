@@ -1,7 +1,6 @@
 plugins {
     id 'java-gradle-plugin'
     id "com.gradle.plugin-publish" version "1.2.0"
-<<<<<<< HEAD
     id 'signing'
 }
 
@@ -15,15 +14,6 @@ gradlePlugin {
             displayName = 'AndroidSVGDrawable Gradle Plugin'
             description = 'Generates raster drawable at build time from SVG files'
             tags.set(['android', 'svg', 'png', 'jpg', 'batik'])
-=======
-}
-
-gradlePlugin {
-    plugins {
-        simplePlugin {
-            id = 'androidsvgdrawable'
-            implementationClass = 'fr.avianey.androidsvgdrawable.plugin.SvgDrawableGradlePlugin'
->>>>>>> b687828 (Finish Gradle migration)
         }
     }
 }
@@ -39,10 +29,7 @@ allprojects {
         mavenLocal()
     }
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> b687828 (Finish Gradle migration)
 publishing {
     repositories {
         mavenLocal()
