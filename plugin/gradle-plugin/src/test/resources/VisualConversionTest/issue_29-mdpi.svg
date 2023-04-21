@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="72px" height="72px" viewBox="-32 -32 1088 1088">
+    <!-- background -->
+    <path
+        d="M 512,512 m -464,0 a 464,464 0 1,0 928,0 a 464,464 0 1,0 -928,0
+        M 512,512 m -368,0 a 368,368 0 1,1 736,0 a 368,368 0 1,1 -736,0"
+        fill="#757575" />
+
+    <!-- H -->
+    <path d="M 370,760 v -500 m 0,240 h 280 m 0,260 v -500" style="fill:none;stroke:#757575;stroke-width:96" />
+</svg>
