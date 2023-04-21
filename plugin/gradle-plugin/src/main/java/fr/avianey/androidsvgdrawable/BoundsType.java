@@ -30,6 +30,7 @@ import org.apache.batik.gvt.GraphicsNode;
  * @author antoine vianey
  * @deprecated
  */
+@Deprecated
 public enum BoundsType {
 
 	/**

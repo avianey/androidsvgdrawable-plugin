@@ -55,3 +55,7 @@ tasks.withType(Javadoc) {
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
 }
+
+project.tasks.findByName('test').dependsOn('assemble')
+project.tasks.findByName('publish').dependsOn('test')
+project.tasks.findByName('publishToMavenLocal').dependsOn('test')
