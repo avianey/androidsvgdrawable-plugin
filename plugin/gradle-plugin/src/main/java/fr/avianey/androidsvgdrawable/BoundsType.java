@@ -30,7 +30,10 @@ import org.apache.batik.gvt.GraphicsNode;
  * @author antoine vianey
  * @deprecated
  */
+<<<<<<< HEAD
 @Deprecated
+=======
+>>>>>>> b687828 (Finish Gradle migration)
 public enum BoundsType {
 
 	/**

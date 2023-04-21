@@ -30,11 +30,19 @@ import static java.util.Collections.EMPTY_MAP;
  * Describe the configuration for a 9-Patch drawable:
  * <dl>
  * <dt>Stretchable area</dt>
+<<<<<<< HEAD
  * <dd>coordinates of start &amp; stop points for segments along the x-axis</dd>
  * <dd>coordinates of start &amp; stop points for segments along the y-axis</dd>
  * <dt>Content area</dt>
  * <dd>coordinates of start &amp; stop points for segments along the x-axis</dd>
  * <dd>coordinates of start &amp; stop points for segments along the y-axis</dd>
+=======
+ * <dd>coordinates of start & stop points for segments along the x-axis</dd>
+ * <dd>coordinates of start & stop points for segments along the y-axis</dd>
+ * <dt>Content area</dt>
+ * <dd>coordinates of start & stop points for segments along the x-axis</dd>
+ * <dd>coordinates of start & stop points for segments along the y-axis</dd>
+>>>>>>> b687828 (Finish Gradle migration)
  * </dl>
  * If no segment defined for an area along an axis, the whole axis is used as a segment.
  * Coordinates must be include within the svg bounds (width and height).
