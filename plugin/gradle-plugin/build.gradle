@@ -1,0 +1,57 @@
+plugins {
+    id 'java-gradle-plugin'
+    id "com.gradle.plugin-publish" version "1.2.0"
+}
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'androidsvgdrawable'
+            implementationClass = 'fr.avianey.androidsvgdrawable.plugin.SvgDrawableGradlePlugin'
+        }
+    }
+}
+
+group = 'fr.avianey.androidsvgdrawable'
+version = '8.0.0'
+description = 'AndroidSvgDrawable Gradle Plugin'
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+    }
+}
+publishing {
+    repositories {
+        mavenLocal()
+    }
+}
+
+dependencies {
+    api 'com.google.guava:guava:30.1-jre'
+    api 'com.google.code.gson:gson:2.8.9'
+    api 'org.apache.xmlgraphics:batik-all:1.16'
+    api 'commons-io:commons-io:2.7'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.jooq:joor:0.9.14'
+    testImplementation 'org.mockito:mockito-all:1.10.19'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+java {
+    withJavadocJar()
+}
+
+tasks.withType(Javadoc) {
+    failOnError false
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
