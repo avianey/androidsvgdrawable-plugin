@@ -26,7 +26,6 @@ import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.parser.UnitProcessor;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLength;
 import org.w3c.dom.svg.SVGSVGElement;
@@ -185,7 +184,7 @@ public class QualifiedSVGResourceFactory {
         }
 
         public String toString() {
-            return FilenameUtils.getName(getAbsolutePath());
+            return toPath().getFileName().toString();
         }
 
     }
