@@ -4,6 +4,10 @@ plugins {
     id 'signing'
 }
 
+signing {
+    required { project.hasProperty('signing.keyId') || project.hasProperty('signingKey') }
+}
+
 gradlePlugin {
     website = 'https://github.com/avianey/androidsvgdrawable-plugin'
     vcsUrl = 'https://github.com/avianey/androidsvgdrawable-plugin'
